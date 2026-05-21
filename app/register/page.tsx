@@ -16,7 +16,7 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signUp({
+    const { data: authData, error } = await supabase.auth.signUp({
       email,
       password,
     })
@@ -25,6 +25,27 @@ export default function RegisterPage() {
       setError(error.message)
       setLoading(false)
       return
+    }
+
+    if (authData.user) {
+      // Extract email prefix for name and slug
+      const emailPrefix = email.split('@')[0]
+      
+      // Create barber record
+      const { error: barberError } = await supabase
+        .from('barbers')
+        .insert({
+          user_id: authData.user.id,
+          email: email,
+          name: emailPrefix,
+          slug: emailPrefix.toLowerCase()
+        })
+
+      if (barberError) {
+        setError('Account created but failed to create barber profile: ' + barberError.message)
+        setLoading(false)
+        return
+      }
     }
 
     router.push('/dashboard')

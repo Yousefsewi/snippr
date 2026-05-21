@@ -34,19 +34,28 @@ export default function DashboardPage() {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.log('Auth error or no user:', authError)
       router.push('/login')
       return
     }
 
+    console.log('Auth user ID:', user.id)
+    console.log('Auth user email:', user.email)
+
     // Fetch barber data
+    console.log('Querying barbers table with user_id:', user.id)
     const { data: barberData, error: barberError } = await supabase
       .from('barbers')
       .select('*')
       .eq('user_id', user.id)
       .single()
 
+    console.log('Barber query error:', barberError)
+    console.log('Barber query data:', barberData)
+
     if (barberError || !barberData) {
       console.error('Error fetching barber data:', barberError)
+      console.error('Barber data is null:', !barberData)
       setLoading(false)
       return
     }
