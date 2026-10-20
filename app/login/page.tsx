@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { Auth5 } from '@/components/watermelon-ui/auth-5'
 import { suggestEmail } from '@/lib/email-typo'
+import { SESSION_ONLY_KEY, ALIVE_COOKIE } from '@/lib/remember-me'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -53,19 +54,27 @@ export default function LoginPage() {
       return
     }
 
+    // "Remember me" off: end the session when the browser closes. A cookie without an
+    // expiry date disappears on close; the dashboard signs out if it's gone.
+    const remember = (form.querySelector('#Auth5-remember') as HTMLInputElement | null)?.checked ?? true
+    try {
+      if (remember) localStorage.removeItem(SESSION_ONLY_KEY)
+      else { localStorage.setItem(SESSION_ONLY_KEY, '1'); document.cookie = `${ALIVE_COOKIE}=1; path=/; SameSite=Lax` }
+    } catch { /* storage blocked: keep the normal (remembered) session */ }
+
     router.push('/dashboard')
   }
 
   return (
     <Auth5
       brandName="Snippr"
-      heading="Welcome back"
-      subtext="Sign in to manage your appointments."
-      submitLabel={loading ? 'Signing in…' : 'Sign in'}
+      heading="Welcome Back!"
+      subtext="Enter your details below"
+      submitLabel={loading ? 'Logging in…' : 'Log in'}
       loading={loading}
       error={error}
       footerText="Don't have an account?"
-      footerLinkText="Register"
+      footerLinkText="Sign up"
       signUpHref="/register"
       forgotPasswordHref="/forgot-password"
       onSubmit={handleLogin}

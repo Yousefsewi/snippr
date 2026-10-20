@@ -533,7 +533,6 @@ export default function Home() {
   const isRTL = false
 
   // Light text on the dark video, dark text on the light colour wash
-  const heading  = SHOW_HERO_VIDEO ? '#f5f5f5' : '#1d1d1f'
   const navText  = SHOW_HERO_VIDEO ? 'rgba(255,255,255,0.82)' : 'rgba(29,29,31,0.72)'
   const navShade = SHOW_HERO_VIDEO ? '0 1px 8px rgba(0,0,0,0.25)' : 'none'
   const navHover = SHOW_HERO_VIDEO ? 'hover:text-white' : 'hover:text-black'
@@ -581,9 +580,9 @@ export default function Home() {
           <div className="flex items-center justify-between gap-3 md:gap-7 pl-2 pr-2 py-2 rounded-full" style={GLASS_PILL}>
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 pr-1">
-              <span className="flex items-center justify-center rounded-full text-[15px]" style={{ ...GLASS_BUTTON, width: 38, height: 38, color: glassInk }}>✦</span>
-              <span className="hidden sm:inline font-semibold text-[14px] tracking-[0.08em]" style={{ color: heading }}>SNIPPR</span>
+            <Link href="/" className="flex items-center flex-shrink-0 pl-3 pr-1" aria-label="Snippr">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={SHOW_HERO_VIDEO ? '/logo-white.svg' : '/logo.svg'} alt="Snippr" style={{ height: 26, width: 'auto', display: 'block' }} />
             </Link>
 
             {/* Menu items */}
@@ -804,20 +803,17 @@ export default function Home() {
 
           {/* ── Giant wordmark + tagline ── */}
           <div className="flex flex-col lg:flex-row items-end justify-between gap-6 pb-10">
-            <h2
-              className={`${serif.className} leading-none select-none`}
+            {/* the logo used as a mask, so it keeps the white-to-grey fade */}
+            <h2 className="m-0 select-none" aria-label="Snippr"
               style={{
-                fontSize: 'clamp(80px, 17vw, 280px)',
-                letterSpacing: '-0.03em',
-                lineHeight: 0.82,
+                height: 'clamp(70px, 14vw, 230px)', aspectRatio: '2.238', maxWidth: '100%',
                 background: 'linear-gradient(180deg, #ffffff 0%, #888888 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                WebkitMaskImage: 'url(/logo.svg)', maskImage: 'url(/logo.svg)',
+                WebkitMaskSize: 'contain', maskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'left bottom', maskPosition: 'left bottom',
               }}
-            >
-              SNIPPR
-            </h2>
+            />
             <p className={`${serif.className} text-[18px] md:text-[22px] leading-snug max-w-[280px] pb-3`} style={{ color: 'rgba(255,255,255,0.55)' }}>
               {c.tagline}
             </p>

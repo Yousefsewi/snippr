@@ -257,3 +257,14 @@ body {
     padding-right: 1.5rem !important;
   }
 }
+
+/* Login / sign-up: no blue autofill background, fields stay white */
+.auth-form input:-webkit-autofill,
+.auth-form input:-webkit-autofill:hover,
+.auth-form input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111;
+  transition: background-color 99999s ease-out;
+}

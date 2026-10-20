@@ -360,3 +360,15 @@ begin
   return new;
 end
 $$;
+
+-- ── Advisor fixes (same as supabase/advisor-fixes.sql) ──
+revoke execute on function public.handle_new_user()          from public, anon, authenticated;
+revoke execute on function public.limit_booking_spam()       from public, anon, authenticated;
+-- rls_auto_enable is added by Supabase itself, so only touch it when it exists
+do $$ begin
+  if to_regprocedure('public.rls_auto_enable()') is not null then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+  end if;
+end $$;
+revoke execute on function public.set_first_visit_discount() from public, anon, authenticated;
+create index if not exists appointments_service_id_idx on public.appointments (service_id);

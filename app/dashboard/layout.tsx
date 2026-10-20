@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { enforceRememberMe } from '@/lib/remember-me'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
@@ -92,6 +93,7 @@ function Chrome({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
     ;(async () => {
+      if (await enforceRememberMe()) { router.replace('/login'); return }
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       let { data: barber } = await supabase.from('barbers').select('name, photo_url').eq('user_id', user.id).single()
@@ -112,7 +114,7 @@ function Chrome({ children }: { children: ReactNode }) {
       setMe({ name: barber.name ?? '', email: user.email ?? '', photo: barber.photo_url ?? null })
     })()
     return () => { active = false }
-  }, [])
+  }, [router])
 
   const markAllRead = () => setNotifs(prev => prev.map(n => ({ ...n, read: true })))
 
@@ -167,15 +169,13 @@ function Chrome({ children }: { children: ReactNode }) {
           borderBottom: '1px solid #e9e9e7',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 10,
-              background: 'var(--accent)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 15, color: '#fff', flexShrink: 0,
-            }}>✦</div>
-            {!collapsed && (
+            {collapsed ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/icon-192.png" alt="Snippr" style={{ width: 32, height: 32, borderRadius: 9, flexShrink: 0, display: 'block' }} />
+            ) : (
               <div style={{ overflow: 'hidden' }}>
-                <p style={{ fontSize: 14.5, fontWeight: 700, color: '#37352f', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.01em' }}>Snippr</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.svg" alt="Snippr" style={{ height: 24, width: 'auto', display: 'block', margin: '2px 0 3px' }} />
                 <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>Book smarter</p>
               </div>
             )}
