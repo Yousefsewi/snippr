@@ -1,28 +1,54 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { Auth5 } from '@/components/watermelon-ui/auth-5'
+import { suggestEmail } from '@/lib/email-typo'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const busy = useRef(false) // one sign-in request at a time (Enter + click used to send two)
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (busy.current) return
+    const form = e.currentTarget
+    const email = ((form.querySelector('#Auth5-email') as HTMLInputElement)?.value ?? '').trim().toLowerCase()
+    const password = (form.querySelector('#Auth5-password') as HTMLInputElement)?.value ?? ''
+
+    busy.current = true
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    let { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    // Misspelled provider ("gamil.com", often put in by browser autofill)? Quietly retry
+    // with the corrected address and put it in the field, so the browser saves the right one.
+    const fixed = suggestEmail(email)
+    if (error?.code === 'invalid_credentials' && fixed) {
+      const retry = await supabase.auth.signInWithPassword({ email: fixed, password })
+      error = retry.error
+      if (!error) {
+        const input = form.querySelector('#Auth5-email') as HTMLInputElement | null
+        if (input) input.value = fixed
+      }
+    }
 
     if (error) {
-      setError(error.message)
+      // Echo the email that was actually sent: browser autofill often puts in an old or
+      // misspelled address without the user noticing.
+      setError(
+        error.code === 'invalid_credentials' && fixed
+          ? `Wrong password for "${fixed}" (we also corrected "${email}"). Try again, or use "Forgot password?".`
+          : error.code === 'invalid_credentials'
+          ? `Wrong email or password for "${email}". Check the spelling, or use "Forgot password?". No account yet? Register first.`
+          : error.code === 'email_not_confirmed'
+            ? 'This email is not confirmed yet. Please check your inbox.'
+            : error.message,
+      )
+      busy.current = false
       setLoading(false)
       return
     }
@@ -31,68 +57,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0A' }}>
-      <div className="w-full max-w-md p-8">
-        <h1 className="text-3xl font-bold mb-8 text-center" style={{ color: 'white' }}>
-          Login
-        </h1>
-        
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: 'white' }}>
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
-              style={{ backgroundColor: '#1A1A1A' }}
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: 'white' }}>
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
-              style={{ backgroundColor: '#1A1A1A' }}
-              placeholder="Enter your password"
-            />
-          </div>
-
-          {error && (
-            <div className="text-red-400 text-sm text-center">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 rounded-lg font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
-            style={{ backgroundColor: '#6366F1' }}
-          >
-            {loading ? 'Signing in...' : 'Login'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm" style={{ color: '#9CA3AF' }}>
-          Don't have an account?{' '}
-          <a href="/register" className="hover:underline" style={{ color: '#6366F1' }}>
-            Register
-          </a>
-        </p>
-      </div>
-    </div>
+    <Auth5
+      brandName="Snippr"
+      heading="Welcome back"
+      subtext="Sign in to manage your appointments."
+      submitLabel={loading ? 'Signing in…' : 'Sign in'}
+      loading={loading}
+      error={error}
+      footerText="Don't have an account?"
+      footerLinkText="Register"
+      signUpHref="/register"
+      forgotPasswordHref="/forgot-password"
+      onSubmit={handleLogin}
+    />
   )
 }

@@ -1,248 +1,202 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { useCurrency } from '@/lib/currency'
 
 type Service = {
-  id: string;
-  barber_id: string;
-  name: string;
-  duration_min: number;
-  price: number;
-};
-
-type Barber = {
-  id: string;
-  slug: string;
-  name: string;
-  email: string;
-};
+  id: string
+  barber_id: string
+  name: string
+  duration_min: number
+  price: number
+}
 
 export default function ServicesPage() {
-  const router = useRouter();
-  const [barber, setBarber] = useState<Barber | null>(null);
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingService, setEditingService] = useState<Service | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    duration_min: "",
-    price: "",
-  });
+  const router = useRouter()
+  const { format } = useCurrency()
+  const [barberId, setBarberId]     = useState<string | null>(null)
+  const [services, setServices]     = useState<Service[]>([])
+  const [loading, setLoading]       = useState(true)
+  const [showForm, setShowForm]     = useState(false)
+  const [editing, setEditing]       = useState<Service | null>(null)
+  const [saving, setSaving]         = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [form, setForm]             = useState({ name: '', duration_min: '', price: '' })
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/login");
-        return;
-      }
-
-      const { data: barberData } = await supabase
-        .from("barbers")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (barberData) setBarber(barberData);
-
-      const { data: servicesData } = await supabase
-        .from("services")
-        .select("*")
-        .eq("barber_id", barberData?.id)
-        .order("name", { ascending: true });
-
-      if (servicesData) setServices(servicesData);
-      setLoading(false);
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/login'); return }
+      const { data: barber } = await supabase.from('barbers').select('id').eq('user_id', user.id).single()
+      if (!barber) { setLoading(false); return }
+      setBarberId(barber.id)
+      await fetchServices(barber.id)
+      setLoading(false)
     }
-    load();
-  }, [router]);
+    load()
+  }, [router])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!barber) return;
+  async function fetchServices(bid: string) {
+    const { data } = await supabase.from('services').select('*').eq('barber_id', bid).order('name')
+    setServices(data || [])
+  }
 
-    const serviceData = {
-      barber_id: barber.id,
-      name: formData.name,
-      duration_min: parseInt(formData.duration_min),
-      price: parseFloat(formData.price),
-    };
-
-    if (editingService) {
-      await supabase
-        .from("services")
-        .update(serviceData)
-        .eq("id", editingService.id);
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!barberId) return
+    setSaving(true)
+    const payload = { barber_id: barberId, name: form.name, duration_min: parseInt(form.duration_min), price: parseFloat(form.price) }
+    if (editing) {
+      await supabase.from('services').update(payload).eq('id', editing.id)
     } else {
-      await supabase.from("services").insert(serviceData);
+      await supabase.from('services').insert(payload)
     }
-
-    const { data: servicesData } = await supabase
-      .from("services")
-      .select("*")
-      .eq("barber_id", barber.id)
-      .order("name", { ascending: true });
-
-    if (servicesData) setServices(servicesData);
-    
-    setShowForm(false);
-    setEditingService(null);
-    setFormData({ name: "", duration_min: "", price: "" });
+    await fetchServices(barberId)
+    setSaving(false)
+    cancel()
   }
 
   async function handleDelete(id: string) {
-    await supabase.from("services").delete().eq("id", id);
-    
-    const { data: servicesData } = await supabase
-      .from("services")
-      .select("*")
-      .eq("barber_id", barber?.id)
-      .order("name", { ascending: true });
-
-    if (servicesData) setServices(servicesData);
+    if (!barberId) return
+    setDeletingId(id)
+    await supabase.from('services').delete().eq('id', id)
+    await fetchServices(barberId)
+    setDeletingId(null)
   }
 
-  function handleEdit(service: Service) {
-    setEditingService(service);
-    setFormData({
-      name: service.name,
-      duration_min: service.duration_min.toString(),
-      price: service.price.toString(),
-    });
-    setShowForm(true);
+  function startEdit(s: Service) {
+    setEditing(s)
+    setForm({ name: s.name, duration_min: s.duration_min.toString(), price: s.price.toString() })
+    setShowForm(true)
   }
 
-  function handleCancel() {
-    setShowForm(false);
-    setEditingService(null);
-    setFormData({ name: "", duration_min: "", price: "" });
+  function cancel() {
+    setShowForm(false); setEditing(null)
+    setForm({ name: '', duration_min: '', price: '' })
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-indigo-400">Loading...</div>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 320 }}>
+      <div style={{ width: 22, height: 22, borderRadius: '50%', border: '2.5px solid #e9e9e7', borderTopColor: '#37352f', animation: 'spin .7s linear infinite' }} />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_500px_at_50%_-10%,rgba(99,102,241,0.35),transparent_60%),radial-gradient(700px_400px_at_20%_110%,rgba(168,85,247,0.18),transparent_55%)]" aria-hidden="true" />
+    <div style={{ fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', maxWidth: 680 }}>
 
-      <main className="relative mx-auto max-w-5xl px-6 py-10">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Services</h1>
-            <p className="mt-1 text-sm text-white/60">Manage your service offerings</p>
-          </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-500"
-          >
-            Add Service
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', margin: 0, color: '#37352f' }}>Services</h1>
+          <p style={{ color: '#9b9a97', fontSize: 14, marginTop: 5, marginBottom: 0 }}>
+            {services.length === 0 ? 'No services yet' : `${services.length} service${services.length !== 1 ? 's' : ''}`}
+          </p>
+        </div>
+        {!showForm && (
+          <button onClick={() => setShowForm(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#37352f', border: 'none', borderRadius: 12, color: '#fff', fontSize: 14.5, fontWeight: 600, padding: '10px 18px', cursor: 'pointer' }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Add service
+          </button>
+        )}
+      </div>
+
+      {/* Form */}
+      {showForm && (
+        <div style={{ background: '#fff', border: '1px solid #e9e9e7', borderRadius: 20, padding: 22, marginBottom: 20, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#9b9a97', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 18px' }}>
+            {editing ? 'Edit service' : 'New service'}
+          </p>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
+              {[
+                { key: 'name',         label: 'Service name',   type: 'text',   placeholder: 'e.g. Haircut & Fade' },
+                { key: 'duration_min', label: 'Duration (min)', type: 'number', placeholder: '30' },
+                { key: 'price',        label: 'Price',          type: 'number', placeholder: '0.00' },
+              ].map(({ key, label, type, placeholder }) => (
+                <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#9b9a97', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>
+                  <input type={type} required placeholder={placeholder}
+                    value={form[key as keyof typeof form]}
+                    onChange={e => setForm({ ...form, [key]: e.target.value })}
+                    style={inp} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button type="submit" disabled={saving}
+                style={{ padding: '10px 20px', borderRadius: 10, background: '#37352f', color: '#fff', border: 'none', fontSize: 14.5, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}>
+                {saving ? 'Saving…' : editing ? 'Save changes' : 'Add service'}
+              </button>
+              <button type="button" onClick={cancel}
+                style={{ padding: '10px 20px', borderRadius: 10, background: '#f7f7f5', color: '#37352f', border: '1px solid #e9e9e7', fontSize: 14.5, cursor: 'pointer' }}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {services.length === 0 && !showForm && (
+        <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fafafa', borderRadius: 20, border: '1.5px dashed #e9e9e7' }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: '#37352f', margin: '0 0 6px' }}>No services yet</p>
+          <p style={{ fontSize: 14, color: '#9b9a97', margin: '0 0 20px' }}>Add your first service to start taking bookings</p>
+          <button onClick={() => setShowForm(true)}
+            style={{ padding: '10px 22px', borderRadius: 12, background: '#37352f', color: '#fff', border: 'none', fontSize: 14.5, fontWeight: 600, cursor: 'pointer' }}>
+            + Add service
           </button>
         </div>
+      )}
 
-        {showForm && (
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <h2 className="text-sm font-semibold text-white/90">
-              {editingService ? "Edit Service" : "Add New Service"}
-            </h2>
-            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-white/50 uppercase tracking-wider mb-2">
-                  Service Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full rounded-xl bg-black/40 px-3 py-2.5 text-sm text-white ring-1 ring-white/10 focus:ring-indigo-500 focus:outline-none"
-                  required
-                />
+      {/* Services list */}
+      {services.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {services.map((s, i) => (
+            <div key={s.id}
+              style={{ display: 'flex', alignItems: 'center', gap: 14, background: '#fff', border: '1px solid #e9e9e7', borderRadius: 18, padding: '14px 18px', transition: 'box-shadow .15s' }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.07)' }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
+            >
+              {/* Number badge */}
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f7f7f5', border: '1px solid #e9e9e7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#9b9a97', flexShrink: 0 }}>
+                {String(i + 1).padStart(2, '0')}
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-white/50 uppercase tracking-wider mb-2">
-                    Duration (minutes)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.duration_min}
-                    onChange={(e) => setFormData({ ...formData, duration_min: e.target.value })}
-                    className="w-full rounded-xl bg-black/40 px-3 py-2.5 text-sm text-white ring-1 ring-white/10 focus:ring-indigo-500 focus:outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-white/50 uppercase tracking-wider mb-2">
-                    Price ($)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    className="w-full rounded-xl bg-black/40 px-3 py-2.5 text-sm text-white ring-1 ring-white/10 focus:ring-indigo-500 focus:outline-none"
-                    required
-                  />
-                </div>
+
+              {/* Name + duration */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 14.5, fontWeight: 600, color: '#37352f', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</p>
+                <p style={{ fontSize: 13, color: '#9b9a97', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  ⏱ {s.duration_min} min
+                </p>
               </div>
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-500"
-                >
-                  {editingService ? "Update Service" : "Add Service"}
+
+              {/* Price */}
+              <p style={{ fontSize: 17, fontWeight: 700, color: '#37352f', margin: 0, flexShrink: 0 }}>{format(s.price)}</p>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                <button onClick={() => startEdit(s)}
+                  style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #e9e9e7', background: '#fff', color: '#37352f', fontSize: 13.5, fontWeight: 500, cursor: 'pointer' }}>
+                  Edit
                 </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="rounded-xl bg-white/5 px-4 py-2.5 text-sm font-medium text-white/70 ring-1 ring-white/10 hover:bg-white/10"
-                >
-                  Cancel
+                <button onClick={() => handleDelete(s.id)} disabled={deletingId === s.id}
+                  style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #f5d0ca', background: '#ffe2dd', color: '#5d1715', fontSize: 13.5, fontWeight: 500, cursor: deletingId === s.id ? 'not-allowed' : 'pointer', opacity: deletingId === s.id ? 0.5 : 1 }}>
+                  {deletingId === s.id ? '…' : 'Delete'}
                 </button>
               </div>
-            </form>
-          </div>
-        )}
-
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <h2 className="text-sm font-semibold text-white/90">Your Services</h2>
-          <div className="mt-4 space-y-3">
-            {services.length === 0 ? (
-              <p className="text-sm text-white/40">No services yet. Add your first service above.</p>
-            ) : (
-              services.map((service) => (
-                <div key={service.id} className="flex items-center justify-between rounded-xl bg-black/40 px-4 py-3 ring-1 ring-white/10">
-                  <div>
-                    <div className="text-sm font-medium text-white">{service.name}</div>
-                    <div className="text-xs text-white/50">{service.duration_min} min • ${service.price.toFixed(2)}</div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(service)}
-                      className="rounded-lg bg-indigo-600/20 px-3 py-1.5 text-xs font-medium text-indigo-300 ring-1 ring-indigo-400/30 hover:bg-indigo-600/30"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(service.id)}
-                      className="rounded-lg bg-rose-600/20 px-3 py-1.5 text-xs font-medium text-rose-300 ring-1 ring-rose-400/30 hover:bg-rose-600/30"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+            </div>
+          ))}
         </div>
-      </main>
+      )}
     </div>
-  );
+  )
+}
+
+const inp: React.CSSProperties = {
+  background: '#f7f7f5', border: '1px solid #e9e9e7', borderRadius: 10,
+  padding: '10px 13px', color: '#37352f', fontSize: 15, outline: 'none',
+  width: '100%', boxSizing: 'border-box',
 }

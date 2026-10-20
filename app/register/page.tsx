@@ -3,117 +3,98 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { detectTimezone, setSavedTimezone } from '@/lib/timezones'
+import { detectCurrency, setSavedCurrency } from '@/lib/currency'
+import { Auth5 } from '@/components/watermelon-ui/auth-5'
+import { suggestEmail } from '@/lib/email-typo'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  // Captured silently from the browser; users adjust these later in Settings
+  const [timezone] = useState(detectTimezone())
+  const [currency] = useState(detectCurrency())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  // email we already warned about; submitting it again means "yes, it's really my address"
+  const [typoWarned, setTypoWarned] = useState('')
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget
+    const first = (form.querySelector('#Auth5-firstname') as HTMLInputElement)?.value.trim() ?? ''
+    const last = (form.querySelector('#Auth5-lastname') as HTMLInputElement)?.value.trim() ?? ''
+    const email = (form.querySelector('#Auth5-email') as HTMLInputElement)?.value ?? ''
+    const password = (form.querySelector('#Auth5-password') as HTMLInputElement)?.value ?? ''
+
+    const emailPrefix = email.split('@')[0]
+    const fullName = `${first} ${last}`.trim() || emailPrefix
+    const slug =
+      (fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')) || emailPrefix.toLowerCase()
+
+    // Catch "gamil.com"-style typos before creating an account nobody can reach
+    const fixed = suggestEmail(email)
+    if (fixed && typoWarned !== email.trim().toLowerCase()) {
+      setTypoWarned(email.trim().toLowerCase())
+      setError(`Did you mean ${fixed}? Fix the email, or press "Create account" again if it's really correct.`)
+      return
+    }
+
     setLoading(true)
     setError('')
 
-    const { data: authData, error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
+    // Remember the chosen timezone and currency for this user
+    setSavedTimezone(timezone)
+    setSavedCurrency(currency)
 
+    // The account is created server-side, already confirmed (app/api/register/route.ts);
+    // the barber profile is created by a database trigger (supabase/schema.sql) from this metadata
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, fullName, slug }),
+      })
+      const result = await res.json()
+      if (!res.ok) {
+        setError(result.error || 'Registration failed. Please try again.')
+        setLoading(false)
+        return
+      }
+      // A confirmation email was sent: they log in after clicking its link
+      if (result.confirmed === false) {
+        setError(`Almost done! We sent a confirmation link to ${email.trim()}. Open it to activate your account (check your spam folder too).`)
+        setLoading(false)
+        return
+      }
+    } catch {
+      setError('Could not reach the server. Please check your connection and try again.')
+      setLoading(false)
+      return
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password })
     if (error) {
       setError(error.message)
       setLoading(false)
       return
     }
 
-    if (authData.user) {
-      // Extract email prefix for name and slug
-      const emailPrefix = email.split('@')[0]
-      
-      // Create barber record
-      const { error: barberError } = await supabase
-        .from('barbers')
-        .insert({
-          user_id: authData.user.id,
-          email: email,
-          name: emailPrefix,
-          slug: emailPrefix.toLowerCase()
-        })
-
-      if (barberError) {
-        setError('Account created but failed to create barber profile: ' + barberError.message)
-        setLoading(false)
-        return
-      }
-    }
-
     router.push('/dashboard')
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0A' }}>
-      <div className="w-full max-w-md p-8">
-        <h1 className="text-3xl font-bold mb-8 text-center" style={{ color: 'white' }}>
-          Register
-        </h1>
-        
-        <form onSubmit={handleRegister} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: 'white' }}>
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
-              style={{ backgroundColor: '#1A1A1A' }}
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: 'white' }}>
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
-              style={{ backgroundColor: '#1A1A1A' }}
-              placeholder="Enter your password"
-            />
-          </div>
-
-          {error && (
-            <div className="text-red-400 text-sm text-center">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 rounded-lg font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
-            style={{ backgroundColor: '#6366F1' }}
-          >
-            {loading ? 'Creating account...' : 'Register'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm" style={{ color: '#9CA3AF' }}>
-          Already have an account?{' '}
-          <a href="/login" className="hover:underline" style={{ color: '#6366F1' }}>
-            Login
-          </a>
-        </p>
-      </div>
-    </div>
+    <Auth5
+      brandName="Snippr"
+      showName
+      heading="Create your account"
+      subtext="Create your barber profile in seconds."
+      submitLabel={loading ? 'Creating account…' : 'Create account'}
+      loading={loading}
+      error={error}
+      footerText="Already have an account?"
+      footerLinkText="Login"
+      signUpHref="/login"
+      forgotPasswordHref="/forgot-password"
+      onSubmit={handleRegister}
+    />
   )
 }
