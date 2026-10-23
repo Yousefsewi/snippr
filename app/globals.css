@@ -268,3 +268,8 @@ body {
   caret-color: #111;
   transition: background-color 99999s ease-out;
 }
+
+/* Hero calendar grows on big screens (zoom keeps text sharp) */
+@media (min-width: 1536px) { .hero-cal-zoom { zoom: 1.15; } }
+@media (min-width: 1800px) { .hero-cal-zoom { zoom: 1.3; } }
+@media (min-width: 2200px) { .hero-cal-zoom { zoom: 1.5; } }

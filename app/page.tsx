@@ -10,6 +10,7 @@ import TwistingRibbon from '@/components/ui/twisting-ribbon'
 import { Rocket, Link2, Share2, CalendarCheck } from 'lucide-react'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import FeatureAccordion from '@/components/feature-accordion'
+import HeroCalendar from '@/components/hero-calendar'
 
 const serif = Inter({ subsets: ['latin'], weight: ['600', '700', '800', '900'], display: 'swap' })
 const playfair = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['500', '600', '700'], display: 'swap' })
@@ -37,6 +38,9 @@ const SHOW_HERO_VIDEO = false
 // "How it works": expanding feature cards (components/feature-accordion.tsx).
 // Set to true to show the older four-step timeline instead.
 const SHOW_STEPS_TIMELINE = false
+
+// Interactive calendar next to / under the hero (components/hero-calendar.tsx). Off for now.
+const SHOW_HERO_CALENDAR = false
 
 // Hero video fades to fully transparent towards the bottom (long, eased fade that starts
 // below the headline/button so the white text keeps its dark backdrop).
@@ -666,7 +670,21 @@ export default function Home() {
           </motion.div>
         </div>
 
+        {/* ── Interactive calendar on the right (wide screens) ── */}
+        {SHOW_HERO_CALENDAR && (
+        <div className="hero-cal-zoom absolute inset-y-0 right-0 z-10 hidden items-center pr-[5vw] pt-32 xl:flex">
+          <HeroCalendar key={lng} lng={lng} />
+        </div>
+        )}
+
       </section>
+
+      {/* ── Same calendar under the hero on smaller screens ── */}
+      {SHOW_HERO_CALENDAR && (
+      <section className="flex justify-center px-5 pt-4 pb-24 xl:hidden" style={{ background: 'transparent' }}>
+        <HeroCalendar key={lng} lng={lng} />
+      </section>
+      )}
 
       {/* ══ HOW IT WORKS ══ */}
       {/* Calendly-style expanding cards; the older step timeline is kept behind a flag */}
