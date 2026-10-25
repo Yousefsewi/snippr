@@ -9,6 +9,7 @@ import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { glass, GLASS_PAGE_WASH as PAGE_WASH } from '@/lib/glass'
 import DashboardWidgets from '@/components/dashboard-widgets'
 import { isBlock } from '@/lib/blocks'
+import { kindForStatus, notifyStatus } from '@/lib/notify-status'
 
 interface Barber {
   id: string; name: string; slug: string; photo_url: string | null
@@ -78,6 +79,8 @@ export default function DashboardPage() {
     await supabase.from('appointments').update({ status }).eq('id', id)
     setAppts(prev => prev.map(a => a.id === id ? { ...a, status } : a))
     setUpdatingId(null)
+    const kind = kindForStatus(status)
+    if (kind) notifyStatus(id, kind)
   }
 
   const fmt     = (iso: string) => new Date(iso).toLocaleString('tr-TR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })

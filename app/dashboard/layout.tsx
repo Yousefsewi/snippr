@@ -9,13 +9,13 @@ import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
 import { CurrencyProvider } from '@/lib/currency'
 import { ThemeProvider, useTheme } from '@/lib/theme'
-import { Home, Calendar, Hourglass, Receipt, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
+import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
 import NotificationOptIn from '@/components/notification-opt-in'
 import { useStored } from '@/lib/use-stored'
 import { glass, glassHover, GLASS_WASH, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
 
 const navIcons: Record<string, LucideIcon> = {
-  overview: Home, calendar: Calendar, waitlist: Hourglass, sales: Receipt, services: Scissors, profile: User,
+  overview: Home, calendar: Calendar, waitlist: Hourglass, sales: Receipt, appointmentsNav: ListChecks, addons: Blocks, services: Scissors, profile: User,
 }
 const footerIcons: Record<string, LucideIcon> = {
   plansBilling: CreditCard, settings: Settings, help: HelpCircle,
@@ -38,8 +38,10 @@ const relTime = (iso: string) => {
 const navItems = [
   { href: '/dashboard',          key: 'overview' as const },
   { href: '/dashboard/calendar', key: 'calendar' as const },
+  { href: '/dashboard/appointments', key: 'appointmentsNav' as const },
   { href: '/dashboard/waitlist', key: 'waitlist' as const },
   { href: '/dashboard/sales',    key: 'sales' as const },
+  { href: '/dashboard/addons',   key: 'addons' as const },
   { href: '/dashboard/services', key: 'services' as const },
 ]
 
@@ -87,7 +89,7 @@ function Chrome({ children }: { children: ReactNode }) {
   const salonStyle = getSalonStyle(useStored(SALON_STYLE_KEY))
 
   // Full-bleed dashboard views render their own background — no narrow centered box
-  const fullBleed = pathname === '/dashboard/calendar' || pathname === '/dashboard' || pathname === '/dashboard/profile' || pathname === '/dashboard/link'
+  const fullBleed = pathname === '/dashboard/calendar' || pathname === '/dashboard/appointments' || pathname === '/dashboard' || pathname === '/dashboard/profile' || pathname === '/dashboard/link'
 
   // Load the signed-in barber for the sidebar profile card.
   // If the account exists but the barber profile row was never created
@@ -219,7 +221,7 @@ function Chrome({ children }: { children: ReactNode }) {
           {/* Main nav */}
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {navItems.filter(item => item.key !== 'services' || servicesOn).map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href || (item.href === '/dashboard/addons' && (pathname.startsWith('/dashboard/addons') || pathname === '/dashboard/messages'))
               const Icon = navIcons[item.key]
               return (
                 <Link key={item.href} href={item.href} style={navLink(isActive)}

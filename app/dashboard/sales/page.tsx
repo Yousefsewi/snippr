@@ -13,6 +13,7 @@ import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { isBlock } from '@/lib/blocks'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
 import { buildXlsx, downloadBlob, type Cell } from '@/lib/xlsx'
+import { notifyStatus } from '@/lib/notify-status'
 
 type Method = 'cash' | 'card' | 'other'
 type Period = 'day' | 'week' | 'month'
@@ -208,6 +209,7 @@ export default function SalesPage() {
     patch(a.id, upd as Partial<Appt>)
     const { error } = await supabase.from('appointments').update(upd).eq('id', a.id)
     if (error && barberId) load(barberId)
+    else if (!clear && a.status !== 'completed') notifyStatus(a.id, 'thanks')
   }
   async function setTip(a: Appt, v: string) {
     const tip = Math.min(100000, Math.max(0, Number(v.replace(',', '.')) || 0))
@@ -215,6 +217,7 @@ export default function SalesPage() {
     patch(a.id, { tip_amount: tip })
     const { error } = await supabase.from('appointments').update({ tip_amount: tip }).eq('id', a.id)
     if (error && barberId) load(barberId)
+    else if (tip > 0 && a.status === 'completed') notifyStatus(a.id, 'tip')
   }
 
   async function saveSale() {
