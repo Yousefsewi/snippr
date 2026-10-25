@@ -9,6 +9,8 @@ import { isOn, messageHtml, type MsgKind, type MsgSettings } from '@/lib/message
 // Each reminder is sent at most once per appointment (messages_sent), so running this
 // more often than planned can never send duplicates or anything that isn't due.
 // If CRON_SECRET is set, Vercel's call must carry it.
+// Vercel runs it at 08:00 and 09:00 UTC (vercel.json); only the run that falls at
+// 10:00 in the Netherlands sends, so it's 10:00 there in both summer and winter time.
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
@@ -30,8 +32,8 @@ type Row = {
 }
 
 const safeTimeZone = (tz: unknown) => {
-  if (typeof tz !== 'string' || !tz) return 'Europe/Istanbul'
-  try { new Intl.DateTimeFormat('en-GB', { timeZone: tz }); return tz } catch { return 'Europe/Istanbul' }
+  if (typeof tz !== 'string' || !tz) return 'Europe/Amsterdam'
+  try { new Intl.DateTimeFormat('en-GB', { timeZone: tz }); return tz } catch { return 'Europe/Amsterdam' }
 }
 
 export async function GET(req: NextRequest) {
@@ -40,6 +42,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   if (!secret && rateLimited(`cron:${clientIp(req.headers)}`, 6, HOUR)) return NextResponse.json({ error: 'too many requests' }, { status: 429 })
+  if ((req.headers.get('user-agent') ?? '').startsWith('vercel-cron')) {
+    const nlHour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hourCycle: 'h23' }).format(new Date()))
+    if (nlHour !== 10) return NextResponse.json({ skipped: `not 10:00 in the Netherlands (now ${nlHour}:00)` })
+  }
   if (!supabaseServiceKey) return NextResponse.json({ skipped: 'server not configured' })
   const apiKey = process.env.RESEND_API_KEY
   if (!mailerReady && !apiKey) return NextResponse.json({ skipped: 'email not configured' })
