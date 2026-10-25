@@ -58,6 +58,40 @@ const newId = (): string => {
 }
 const toMin = (hhmm: string) => { const [h, m] = (hhmm || '0:0').split(':').map(Number); return h * 60 + m }
 
+/* ─────────────────────────  words  ───────────────────────── */
+const BT = {
+  en: {
+    taken: 'That time was just taken — pick another.', couldNot: 'Could not book. Please try again.',
+    notAvailable: 'This page isn’t available', notAvailableSub: 'The link may be wrong or the barber moved.',
+    openToday: (a: string, b: string) => `Open today ${a}–${b}`, closedToday: 'Closed today', firstOff: (n: number) => `🎁 ${n}% off your first visit`,
+    requested: 'Booking requested!', at: 'at', willConfirm: (n: string) => `${n} will confirm shortly.`, another: 'Book another',
+    details: 'Booking Details', service: 'Service', optional: 'Optional', date: 'Date', time: 'Time', choose: 'Choose', pickDate: 'Pick a date first', min: 'min',
+    closedDay: 'Closed on this day — pick another date.', footnote: 'Times shown in your local time. You pay in the shop — nothing is charged online.',
+    yourDetails: 'Your details', name: 'Name', required: 'Required', email: 'Email', forConfirm: 'For confirmation', phone: 'Phone',
+    payment: 'Payment details', total: 'Total', booking: 'Booking…', book: 'Book', enterName: 'Enter your name to book', powered: 'Powered by',
+    wlFull: '⏳ Fully booked — join the waitlist', wlAsk: 'No time that suits you? Join the waitlist', wlFor: (d: string) => `Join the waitlist for ${d}.`,
+    wlName: 'Your name', wlPhone: 'Phone', wlEmail: 'Email (optional)', wlPrefs: ['Any time', 'Morning', 'Afternoon', 'Evening'],
+    wlJoin: 'Join the waitlist', wlJoining: 'Joining…', wlDone: '✓ You’re on the waitlist — the barber will contact you if a spot opens.',
+    wlNeedName: 'Please enter your name.', wlNeedContact: 'Add a phone number or email so the barber can reach you.', wlFail: 'Could not join the waitlist. Please try again.',
+  },
+  tr: {
+    taken: 'Bu saat az önce doldu — başka bir saat seç.', couldNot: 'Randevu alınamadı. Lütfen tekrar dene.',
+    notAvailable: 'Bu sayfa bulunamadı', notAvailableSub: 'Link yanlış olabilir ya da berber sayfasını değiştirmiş olabilir.',
+    openToday: (a: string, b: string) => `Bugün açık ${a}–${b}`, closedToday: 'Bugün kapalı', firstOff: (n: number) => `🎁 İlk ziyarette %${n} indirim`,
+    requested: 'Randevu talebin alındı!', at: '·', willConfirm: (n: string) => `${n} kısa süre içinde onaylayacak.`, another: 'Başka randevu al',
+    details: 'Randevu bilgileri', service: 'Hizmet', optional: 'İsteğe bağlı', date: 'Tarih', time: 'Saat', choose: 'Seç', pickDate: 'Önce tarih seç', min: 'dk',
+    closedDay: 'Bu gün kapalı — başka bir gün seç.', footnote: 'Saatler senin saat dilimine göre. Ödeme dükkânda yapılır — online hiçbir ücret alınmaz.',
+    yourDetails: 'Bilgilerin', name: 'Ad', required: 'Zorunlu', email: 'E-posta', forConfirm: 'Onay için', phone: 'Telefon',
+    payment: 'Ödeme bilgileri', total: 'Toplam', booking: 'Randevu alınıyor…', book: 'Randevu al', enterName: 'Randevu almak için adını yaz', powered: 'Altyapı:',
+    wlFull: '⏳ Bu gün dolu — bekleme listesine katıl', wlAsk: 'Uygun saat yok mu? Bekleme listesine katıl', wlFor: (d: string) => `${d} için bekleme listesine katıl.`,
+    wlName: 'Adın', wlPhone: 'Telefon', wlEmail: 'E-posta (isteğe bağlı)', wlPrefs: ['Herhangi bir saat', 'Sabah', 'Öğleden sonra', 'Akşam'],
+    wlJoin: 'Bekleme listesine katıl', wlJoining: 'Katılıyor…', wlDone: '✓ Bekleme listesindesin — yer açılırsa berber seninle iletişime geçecek.',
+    wlNeedName: 'Lütfen adını yaz.', wlNeedContact: 'Berberin sana ulaşabilmesi için telefon ya da e-posta ekle.', wlFail: 'Bekleme listesine katılınamadı. Lütfen tekrar dene.',
+  },
+}
+type BLang = keyof typeof BT
+type BWords = (typeof BT)['en']
+
 /* ─────────────────────────  page  ───────────────────────── */
 export default function BookingPage() {
   const slug = useParams().slug as string
@@ -85,6 +119,16 @@ export default function BookingPage() {
   // which iOS-style row is expanded: service → date → time open one after another
   // shown inside the dashboard's iPhone preview (?preview=1)
   const inPreview = useClientValue(() => new URLSearchParams(window.location.search).has('preview'), false)
+  // the client's language: their own pick, else their phone's language
+  const autoLang = useClientValue<BLang>(() => {
+    try { const s = localStorage.getItem('snippr-lang'); if (s === 'tr' || s === 'en') return s } catch { /* storage blocked */ }
+    return (navigator.language || '').toLowerCase().startsWith('tr') ? 'tr' : 'en'
+  }, 'en')
+  const [langPick, setLangPick] = useState<BLang | null>(null)
+  const lang: BLang = langPick ?? autoLang
+  const t = BT[lang]
+  const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
+  const switchLang = (l: BLang) => { setLangPick(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
   const [waitlistOn, setWaitlistOn] = useState(false)
   const [openRow, setOpenRow] = useState<'service' | 'date' | 'time' | null>(null)
 
@@ -176,7 +220,7 @@ export default function BookingPage() {
     const end = new Date(start.getTime() + (service?.duration_min ?? 30) * 60000)
 
     const slotTaken = () => {
-      setError('That time was just taken — pick another.'); setSubmitting(false); setTime('')
+      setError(t.taken); setSubmitting(false); setTime('')
       const s = h * 60 + m
       setBooked(b => ({ ...b, ranges: [...b.ranges, [s, s + durationMin]] }))
     }
@@ -197,7 +241,7 @@ export default function BookingPage() {
     })
     // 23P01 = the database's no-overlap rule: someone booked this slot a moment ago
     if (err?.code === '23P01') { slotTaken(); return }
-    if (err) { setError(`Could not book: ${err.message}`); setSubmitting(false); return }
+    if (err) { setError(t.couldNot); setSubmitting(false); return }
     setDone(true); setSubmitting(false)
     if (FIRST_VISIT_DISCOUNT) supabase.rpc('get_booking_discount', { p_id: appointmentId })
       .then(({ data }) => setAppliedDiscount(typeof data === 'number' ? data : 0))
@@ -207,7 +251,7 @@ export default function BookingPage() {
     fetch('/api/notify-booking', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ appointmentId, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }),
+      body: JSON.stringify({ appointmentId, lang, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }),
     }).catch(() => { /* booking already succeeded — notifications are best-effort */ })
   }
 
@@ -228,8 +272,8 @@ export default function BookingPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
         <div style={{ ...GLASS_PANEL, borderRadius: 36, padding: '34px 30px', textAlign: 'center', color: '#fff', maxWidth: 360 }}>
           <p style={{ fontSize: 40, margin: 0 }}>✂️</p>
-          <p style={{ fontSize: 19, fontWeight: 700, margin: '10px 0 6px' }}>This page isn’t available</p>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, margin: 0 }}>The link may be wrong or the barber moved.</p>
+          <p style={{ fontSize: 19, fontWeight: 700, margin: '10px 0 6px' }}>{t.notAvailable}</p>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, margin: 0 }}>{t.notAvailableSub}</p>
         </div>
       </div>
     </GlassBackdrop>
@@ -274,11 +318,11 @@ export default function BookingPage() {
             <div style={{ position: 'absolute', left: 0, right: 0, bottom: 16, display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap', padding: '0 12px' }}>
               <span style={{ ...GLASS_CHIP, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 999, fontSize: 12.5, fontWeight: 600 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: todayHours?.open ? '#4ade80' : '#a1a1aa', boxShadow: todayHours?.open ? '0 0 8px #4ade80' : 'none' }} />
-                {todayHours?.open ? `Open today ${todayHours.start}–${todayHours.end}` : 'Closed today'}
+                {todayHours?.open ? t.openToday(todayHours.start, todayHours.end) : t.closedToday}
               </span>
               {firstVisit > 0 && (
                 <span style={{ ...GLASS_CHIP, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 999, fontSize: 12.5, fontWeight: 600 }}>
-                  🎁 {firstVisit}% off your first visit
+                  {t.firstOff(firstVisit)}
                 </span>
               )}
             </div>
@@ -341,28 +385,28 @@ export default function BookingPage() {
                 <div style={{ ...GLASS_CHIP, width: 62, height: 62, margin: '0 auto', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
                 </div>
-                <h2 style={{ fontSize: 21, fontWeight: 700, margin: '16px 0 6px' }}>Booking requested!</h2>
+                <h2 style={{ fontSize: 21, fontWeight: 700, margin: '16px 0 6px' }}>{t.requested}</h2>
                 <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: 14, margin: 0 }}>
-                  {service ? `${service.name} · ` : ''}{date?.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })} at {time}
+                  {service ? `${service.name} · ` : ''}{date?.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })} {t.at} {time}
                 </p>
                 {appliedDiscount > 0 && (
                   <p style={{ ...GLASS_CHIP, display: 'inline-block', marginTop: 14, padding: '9px 15px', borderRadius: 16, fontSize: 13.5, fontWeight: 600 }}>
                     🎁 {appliedDiscount}% first-visit discount applied{service && service.price > 0 ? ` — you pay ${formatMoney(Math.round(service.price * (100 - appliedDiscount)) / 100, ccy)} instead of ${formatMoney(service.price, ccy)}` : ''}
                   </p>
                 )}
-                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, margin: '12px 0 0' }}>{barber.name} will confirm shortly.</p>
-                <button onClick={reset} style={{ ...GLASS_PILL_BTN, marginTop: 20 }}>Book another</button>
+                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, margin: '12px 0 0' }}>{t.willConfirm(barber.name)}</p>
+                <button onClick={reset} style={{ ...GLASS_PILL_BTN, marginTop: 20 }}>{t.another}</button>
               </div>
             ) : (
               <>
                 {/* ══ booking details — iPhone Settings-style grouped lists ══ */}
-                <p style={SECTION_TITLE}>Booking Details</p>
+                <p style={SECTION_TITLE}>{t.details}</p>
 
                 {/* group 1: service · date · time (tap a row to open it) */}
                 <div style={IOS_GROUP}>
                   {services.length > 0 && (
                     <>
-                      <IosRow icon="✂️" tint="#ff9f0a" label="Service" value={service ? service.name : 'Optional'} open={openRow === 'service'}
+                      <IosRow icon="✂️" tint="#ff9f0a" label={t.service} value={service ? service.name : t.optional} open={openRow === 'service'}
                         onClick={() => setOpenRow(openRow === 'service' ? null : 'service')} />
                       {openRow === 'service' && (
                         <div style={IOS_PANEL}>
@@ -374,7 +418,7 @@ export default function BookingPage() {
                                 <span style={{ flex: 1, minWidth: 0 }}>
                                   <span style={{ display: 'block', fontSize: 15 }}>{s.name}</span>
                                   <span style={{ display: 'block', fontSize: 12.5, color: 'rgba(255,255,255,0.65)', marginTop: 1 }}>
-                                    {s.duration_min} min{firstVisit > 0 && s.price > 0 ? ` · first visit ${formatMoney(discounted(s.price), ccy)}` : ''}
+                                    {s.duration_min} {t.min}{firstVisit > 0 && s.price > 0 ? ` · first visit ${formatMoney(discounted(s.price), ccy)}` : ''}
                                   </span>
                                 </span>
                                 <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)' }}>{formatMoney(s.price, ccy)}</span>
@@ -388,8 +432,8 @@ export default function BookingPage() {
                     </>
                   )}
 
-                  <IosRow icon="📅" tint="#ff453a" label="Date" open={openRow === 'date'}
-                    value={date ? date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'Choose'}
+                  <IosRow icon="📅" tint="#ff453a" label={t.date} open={openRow === 'date'}
+                    value={date ? date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' }) : t.choose}
                     onClick={() => setOpenRow(openRow === 'date' ? null : 'date')} />
                   {openRow === 'date' && (
                     <div style={{ ...IOS_PANEL, padding: '12px 12px 14px' }}>
@@ -399,7 +443,7 @@ export default function BookingPage() {
                           return (
                             <button key={d.toISOString()} onClick={() => { setDate(d); setTime(''); setOpenRow('time') }}
                               style={{ ...(sel ? GLASS_SELECTED : GLASS_ROW), flexShrink: 0, width: 54, padding: '8px 0', borderRadius: 16, cursor: 'pointer', textAlign: 'center', color: sel ? '#111' : '#fff', fontFamily: 'inherit' }}>
-                              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', opacity: 0.75 }}>{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', opacity: 0.75 }}>{d.toLocaleDateString(locale, { weekday: 'short' })}</div>
                               <div style={{ fontSize: 17, fontWeight: 700, marginTop: 2 }}>{d.getDate()}</div>
                             </button>
                           )
@@ -409,13 +453,13 @@ export default function BookingPage() {
                   )}
 
                   <div style={IOS_SEPARATOR_LINE} />
-                  <IosRow icon="🕒" tint="#0a84ff" label="Time" open={openRow === 'time'} disabled={!date}
-                    value={time || (date ? 'Choose' : 'Pick a date first')}
+                  <IosRow icon="🕒" tint="#0a84ff" label={t.time} open={openRow === 'time'} disabled={!date}
+                    value={time || (date ? t.choose : t.pickDate)}
                     onClick={() => { if (date) setOpenRow(openRow === 'time' ? null : 'time') }} />
                   {openRow === 'time' && date && (
                     <div style={{ ...IOS_PANEL, padding: 12 }}>
                       {isClosed ? (
-                        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 14, padding: '10px 0', margin: 0 }}>Closed on this day — pick another date.</p>
+                        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 14, padding: '10px 0', margin: 0 }}>{t.closedDay}</p>
                       ) : (
                         <div className="glass-scroll" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, maxHeight: 200, overflowY: 'auto' }}>
                           {slots.map(t => {
@@ -431,24 +475,24 @@ export default function BookingPage() {
                         </div>
                       )}
                       {waitlistOn && (
-                        <WaitlistJoin key={date.toDateString()} barberId={barber.id} date={date} serviceId={service?.id ?? null}
+                        <WaitlistJoin key={date.toDateString()} t={t} locale={locale} barberId={barber.id} date={date} serviceId={service?.id ?? null}
                           full={isClosed || (slots.length > 0 && slots.every(isTaken))} />
                       )}
                     </div>
                   )}
                 </div>
-                <p style={IOS_FOOTNOTE}>Times shown in your local time. You pay in the shop — nothing is charged online.</p>
+                <p style={IOS_FOOTNOTE}>{t.footnote}</p>
 
                 {/* group 2: your details, iOS form rows */}
                 {date && time && (
                   <>
-                    <p style={IOS_HEADER}>Your details</p>
+                    <p style={IOS_HEADER}>{t.yourDetails}</p>
                     <div style={IOS_GROUP}>
-                      <IosField icon="👤" tint="#30d158" label="Name" value={name} onChange={setName} placeholder="Required" />
+                      <IosField icon="👤" tint="#30d158" label={t.name} value={name} onChange={setName} placeholder={t.required} />
                       <div style={IOS_SEPARATOR_LINE} />
-                      <IosField icon="✉️" tint="#5e5ce6" label="Email" value={email} onChange={setEmail} placeholder="For confirmation" type="email" />
+                      <IosField icon="✉️" tint="#5e5ce6" label={t.email} value={email} onChange={setEmail} placeholder={t.forConfirm} type="email" />
                       <div style={IOS_SEPARATOR_LINE} />
-                      <IosField icon="📞" tint="#64d2ff" label="Phone" value={phone} onChange={setPhone} placeholder="Optional" type="tel" />
+                      <IosField icon="📞" tint="#64d2ff" label={t.phone} value={phone} onChange={setPhone} placeholder={t.optional} type="tel" />
                     </div>
                     {firstVisit > 0 && (
                       <p style={IOS_FOOTNOTE}>🎁 First time here? Add your phone or email and {firstVisit}% is taken off automatically.</p>
@@ -457,7 +501,7 @@ export default function BookingPage() {
                     {/* group 3: payment details */}
                     {service && (
                       <>
-                        <p style={IOS_HEADER}>Payment details</p>
+                        <p style={IOS_HEADER}>{t.payment}</p>
                         <div style={IOS_GROUP}>
                           <div style={IOS_STATIC_ROW}><span>{service.name}</span><span style={{ color: 'rgba(255,255,255,0.8)' }}>{formatMoney(price, ccy)}</span></div>
                           {firstVisit > 0 && price > 0 && (
@@ -467,7 +511,7 @@ export default function BookingPage() {
                             </>
                           )}
                           <div style={IOS_SEPARATOR_LINE} />
-                          <div style={{ ...IOS_STATIC_ROW, fontWeight: 700 }}><span>Total</span><span>{formatMoney(total, ccy)}</span></div>
+                          <div style={{ ...IOS_STATIC_ROW, fontWeight: 700 }}><span>{t.total}</span><span>{formatMoney(total, ccy)}</span></div>
                         </div>
                         {firstVisit > 0 && price > 0 && <p style={IOS_FOOTNOTE}>The discount applies if this is your first visit.</p>}
                       </>
@@ -487,18 +531,26 @@ export default function BookingPage() {
             <button onClick={submit} disabled={submitting || !name}
               style={{ padding: '15px 34px', borderRadius: 999, background: '#ffffff', border: 'none', color: '#111', fontSize: 15.5, fontWeight: 700, fontFamily: 'inherit',
                 boxShadow: '0 12px 30px rgba(0,0,0,0.25)', cursor: submitting || !name ? 'not-allowed' : 'pointer', opacity: submitting || !name ? 0.6 : 1 }}>
-              {submitting ? 'Booking…' : service ? `Book · ${formatMoney(total, ccy)}` : 'Book'}
+              {submitting ? t.booking : service ? `${t.book} · ${formatMoney(total, ccy)}` : t.book}
             </button>
           </div>
         )}
         {!done && date && time && !name && (
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.75)', margin: '8px 0 0' }}>Enter your name to book</p>
+          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.75)', margin: '8px 0 0' }}>{t.enterName}</p>
         )}
 
         {/* footer */}
         <p style={{ textAlign: 'center', marginTop: 22, color: 'rgba(255,255,255,0.7)', fontSize: 12.5 }}>
-          Powered by <Link href="/" style={{ color: '#fff', fontWeight: 700, textDecoration: 'none' }}>Snippr</Link>
+          {t.powered} <Link href="/" style={{ color: '#fff', fontWeight: 700, textDecoration: 'none' }}>Snippr</Link>
         </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 10 }}>
+          {(['tr', 'en'] as BLang[]).map(l => (
+            <button key={l} onClick={() => switchLang(l)} aria-pressed={lang === l}
+              style={{ ...GLASS_CHIP, padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', color: '#fff', opacity: lang === l ? 1 : 0.55 }}>
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
     </GlassBackdrop>
   )
@@ -626,7 +678,7 @@ function SocialIcon({ platform, size = 26 }: { platform: string; size?: number }
 }
 
 /* ── waitlist: shown under the times; opens a small form ── */
-function WaitlistJoin({ barberId, date, serviceId, full }: { barberId: string; date: Date; serviceId: string | null; full: boolean }) {
+function WaitlistJoin({ t, locale, barberId, date, serviceId, full }: { t: BWords; locale: string; barberId: string; date: Date; serviceId: string | null; full: boolean }) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -640,46 +692,46 @@ function WaitlistJoin({ barberId, date, serviceId, full }: { barberId: string; d
 
   const join = async () => {
     setMsg('')
-    if (!name.trim()) return setMsg('Please enter your name.')
-    if (!phone.trim() && !email.trim()) return setMsg('Add a phone number or email so the barber can reach you.')
+    if (!name.trim()) return setMsg(t.wlNeedName)
+    if (!phone.trim() && !email.trim()) return setMsg(t.wlNeedContact)
     setBusy(true)
     const { error } = await supabase.rpc('join_waitlist', {
       p_barber_id: barberId, p_name: name.trim(), p_phone: phone.trim() || null, p_email: email.trim() || null,
       p_service_id: serviceId, p_date: dayKey, p_time_pref: pref,
     })
     setBusy(false)
-    if (error) return setMsg(error.code === 'P0001' ? error.message : 'Could not join the waitlist. Please try again.')
+    if (error) return setMsg(error.code === 'P0001' ? (locale === 'tr-TR' ? t.wlFail : error.message) : t.wlFail)
     setDone(true)
   }
 
   if (done) return (
     <p style={{ margin: '12px 0 0', textAlign: 'center', fontSize: 14, color: '#fff', fontWeight: 600 }}>
-      ✓ You’re on the waitlist — the barber will contact you if a spot opens.
+      {t.wlDone}
     </p>
   )
 
   if (!open) return (
     <button onClick={() => setOpen(true)} style={{ display: 'block', margin: '12px auto 0', background: full ? 'rgba(255,255,255,0.92)' : 'transparent', color: full ? '#111' : '#fff', border: full ? 'none' : '1px solid rgba(255,255,255,0.35)', borderRadius: 999, padding: '9px 16px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-      {full ? '⏳ Fully booked — join the waitlist' : 'No time that suits you? Join the waitlist'}
+      {full ? t.wlFull : t.wlAsk}
     </button>
   )
 
   return (
     <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <p style={{ margin: '0 0 2px', fontSize: 13.5, color: 'rgba(255,255,255,0.85)' }}>
-        Join the waitlist for {date.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}.
+        {t.wlFor(date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' }))}
       </p>
-      <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" maxLength={100} style={input} />
-      <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" inputMode="tel" maxLength={40} style={input} />
-      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email (optional)" type="email" maxLength={254} style={input} />
+      <input value={name} onChange={e => setName(e.target.value)} placeholder={t.wlName} maxLength={100} style={input} />
+      <input value={phone} onChange={e => setPhone(e.target.value)} placeholder={t.wlPhone} inputMode="tel" maxLength={40} style={input} />
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder={t.wlEmail} type="email" maxLength={254} style={input} />
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        {([['any', 'Any time'], ['morning', 'Morning'], ['afternoon', 'Afternoon'], ['evening', 'Evening']] as const).map(([k, l]) => (
+        {(['any', 'morning', 'afternoon', 'evening'] as const).map((k, i) => [k, t.wlPrefs[i]] as const).map(([k, l]) => (
           <button key={k} onClick={() => setPref(k)} style={{ borderRadius: 999, padding: '7px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: 'none', background: pref === k ? '#fff' : 'rgba(255,255,255,0.16)', color: pref === k ? '#111' : '#fff' }}>{l}</button>
         ))}
       </div>
       {msg && <p style={{ margin: 0, fontSize: 13, color: '#ffd1d1' }}>{msg}</p>}
       <button onClick={join} disabled={busy} style={{ marginTop: 4, borderRadius: 999, padding: '11px 0', fontSize: 14.5, fontWeight: 700, border: 'none', cursor: 'pointer', background: '#fff', color: '#111', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}>
-        {busy ? 'Joining…' : 'Join the waitlist'}
+        {busy ? t.wlJoining : t.wlJoin}
       </button>
     </div>
   )

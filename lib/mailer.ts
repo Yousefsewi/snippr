@@ -23,9 +23,17 @@ const transport = mailerReady
 export const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 
+// Only one plain address like "name@example.com": no display names, comments, brackets,
+// commas or spaces. Client-typed addresses must never be able to add extra recipients
+// (see nodemailer advisory GHSA-8c8m-p3m8-cjg8).
+export const isPlainEmail = (to: unknown): to is string =>
+  typeof to === 'string' && to.length <= 254 && /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/.test(to)
+
 export async function sendMail(to: string, subject: string, html: string) {
   if (!transport) throw new Error('Email is not configured (GMAIL_USER / GMAIL_APP_PASSWORD missing).')
-  await transport.sendMail({ from: `"Snippr" <${user}>`, to, subject, html })
+  if (!isPlainEmail(to)) throw new Error('Invalid email address.')
+  // passing an address object skips nodemailer's address parser entirely
+  await transport.sendMail({ from: `"Snippr" <${user}>`, to: { name: '', address: to }, subject, html })
 }
 
 // Simple branded layout with one big button

@@ -21,18 +21,19 @@ const footerIcons: Record<string, LucideIcon> = {
   plansBilling: CreditCard, settings: Settings, help: HelpCircle,
 }
 
-type Notif = { id: string | number; text: string; type?: string; read: boolean; created_at: string; href?: string }
+type Notif = { id: string | number; text: string; textTr?: string; type?: string; read: boolean; created_at: string; href?: string }
 
 // Relative time, supports both past ("2h ago") and future ("in 2h")
-const relTime = (iso: string) => {
+const relTime = (iso: string, tr = false) => {
   const diff = new Date(iso).getTime() - Date.now()
   const s = Math.abs(diff) / 1000
-  if (s < 60) return 'just now'
+  if (s < 60) return tr ? 'az önce' : 'just now'
   let label: string
   if (s < 3600) label = `${Math.floor(s / 60)}m`
   else if (s < 86400) label = `${Math.floor(s / 3600)}h`
   else label = `${Math.floor(s / 86400)}d`
-  return diff > 0 ? `in ${label}` : `${label} ago`
+  if (tr) label = label.replace('m', ' dk').replace('h', ' sa').replace('d', ' gün')
+  return diff > 0 ? (tr ? `${label} sonra` : `in ${label}`) : (tr ? `${label} önce` : `${label} ago`)
 }
 
 const navItems = [
@@ -52,10 +53,10 @@ const footerItems = [
 // Getting-started tips. Only real, working features — no made-up promotions.
 // Clicking a notification navigates to its `href`.
 const ANNOUNCEMENTS: Notif[] = [
-  { id: 'n1', text: '✂️ Add your services and prices so clients can pick what they want.',            read: false, created_at: new Date(Date.now() - 1 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/services' },
-  { id: 'n2', text: '🕘 Set your working hours — clients can only book when you are open.',           read: false, created_at: new Date(Date.now() - 2 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/profile/edit' },
-  { id: 'n3', text: '📣 Share your booking link on Instagram & WhatsApp to get your first bookings.', read: false, created_at: new Date(Date.now() - 3 * 3600000).toISOString(),  type: 'promo',   href: '/dashboard/link' },
-  { id: 'n4', text: '📅 Your calendar is live — new bookings appear instantly.',                      read: true,  created_at: new Date(Date.now() - 4 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/calendar' },
+  { id: 'n1', text: '✂️ Add your services and prices so clients can pick what they want.', textTr: '✂️ Hizmetlerini ve fiyatlarını ekle, müşteriler istediğini seçsin.',            read: false, created_at: new Date(Date.now() - 1 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/services' },
+  { id: 'n2', text: '🕘 Set your working hours — clients can only book when you are open.', textTr: '🕘 Çalışma saatlerini ayarla — müşteriler sadece açık olduğun saatlerde randevu alabilir.',           read: false, created_at: new Date(Date.now() - 2 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/profile/edit' },
+  { id: 'n3', text: '📣 Share your booking link on Instagram & WhatsApp to get your first bookings.', textTr: '📣 İlk randevuların için linkini Instagram ve WhatsApp’ta paylaş.', read: false, created_at: new Date(Date.now() - 3 * 3600000).toISOString(),  type: 'promo',   href: '/dashboard/link' },
+  { id: 'n4', text: '📅 Your calendar is live — new bookings appear instantly.', textTr: '📅 Takvimin canlı — yeni randevular anında görünür.',                      read: true,  created_at: new Date(Date.now() - 4 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/calendar' },
 ]
 
 
@@ -75,7 +76,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 function Chrome({ children }: { children: ReactNode }) {
   const router   = useRouter()
   const pathname = usePathname()
-  const { t, isRTL } = useLang()
+  const { t, isRTL, lang } = useLang()
+  const tr = lang === 'tr'
+  const loc = tr ? 'tr-TR' : 'en-US'
   const { theme } = useTheme()
   const [loggingOut, setLoggingOut] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
@@ -187,7 +190,7 @@ function Chrome({ children }: { children: ReactNode }) {
               <div style={{ overflow: 'hidden' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/logo.svg" alt="Snippr" style={{ height: 24, width: 'auto', display: 'block', margin: '2px 0 3px' }} />
-                <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>Book smarter</p>
+                <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>{tr ? 'Akıllı randevu' : 'Book smarter'}</p>
               </div>
             )}
           </div>
@@ -211,7 +214,7 @@ function Chrome({ children }: { children: ReactNode }) {
             <div style={{ ...glass(), display: 'flex', alignItems: 'center', gap: 8, padding: '9px 11px', borderRadius: 14, marginBottom: 6 }}>
               <Search size={15} strokeWidth={1.75} color="#9b9a97" style={{ flexShrink: 0 }} />
               <input
-                placeholder="Search…"
+                placeholder={tr ? 'Ara…' : 'Search…'}
                 style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 14.5, color: '#37352f', fontFamily: 'inherit' }}
               />
             </div>
@@ -290,8 +293,8 @@ function Chrome({ children }: { children: ReactNode }) {
                   >
                     <span style={{ width: 6, height: 6, borderRadius: '50%', marginTop: 5, flexShrink: 0, background: !n.read ? c.dot : '#d3d3d1' }} />
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ fontSize: 13.5, color: '#37352f', margin: 0, lineHeight: 1.35, fontWeight: n.read ? 500 : 600 }}>{n.text}</p>
-                      <p style={{ fontSize: 10.5, color: '#9b9a97', margin: '2px 0 0' }}>{relTime(n.created_at)}</p>
+                      <p style={{ fontSize: 13.5, color: '#37352f', margin: 0, lineHeight: 1.35, fontWeight: n.read ? 500 : 600 }}>{tr && n.textTr ? n.textTr : n.text}</p>
+                      <p style={{ fontSize: 10.5, color: '#9b9a97', margin: '2px 0 0' }}>{relTime(n.created_at, tr)}</p>
                     </div>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c0c0c0" strokeWidth="2" style={{ flexShrink: 0, marginTop: 3 }}><path d="M9 18l6-6-6-6"/></svg>
                   </Link>
@@ -316,13 +319,13 @@ function Chrome({ children }: { children: ReactNode }) {
                   <div style={{ ...glass(), display: 'flex', alignItems: 'center', gap: 12, margin: '0 2px', padding: '10px 12px', borderRadius: 18 }}>
                     <div style={{ textAlign: 'center', lineHeight: 1, flexShrink: 0 }}>
                       <div style={{ fontSize: 10, fontWeight: 600, color: '#eb5757', textTransform: 'uppercase' }}>
-                        {today.toLocaleDateString('en-US', { month: 'short' })}
+                        {today.toLocaleDateString(loc, { month: 'short' })}
                       </div>
                       <div style={{ fontSize: 20, fontWeight: 700, color: '#37352f' }}>{today.getDate()}</div>
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: 14, fontWeight: 500, color: '#37352f', margin: 0 }}>
-                        {today.toLocaleDateString('en-US', { weekday: 'long' })}
+                        {today.toLocaleDateString(loc, { weekday: 'long' })}
                       </p>
                       <p style={{ fontSize: 12.5, color: '#9b9a97', margin: '2px 0 0' }}>{t.viewCalendar}</p>
                     </div>
@@ -385,7 +388,7 @@ function Chrome({ children }: { children: ReactNode }) {
                       onMouseLeave={e => { if (pathname !== '/dashboard/link') glassHover(e, false) }}
                     >
                       <Link2 size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                      <span>Booking link</span>
+                      <span>{tr ? 'Randevu linki' : 'Booking link'}</span>
                     </Link>
                     {/* Need support? */}
                     <Link href="/dashboard/help" onClick={() => setShowProfileMenu(false)}
@@ -395,9 +398,9 @@ function Chrome({ children }: { children: ReactNode }) {
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                         <LifeBuoy size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                        Need support?
+                        {tr ? 'Destek mi lazım?' : 'Need support?'}
                       </span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#fff', background: 'var(--accent)', borderRadius: 6, padding: '2px 6px' }}>New</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#fff', background: 'var(--accent)', borderRadius: 6, padding: '2px 6px' }}>{tr ? 'Yeni' : 'New'}</span>
                     </Link>
                     {/* Settings */}
                     <Link href="/dashboard/settings" onClick={() => setShowProfileMenu(false)}
@@ -440,14 +443,14 @@ function Chrome({ children }: { children: ReactNode }) {
                       : <span style={{ fontSize: 15, fontWeight: 700, color: '#787774' }}>{(me.name || me.email || '?').charAt(0).toUpperCase()}</span>}
                   </div>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <p style={{ fontSize: 13.5, fontWeight: 600, color: '#37352f', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{me.name || 'Your account'}</p>
+                    <p style={{ fontSize: 13.5, fontWeight: 600, color: '#37352f', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{me.name || (tr ? 'Hesabın' : 'Your account')}</p>
                     <p style={{ fontSize: 12, color: '#9b9a97', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{me.email}</p>
                   </div>
                 </Link>
                 {/* ... → menu */}
                 <button
                   onClick={() => setShowProfileMenu(o => !o)}
-                  title="More"
+                  title={tr ? 'Daha fazla' : 'More'}
                   style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 8, border: 'none', background: 'none', color: '#9b9a97', cursor: 'pointer' }}
                   onMouseEnter={e => { glassHover(e, true) }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}

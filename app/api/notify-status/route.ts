@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { mailerReady, sendMail, SITE_URL, rateLimited } from '@/lib/mailer'
+import { mailerReady, sendMail, SITE_URL, rateLimited, isPlainEmail } from '@/lib/mailer'
 import { isOn, messageHtml, MSG_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
 
 // Sends one automatic email to a client after the barber changes an appointment
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     : a.status === 'completed' && Number(a.tip_amount ?? 0) > 0
   if (!fits) return NextResponse.json({ skipped: 'status does not match' })
   if (!isOn(a.barbers.message_settings, k)) return NextResponse.json({ skipped: 'switched off' })
-  if (!a.customer_email) return NextResponse.json({ skipped: 'no client email' })
+  if (!a.customer_email || !isPlainEmail(a.customer_email)) return NextResponse.json({ skipped: 'no valid client email' })
   if ((a.messages_sent ?? []).includes(k)) return NextResponse.json({ skipped: 'already sent' })
   if (new Date(a.start_time).getTime() < Date.now() - 14 * 86400000) return NextResponse.json({ skipped: 'too old' })
 
