@@ -85,6 +85,7 @@ export default function BookingPage() {
   // which iOS-style row is expanded: service → date → time open one after another
   // shown inside the dashboard's iPhone preview (?preview=1)
   const inPreview = useClientValue(() => new URLSearchParams(window.location.search).has('preview'), false)
+  const [waitlistOn, setWaitlistOn] = useState(false)
   const [openRow, setOpenRow] = useState<'service' | 'date' | 'time' | null>(null)
 
   /* load barber + services */
@@ -98,6 +99,9 @@ export default function BookingPage() {
       // Read separately so the page still works if first-visit-discount.sql hasn't been run yet
       const { data: d } = await supabase.from('barbers').select('first_visit_discount').eq('id', b.id).maybeSingle()
       setBarber({ ...b, first_visit_discount: d?.first_visit_discount ?? 0 })
+      // waitlist is off until supabase/waitlist.sql has been run (the column is missing before that)
+      const { data: w, error: wErr } = await supabase.from('barbers').select('waitlist_enabled').eq('id', b.id).maybeSingle()
+      setWaitlistOn(!wErr && !!w?.waitlist_enabled)
       const { data: s } = await supabase.from('services').select('*').eq('barber_id', b.id).order('price')
       setServices(s || [])
       setLoading(false)
@@ -426,6 +430,10 @@ export default function BookingPage() {
                           })}
                         </div>
                       )}
+                      {waitlistOn && (
+                        <WaitlistJoin key={date.toDateString()} barberId={barber.id} date={date} serviceId={service?.id ?? null}
+                          full={isClosed || (slots.length > 0 && slots.every(isTaken))} />
+                      )}
                     </div>
                   )}
                 </div>
@@ -615,4 +623,64 @@ function SocialIcon({ platform, size = 26 }: { platform: string; size?: number }
     default:
       return <svg {...p}><path d="M10.6 13.4a3 3 0 0 0 4.5.3l2-2a3 3 0 0 0-4.2-4.2l-1.1 1.1m-.4 3.2a3 3 0 0 0-4.5-.3l-2 2a3 3 0 0 0 4.2 4.2l1.1-1.1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
   }
+}
+
+/* ── waitlist: shown under the times; opens a small form ── */
+function WaitlistJoin({ barberId, date, serviceId, full }: { barberId: string; date: Date; serviceId: string | null; full: boolean }) {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [pref, setPref] = useState<'any' | 'morning' | 'afternoon' | 'evening'>('any')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
+  const [done, setDone] = useState(false)
+  const input: React.CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.28)', background: 'rgba(255,255,255,0.14)', color: '#fff', fontSize: 15, outline: 'none', fontFamily: 'inherit' }
+  const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+
+  const join = async () => {
+    setMsg('')
+    if (!name.trim()) return setMsg('Please enter your name.')
+    if (!phone.trim() && !email.trim()) return setMsg('Add a phone number or email so the barber can reach you.')
+    setBusy(true)
+    const { error } = await supabase.rpc('join_waitlist', {
+      p_barber_id: barberId, p_name: name.trim(), p_phone: phone.trim() || null, p_email: email.trim() || null,
+      p_service_id: serviceId, p_date: dayKey, p_time_pref: pref,
+    })
+    setBusy(false)
+    if (error) return setMsg(error.code === 'P0001' ? error.message : 'Could not join the waitlist. Please try again.')
+    setDone(true)
+  }
+
+  if (done) return (
+    <p style={{ margin: '12px 0 0', textAlign: 'center', fontSize: 14, color: '#fff', fontWeight: 600 }}>
+      ✓ You’re on the waitlist — the barber will contact you if a spot opens.
+    </p>
+  )
+
+  if (!open) return (
+    <button onClick={() => setOpen(true)} style={{ display: 'block', margin: '12px auto 0', background: full ? 'rgba(255,255,255,0.92)' : 'transparent', color: full ? '#111' : '#fff', border: full ? 'none' : '1px solid rgba(255,255,255,0.35)', borderRadius: 999, padding: '9px 16px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+      {full ? '⏳ Fully booked — join the waitlist' : 'No time that suits you? Join the waitlist'}
+    </button>
+  )
+
+  return (
+    <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <p style={{ margin: '0 0 2px', fontSize: 13.5, color: 'rgba(255,255,255,0.85)' }}>
+        Join the waitlist for {date.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}.
+      </p>
+      <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" maxLength={100} style={input} />
+      <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" inputMode="tel" maxLength={40} style={input} />
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email (optional)" type="email" maxLength={254} style={input} />
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {([['any', 'Any time'], ['morning', 'Morning'], ['afternoon', 'Afternoon'], ['evening', 'Evening']] as const).map(([k, l]) => (
+          <button key={k} onClick={() => setPref(k)} style={{ borderRadius: 999, padding: '7px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: 'none', background: pref === k ? '#fff' : 'rgba(255,255,255,0.16)', color: pref === k ? '#111' : '#fff' }}>{l}</button>
+        ))}
+      </div>
+      {msg && <p style={{ margin: 0, fontSize: 13, color: '#ffd1d1' }}>{msg}</p>}
+      <button onClick={join} disabled={busy} style={{ marginTop: 4, borderRadius: 999, padding: '11px 0', fontSize: 14.5, fontWeight: 700, border: 'none', cursor: 'pointer', background: '#fff', color: '#111', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}>
+        {busy ? 'Joining…' : 'Join the waitlist'}
+      </button>
+    </div>
+  )
 }

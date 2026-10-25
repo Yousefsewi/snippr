@@ -87,12 +87,16 @@ export function setSavedCurrency(code: string) {
 interface CurrencyCtxValue { currency: string; setCurrency: (c: string) => void; format: (n: number) => string }
 const CurrencyCtx = createContext<CurrencyCtxValue>({ currency: 'USD', setCurrency: () => {}, format: (n) => String(n) })
 
-export function CurrencyProvider({ children }: { children: ReactNode }) {
+// Saved currency (or a guess from the browser) without needing the provider.
+// Used on public pages like the footer picker and the pricing page.
+export function useCurrencyChoice(): [string, (c: string) => void] {
   const saved = useStored(KEY)
   const detected = useClientValue(detectCurrency, 'USD')
-  const currency = saved || detected
+  return [saved || detected, (c: string) => writeStored(KEY, c)]
+}
 
-  const setCurrency = (c: string) => writeStored(KEY, c)
+export function CurrencyProvider({ children }: { children: ReactNode }) {
+  const [currency, setCurrency] = useCurrencyChoice()
 
   return (
     <CurrencyCtx.Provider value={{ currency, setCurrency, format: (n) => formatMoney(n, currency) }}>

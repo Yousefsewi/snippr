@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Inter, Playfair_Display } from 'next/font/google'
@@ -11,6 +11,7 @@ import { Rocket, Link2, Share2, CalendarCheck } from 'lucide-react'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import FeatureAccordion from '@/components/feature-accordion'
 import HeroCalendar from '@/components/hero-calendar'
+import LangCurrencyPicker from '@/components/lang-currency-picker'
 
 const serif = Inter({ subsets: ['latin'], weight: ['600', '700', '800', '900'], display: 'swap' })
 const playfair = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['500', '600', '700'], display: 'swap' })
@@ -82,7 +83,7 @@ const FOOTER_HREFS: Record<string, string> = {
   'Barbershops': '/register', 'Hair salons': '/register', 'Beauty salons': '/register', 'Get started': '/register',
   'Online Booking': '#how', 'Calendar': '#how', 'Notifications': '#how', 'Confirmation emails': '#faq',
   'Opening hours': '#faq', 'Working hours': '#faq', 'Booking link': '#how', 'QR code': '#how',
-  'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms',
+  'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Help & support': '/help', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms',
 }
 
 function FooterLinks({ links }: { links: string[] }) {
@@ -187,7 +188,7 @@ const FAQ_BY_LANG: Record<Lng, Record<string, { q: string; a: string }[]>> = { e
 
 // Landing copy (English / Turkish)
 const LC: Record<Lng, {
-  nav: { how: string; pricing: string; faq: string; about: string }
+  nav: { how: string; pricing: string; faq: string; about: string; help: string }
   login: string; getStarted: string; badge: string; downloadApp: string
   heroBig: string; heroSub: string
   appTag: string; appTitle: string; appBody: string; appBtn: string; appDone: string
@@ -200,7 +201,7 @@ const LC: Record<Lng, {
   tagline: string; rights: string; builtWith: string
 }> = {
   en: {
-    nav: { how: 'How it works', pricing: 'Pricing', faq: 'FAQ', about: 'About' },
+    nav: { how: 'How it works', pricing: 'Pricing', faq: 'FAQ', about: 'About', help: 'Help & support' },
     login: 'Login', getStarted: 'Get started', badge: 'Online booking 24/7', downloadApp: 'Download App',
     heroBig: 'NEVER MISS\nA CUSTOMER.',
     heroSub: 'Smart scheduling for modern barbershops — set up in minutes, book online 24/7.',
@@ -236,7 +237,7 @@ const LC: Record<Lng, {
     tagline: 'Helping barbers fill every chair, effortlessly.', rights: `© ${new Date().getFullYear()} Snippr. All rights reserved.`, builtWith: 'Built with',
   },
   tr: {
-    nav: { how: 'Nasıl çalışır', pricing: 'Fiyatlandırma', faq: 'SSS', about: 'Hakkında' },
+    nav: { how: 'Nasıl çalışır', pricing: 'Fiyatlandırma', faq: 'SSS', about: 'Hakkında', help: 'Yardım ve destek' },
     login: 'Giriş', getStarted: 'Başla', badge: '7/24 online randevu', downloadApp: 'Uygulamayı İndir',
     heroBig: 'MÜŞTERİNİ\nKAÇIRMA.',
     heroSub: 'Modern berberler için akıllı randevu sistemi — dakikalar içinde kur, 7/24 online rezervasyon al.',
@@ -321,78 +322,6 @@ function FAQ({ serif, lng }: { serif: string; lng: Lng }) {
         </div>
       </div>
     </section>
-  )
-}
-
-function LangSwitcher({ lng, setLng }: { lng: Lng; setLng: (l: Lng) => void }) {
-  const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onClick)
-    return () => document.removeEventListener('mousedown', onClick)
-  }, [])
-
-  const langs: { code: Lng; label: string }[] = [
-    { code: 'en', label: 'English' },
-    { code: 'tr', label: 'Türkçe' },
-  ]
-  const filtered = langs.filter(l => l.label.toLowerCase().includes(query.toLowerCase()))
-  const current = langs.find(l => l.code === lng)!
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="inline-flex items-center gap-2 rounded-full text-[12px] font-semibold px-3.5 py-2 transition-all"
-        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.85)' }}
-      >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 8h9M9 5v3M12 8c0 4-3.5 7-7 8M8 12c1.2 1.6 3 2.8 5 3.4"/><path d="M13 20l4-9 4 9M14.5 17h5"/></svg>
-        {current.label}
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-
-      {open && (
-        <div
-          className="absolute bottom-full mb-2 left-0 rounded-2xl overflow-hidden z-10"
-          style={{ width: 220, background: '#111', border: '1px solid rgba(255,255,255,0.14)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
-        >
-          <div className="p-2.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder={lng === 'tr' ? 'Şuna göre ara' : 'Search'}
-                className="bg-transparent text-[13px] outline-none flex-1"
-                style={{ color: '#fff' }}
-              />
-            </div>
-          </div>
-          <div className="max-h-52 overflow-y-auto py-1.5">
-            {filtered.map(l => (
-              <button
-                key={l.code}
-                onClick={() => { setLng(l.code); setOpen(false); setQuery('') }}
-                className="w-full flex items-center justify-between px-4 py-2.5 text-[13px] text-left transition-colors"
-                style={{ color: l.code === lng ? '#fff' : 'rgba(255,255,255,0.75)', background: l.code === lng ? 'rgba(255,255,255,0.06)' : 'transparent' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = l.code === lng ? 'rgba(255,255,255,0.06)' : 'transparent' }}
-              >
-                {l.label}
-                {l.code === lng && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
   )
 }
 
@@ -533,6 +462,7 @@ function AppInterestCTA({ serif, lng }: { serif: string; lng: Lng }) {
 
 export default function Home() {
   const [lng, setLng] = useState<Lng>('en')
+  const chooseLng = (l: Lng) => { setLng(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
   const c = LC[lng]
   const isRTL = false
 
@@ -590,12 +520,13 @@ export default function Home() {
             </Link>
 
             {/* Menu items */}
-            <div className="hidden md:flex items-center gap-7">
+            <div className="hidden lg:flex items-center gap-7">
               {[
                 { label: c.nav.how,     href: '#how' },
                 { label: c.nav.pricing, href: '/pricing' },
                 { label: c.nav.faq,     href: '#faq' },
                 { label: c.nav.about,   href: '/about' },
+                { label: c.nav.help,    href: '/help' },
               ].map(({ label, href }) =>
                 href.startsWith('#') ? (
                   <a
@@ -792,7 +723,7 @@ export default function Home() {
 
             {/* INFO + CONNECT */}
             <div className="lg:col-span-2">
-              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Contact', 'Privacy', 'Terms']} serif={serif.className} />
+              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms']} serif={serif.className} />
               <div className="mt-8">
               </div>
             </div>
@@ -840,7 +771,7 @@ export default function Home() {
           {/* bottom bar */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-3 py-6" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.4)' }}>{c.rights}</p>
-            <LangSwitcher lng={lng} setLng={setLng} />
+            <LangCurrencyPicker lng={lng} setLng={chooseLng} theme="dark" placement="up" align="center" />
             <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.4)' }}>{c.builtWith} <span style={{ color: 'rgba(255,255,255,0.7)' }}>Next.js</span></p>
           </div>
         </div>

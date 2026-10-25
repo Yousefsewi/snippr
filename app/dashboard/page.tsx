@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useLang } from '@/lib/i18n'
 import { useCurrency } from '@/lib/currency'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
-import { glass, glassHover, GLASS_PAGE_WASH as PAGE_WASH } from '@/lib/glass'
+import { glass, GLASS_PAGE_WASH as PAGE_WASH } from '@/lib/glass'
+import DashboardWidgets from '@/components/dashboard-widgets'
+import { isBlock } from '@/lib/blocks'
 
 interface Barber {
   id: string; name: string; slug: string; photo_url: string | null
@@ -17,6 +18,7 @@ interface Appointment {
   start_time: string; end_time: string; status: string
   service_id: string | null; services: { name: string; price: number } | null
   discount_percent?: number // first-visit discount applied by the database
+  created_at?: string
 }
 
 const statusPill: Record<string, string> = {
@@ -26,15 +28,9 @@ const statusPill: Record<string, string> = {
   completed: 'bg-[#e3e2e0] text-[#32302c]',
 }
 
-const quickLinks = [
-  { href: '/dashboard/calendar', titleKey: 'calendar' as const, subKey: 'schedule' as const },
-  { href: '/dashboard/services', titleKey: 'services' as const, subKey: 'manageOfferings' as const },
-  { href: '/dashboard/profile',  titleKey: 'profile' as const,  subKey: 'yourDetails' as const },
-]
-
 export default function DashboardPage() {
   const router = useRouter()
-  const { t, isRTL } = useLang()
+  const { t, isRTL, lang } = useLang()
   const { format } = useCurrency()
   const [loading, setLoading]       = useState(true)
   const [barber, setBarber]         = useState<Barber | null>(null)
@@ -55,7 +51,7 @@ export default function DashboardPage() {
       const { data: appts } = await supabase
         .from('appointments').select('*, services(name, price)')
         .eq('barber_id', data.id).order('start_time', { ascending: false })
-      setAppts((appts as Appointment[]) || [])
+      setAppts(((appts as Appointment[]) || []).filter(a => !isBlock(a)))
       setLoading(false)
     })()
   }, [router])
@@ -71,7 +67,7 @@ export default function DashboardPage() {
           const { data: appts } = await supabase
             .from('appointments').select('*, services(name, price)')
             .eq('barber_id', barber.id).order('start_time', { ascending: false })
-          setAppts((appts as Appointment[]) || [])
+          setAppts(((appts as Appointment[]) || []).filter(a => !isBlock(a)))
         })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
@@ -102,8 +98,6 @@ export default function DashboardPage() {
   )
 
   const upcoming        = appointments.filter(a => new Date(a.start_time) >= new Date() && a.status !== 'cancelled')
-  const uniqueCustomers = new Set(appointments.map(a => a.customer_name)).size
-  const revenue         = appointments.filter(a => ['completed','confirmed'].includes(a.status)).reduce((s, a) => s + (a.services?.price ?? 0) * (100 - (FIRST_VISIT_DISCOUNT ? (a.discount_percent ?? 0) : 0)) / 100, 0)
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? t.greetMorning : hour < 18 ? t.greetAfternoon : t.greetEvening
@@ -111,12 +105,6 @@ export default function DashboardPage() {
   const statusLabel: Record<string, string> = {
     pending: t.st_pending, confirmed: t.st_confirmed, cancelled: t.st_cancelled, completed: t.st_completed,
   }
-
-  const stats = [
-    { label: t.totalAppointments, value: appointments.length, sub: t.allTime },
-    { label: t.uniqueCustomers,   value: uniqueCustomers,     sub: t.allTime },
-    { label: t.revenue,           value: format(revenue),     sub: t.confirmedCompleted },
-  ]
 
   return (
     <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: PAGE_WASH, minHeight: '100vh', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
@@ -134,38 +122,10 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Quick access */}
-        <section style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: '#9b9a97', letterSpacing: '0.05em', textTransform: 'uppercase', margin: '0 0 12px 4px' }}>{t.quickAccess}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-            {quickLinks.map(({ href, titleKey, subKey }) => (
-              <Link key={href} href={href} style={{ ...glass(), display: 'block', padding: 18, borderRadius: 20, textDecoration: 'none', transition: 'background 0.18s, transform 0.18s' }}
-                onMouseEnter={e => glassHover(e, true)}
-                onMouseLeave={e => glassHover(e, false)}
-              >
-                <p style={{ fontSize: 14, fontWeight: 500, color: '#37352f', margin: 0 }}>{t[titleKey]}</p>
-                <p style={{ fontSize: 13, color: '#9b9a97', margin: '4px 0 0' }}>{t[subKey]}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* At a glance */}
-        <section style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: '#9b9a97', letterSpacing: '0.05em', textTransform: 'uppercase', margin: '0 0 12px 4px' }}>{t.atAGlance}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
-            {stats.map(({ label, value, sub }) => (
-              <div key={label} style={{ ...glass(), padding: 18, borderRadius: 20, transition: 'background 0.18s, transform 0.18s' }}
-                onMouseEnter={e => glassHover(e, true)}
-                onMouseLeave={e => glassHover(e, false)}
-              >
-                <p style={{ fontSize: 22, fontWeight: 600, color: '#37352f', margin: 0 }}>{value}</p>
-                <p style={{ fontSize: 14, color: '#37352f', margin: '4px 0 0' }}>{label}</p>
-                <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>{sub}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Overview widgets */}
+        <div style={{ marginBottom: 40 }}>
+          <DashboardWidgets appts={appointments} lang={lang} format={format} statusLabel={statusLabel} applyDiscount={FIRST_VISIT_DISCOUNT} />
+        </div>
 
         {/* Appointments */}
         <section>

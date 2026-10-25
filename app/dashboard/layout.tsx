@@ -3,18 +3,19 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { enforceRememberMe } from '@/lib/remember-me'
+import { isOnboarded, markOnboarded } from '@/lib/onboarding'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
 import { CurrencyProvider } from '@/lib/currency'
 import { ThemeProvider, useTheme } from '@/lib/theme'
-import { Home, Calendar, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
+import { Home, Calendar, Hourglass, Receipt, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
 import NotificationOptIn from '@/components/notification-opt-in'
 import { useStored } from '@/lib/use-stored'
 import { glass, glassHover, GLASS_WASH, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
 
 const navIcons: Record<string, LucideIcon> = {
-  overview: Home, calendar: Calendar, services: Scissors, profile: User,
+  overview: Home, calendar: Calendar, waitlist: Hourglass, sales: Receipt, services: Scissors, profile: User,
 }
 const footerIcons: Record<string, LucideIcon> = {
   plansBilling: CreditCard, settings: Settings, help: HelpCircle,
@@ -37,6 +38,8 @@ const relTime = (iso: string) => {
 const navItems = [
   { href: '/dashboard',          key: 'overview' as const },
   { href: '/dashboard/calendar', key: 'calendar' as const },
+  { href: '/dashboard/waitlist', key: 'waitlist' as const },
+  { href: '/dashboard/sales',    key: 'sales' as const },
   { href: '/dashboard/services', key: 'services' as const },
 ]
 
@@ -96,7 +99,7 @@ function Chrome({ children }: { children: ReactNode }) {
       if (await enforceRememberMe()) { router.replace('/login'); return }
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      let { data: barber } = await supabase.from('barbers').select('name, photo_url').eq('user_id', user.id).single()
+      let { data: barber } = await supabase.from('barbers').select('id, name, photo_url, working_hours').eq('user_id', user.id).single()
 
       if (!barber) {
         const emailPrefix = (user.email ?? 'barber').split('@')[0]
@@ -105,12 +108,18 @@ function Chrome({ children }: { children: ReactNode }) {
         const { data: created } = await supabase
           .from('barbers')
           .insert({ user_id: user.id, email: user.email, name: emailPrefix, slug })
-          .select('name, photo_url')
+          .select('id, name, photo_url, working_hours')
           .single()
         barber = created
       }
 
       if (!barber || !active) return
+      // brand-new shop (no hours, no services yet): run the setup questions first
+      if (!barber.working_hours && !isOnboarded(user.id)) {
+        const { count } = await supabase.from('services').select('id', { count: 'exact', head: true }).eq('barber_id', barber.id)
+        if (!count) { router.replace('/onboarding'); return }
+        markOnboarded(user.id)
+      }
       setMe({ name: barber.name ?? '', email: user.email ?? '', photo: barber.photo_url ?? null })
     })()
     return () => { active = false }

@@ -15,7 +15,7 @@ export const LANGS: { code: Lang; label: string; flag: string }[] = [
 
 interface T {
   // sidebar / chrome
-  overview: string; calendar: string; services: string; profile: string
+  overview: string; calendar: string; waitlist: string; sales: string; services: string; profile: string
   plansBilling: string; settings: string; help: string; signOut: string; signingOut: string; workspace: string
   notifications: string; noNotifications: string; markAllRead: string
   today: string; viewCalendar: string; upcoming: string
@@ -41,7 +41,7 @@ interface T {
 
 const dict: Record<Lang, T> = {
   en: {
-    overview: 'Overview', calendar: 'Calendar', services: 'Services', profile: 'Profile',
+    overview: 'Overview', calendar: 'Calendar', waitlist: 'Waitlist', sales: 'Sales', services: 'Services', profile: 'Profile',
     plansBilling: 'Plans & Billing', settings: 'Settings', help: 'Help & Instructions', signOut: 'Sign out', signingOut: 'Signing out…', workspace: 'Workspace',
     notifications: 'Notifications', noNotifications: 'No notifications', markAllRead: 'Mark all as read',
     today: 'Today', viewCalendar: 'View calendar →', upcoming: 'Upcoming',
@@ -63,7 +63,7 @@ const dict: Record<Lang, T> = {
     dangerZone: 'Danger zone', deleteAccount: 'Delete account', deleteAccountSub: 'Permanently remove your account and all data', deleteBtn: 'Delete',
   },
   tr: {
-    overview: 'Genel Bakış', calendar: 'Takvim', services: 'Hizmetler', profile: 'Profil',
+    overview: 'Genel Bakış', calendar: 'Takvim', waitlist: 'Bekleme listesi', sales: 'Satışlar', services: 'Hizmetler', profile: 'Profil',
     plansBilling: 'Planlar & Ödeme', settings: 'Ayarlar', help: 'Yardım & Talimatlar', signOut: 'Çıkış yap', signingOut: 'Çıkış yapılıyor…', workspace: 'Çalışma alanı',
     notifications: 'Bildirimler', noNotifications: 'Bildirim yok', markAllRead: 'Tümünü okundu işaretle',
     today: 'Bugün', viewCalendar: 'Takvimi gör →', upcoming: 'Yaklaşan',
@@ -85,7 +85,7 @@ const dict: Record<Lang, T> = {
     dangerZone: 'Tehlikeli bölge', deleteAccount: 'Hesabı sil', deleteAccountSub: 'Hesabını ve tüm verilerini kalıcı olarak sil', deleteBtn: 'Sil',
   },
   ar: {
-    overview: 'نظرة عامة', calendar: 'التقويم', services: 'الخدمات', profile: 'الملف الشخصي',
+    overview: 'نظرة عامة', calendar: 'التقويم', waitlist: 'قائمة الانتظار', sales: 'المبيعات', services: 'الخدمات', profile: 'الملف الشخصي',
     plansBilling: 'الخطط والفوترة', settings: 'الإعدادات', help: 'المساعدة والإرشادات', signOut: 'تسجيل الخروج', signingOut: 'جارٍ الخروج…', workspace: 'مساحة العمل',
     notifications: 'الإشعارات', noNotifications: 'لا توجد إشعارات', markAllRead: 'تعليم الكل كمقروء',
     today: 'اليوم', viewCalendar: 'عرض التقويم →', upcoming: 'القادمة',
@@ -107,7 +107,7 @@ const dict: Record<Lang, T> = {
     dangerZone: 'منطقة خطرة', deleteAccount: 'حذف الحساب', deleteAccountSub: 'احذف حسابك وكل البيانات نهائيًا', deleteBtn: 'حذف',
   },
   nl: {
-    overview: 'Overzicht', calendar: 'Agenda', services: 'Diensten', profile: 'Profiel',
+    overview: 'Overzicht', calendar: 'Agenda', waitlist: 'Wachtlijst', sales: 'Verkoop', services: 'Diensten', profile: 'Profiel',
     plansBilling: 'Abonnementen', settings: 'Instellingen', help: 'Help & Uitleg', signOut: 'Uitloggen', signingOut: 'Uitloggen…', workspace: 'Werkruimte',
     notifications: 'Meldingen', noNotifications: 'Geen meldingen', markAllRead: 'Alles als gelezen markeren',
     today: 'Vandaag', viewCalendar: 'Agenda bekijken →', upcoming: 'Aankomend',
@@ -129,7 +129,7 @@ const dict: Record<Lang, T> = {
     dangerZone: 'Gevarenzone', deleteAccount: 'Account verwijderen', deleteAccountSub: 'Verwijder je account en alle gegevens permanent', deleteBtn: 'Verwijderen',
   },
   de: {
-    overview: 'Übersicht', calendar: 'Kalender', services: 'Leistungen', profile: 'Profil',
+    overview: 'Übersicht', calendar: 'Kalender', waitlist: 'Warteliste', sales: 'Verkäufe', services: 'Leistungen', profile: 'Profil',
     plansBilling: 'Tarife & Abrechnung', settings: 'Einstellungen', help: 'Hilfe & Anleitung', signOut: 'Abmelden', signingOut: 'Abmelden…', workspace: 'Arbeitsbereich',
     notifications: 'Benachrichtigungen', noNotifications: 'Keine Benachrichtigungen', markAllRead: 'Alle als gelesen markieren',
     today: 'Heute', viewCalendar: 'Kalender ansehen →', upcoming: 'Anstehend',

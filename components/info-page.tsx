@@ -6,7 +6,7 @@ import { Playfair_Display } from 'next/font/google'
 
 const serif = Playfair_Display({ subsets: ['latin'], weight: ['700'], display: 'swap' })
 
-export type InfoSection = { heading: string; body: React.ReactNode }
+export type InfoSection = { heading: string; body: React.ReactNode; id?: string }
 
 // Shared layout for simple text pages (privacy, terms, contact) — same look as /faq and /about.
 export default function InfoPage({ title, subtitle, sections }: { title: string; subtitle: string; sections: InfoSection[] }) {
@@ -42,11 +42,12 @@ export default function InfoPage({ title, subtitle, sections }: { title: string;
         {sections.map((s, i) => (
           <motion.div
             key={s.heading}
+            id={s.id}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.05 }}
-            style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '24px 0' }}
+            style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '24px 0', scrollMarginTop: 80 }}
           >
             <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 12px', color: 'rgba(255,255,255,0.9)' }}>{s.heading}</h2>
             <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>{s.body}</div>

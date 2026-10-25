@@ -1,5 +1,6 @@
 import InfoPage from '@/components/info-page'
 import { SUPPORT_EMAIL } from '@/lib/site'
+import CookieSettingsButton from '@/components/cookie-settings-button'
 
 export const metadata = { title: 'Privacy Policy — Snippr' }
 
@@ -22,8 +23,24 @@ export default function PrivacyPage() {
           body: 'A customer’s name, phone number and email are visible only to the barber they booked with. Other barbers and visitors cannot see them; the public booking page only shows which time slots are taken.',
         },
         {
+          id: 'cookies',
           heading: 'Cookies & local storage',
-          body: 'We use essential cookies and browser storage to keep you signed in and to remember preferences such as language, theme and your cookie choice. We do not use advertising or tracking cookies.',
+          body: (
+            <>
+              <p style={{ margin: '0 0 12px' }}>
+                We only use cookies and browser storage that Snippr needs to work. We do not use advertising, tracking or analytics cookies.
+              </p>
+              <ul style={{ margin: '0 0 12px', paddingLeft: 18 }}>
+                <li><b>Sign-in</b>: keeps you logged in to your dashboard (browser storage, set by Supabase).</li>
+                <li><b>Remember me</b>: when you untick it at login, a small cookie (<code>snippr_alive</code>) signs you out once you close the browser.</li>
+                <li><b>Your choices</b>: your cookie choice, language and dashboard settings (browser storage).</li>
+              </ul>
+              <p style={{ margin: '0 0 12px' }}>
+                These are necessary, so they stay on. Analytics and marketing are switched off and not in use; if we ever add them, we will ask first and respect your choice.
+              </p>
+              <CookieSettingsButton />
+            </>
+          ),
         },
         {
           heading: 'Services we use',
