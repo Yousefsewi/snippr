@@ -5,6 +5,7 @@ import { DEFAULT_HOURS, type Hours, type DayHours, type Day as HoursDay } from '
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { isPwnedPassword, PWNED_MESSAGE } from '@/lib/pwned'
 import { AddressAutocomplete } from '@/components/address-autocomplete'
 
 // Read an image File, downscale it on a canvas, return a JPEG data URL
@@ -120,7 +121,10 @@ export default function EditProfilePage() {
     // 2) email / password (auth)
     const authPatch: { email?: string; password?: string } = {}
     if (email && email !== origEmail) authPatch.email = email
-    if (password) authPatch.password = password
+    if (password) {
+      if (await isPwnedPassword(password)) { setError(PWNED_MESSAGE.en); setSaving(false); return }
+      authPatch.password = password
+    }
     if (Object.keys(authPatch).length) {
       const { error: aErr } = await supabase.auth.updateUser(authPatch)
       if (aErr) { setError(aErr.message); setSaving(false); return }

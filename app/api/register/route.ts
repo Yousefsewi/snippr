@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { mailerReady, sendMail, buttonEmail, SITE_URL, rateLimited, clientIp } from '@/lib/mailer'
+import { isPwnedPassword, PWNED_MESSAGE } from '@/lib/pwned'
 
 // Server-side sign-up.
 // - With Gmail configured (lib/mailer.ts): the account is created unconfirmed and we email
@@ -23,6 +24,8 @@ export async function POST(req: NextRequest) {
   const cleanEmail = String(email ?? '').trim().toLowerCase()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
   if (String(password ?? '').length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 })
+  // leaked-password check (free alternative to Supabase's paid-plan setting)
+  if (await isPwnedPassword(String(password))) return NextResponse.json({ error: PWNED_MESSAGE.en }, { status: 400 })
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
   const metadata = { full_name: String(fullName ?? '').slice(0, 100), slug: String(slug ?? '').slice(0, 60) }

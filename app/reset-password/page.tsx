@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MdLock, MdArrowForward } from 'react-icons/md'
 import { supabase } from '@/lib/supabase'
+import { isPwnedPassword, PWNED_MESSAGE } from '@/lib/pwned'
 import { useClientValue } from '@/lib/use-stored'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -52,6 +53,7 @@ export default function ResetPasswordPage() {
     if (password.length < 6) { setError('Password must be at least 6 characters.'); return }
     if (password !== confirm) { setError("The two passwords don't match."); return }
     setLoading(true)
+    if (await isPwnedPassword(password)) { setError(PWNED_MESSAGE.en); setLoading(false); return }
     const { error } = await supabase.auth.updateUser({ password })
     setLoading(false)
     if (error) { setError(error.message); return }
