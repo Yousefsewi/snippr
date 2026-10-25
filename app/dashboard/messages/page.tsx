@@ -25,9 +25,9 @@ const COPY = {
     noEmail: 'Emails only go to clients who left an email address when booking.',
     sections: { reminders: 'Reminders', updates: 'Appointment updates', waitlist: 'Waitlist', loyalty: 'Client loyalty' },
     cards: {
-      r3d: ['3 days before', 'Reminds clients of their upcoming appointment 3 days ahead.'],
-      r24: ['24 hours before', 'Reminds clients of their appointment the day before.'],
-      r1h: ['1 hour before', 'A last nudge one hour before the appointment.'],
+      r3d: ['3 days before', 'Reminds clients of their upcoming appointment 3 days ahead (sent every morning).'],
+      r24: ['The day before', 'Reminds clients of their appointment the day before (sent every morning).'],
+      r1h: ['1 hour before', 'A last nudge one hour before. Needs an hourly job — coming soon.'],
       newBooking: ['New appointment', 'Clients get a booking confirmation, and you get a notification.'],
       confirmed: ['Appointment confirmed', 'Sent when you confirm a booking.'],
       cancelled: ['Appointment cancelled', 'Sent when you cancel a booking, with a link to pick a new time.'],
@@ -40,7 +40,7 @@ const COPY = {
       referral: ['Referral reward', 'Tells clients when a friend they referred books.'],
     },
     reviewHint: 'Add your Google review link', reviewSet: 'Google review link added',
-    history: 'Message history', historySub: 'Emails Snippr sent to your clients.', historyEmpty: 'No messages sent yet', historyEmptySub: 'When an automatic email goes out, it shows up here.', kinds: { new: 'New appointment', confirmed: 'Appointment confirmed', cancelled: 'Appointment cancelled', thanks: 'Thanks for your visit', tip: 'Thanks for the tip' } as Record<string, string>, settingsTitle: 'Message settings', apptOn: 'Appointment',
+    history: 'Message history', historySub: 'Emails Snippr sent to your clients.', historyEmpty: 'No messages sent yet', historyEmptySub: 'When an automatic email goes out, it shows up here.', kinds: { remind1d: 'Reminder (1 day before)', remind3d: 'Reminder (3 days before)', new: 'New appointment', confirmed: 'Appointment confirmed', cancelled: 'Appointment cancelled', thanks: 'Thanks for your visit', tip: 'Thanks for the tip' } as Record<string, string>, settingsTitle: 'Message settings', apptOn: 'Appointment',
   },
   tr: {
     back: 'Eklentiler', title: 'Otomatik mesajlar', sub: 'Müşterilerine kendiliğinden giden e-postalar. Herkese tek tek yazmana gerek kalmaz.',
@@ -49,9 +49,9 @@ const COPY = {
     noEmail: 'E-postalar sadece randevu alırken e-posta adresi bırakan müşterilere gider.',
     sections: { reminders: 'Hatırlatmalar', updates: 'Randevu güncellemeleri', waitlist: 'Bekleme listesi', loyalty: 'Müşteri sadakati' },
     cards: {
-      r3d: ['3 gün öncesinde hatırlatma', 'Müşterilere yaklaşan randevularını 3 gün önceden hatırlatır.'],
-      r24: ['24 saat öncesinde hatırlatma', 'Müşterilere randevularını bir gün önceden hatırlatır.'],
-      r1h: ['1 saat öncesinde hatırlatma', 'Randevudan bir saat önce son bir hatırlatma.'],
+      r3d: ['3 gün öncesinde hatırlatma', 'Müşterilere yaklaşan randevularını 3 gün önceden hatırlatır (her sabah gönderilir).'],
+      r24: ['1 gün öncesinde hatırlatma', 'Müşterilere randevularını bir gün önceden hatırlatır (her sabah gönderilir).'],
+      r1h: ['1 saat öncesinde hatırlatma', 'Randevudan bir saat önce son hatırlatma. Saatlik çalışan bir sistem gerektirir — yakında.'],
       newBooking: ['Yeni randevu', 'Müşteriye randevu onayı gider, sana da bildirim gelir.'],
       confirmed: ['Randevu onaylandı', 'Bir randevuyu onayladığında gönderilir.'],
       cancelled: ['İptal edilen randevu', 'Randevuyu iptal ettiğinde, yeni saat seçme linkiyle gönderilir.'],
@@ -64,7 +64,7 @@ const COPY = {
       referral: ['Kazanılan tavsiye ödülleri', 'Tavsiye ettikleri arkadaşları randevu alınca bildirir.'],
     },
     reviewHint: 'Google yorum linkini ekle', reviewSet: 'Google yorum linki eklendi',
-    history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { new: 'Yeni randevu', confirmed: 'Randevu onaylandı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
+    history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { remind1d: 'Hatırlatma (1 gün önce)', remind3d: 'Hatırlatma (3 gün önce)', new: 'Yeni randevu', confirmed: 'Randevu onaylandı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
   },
 }
 
@@ -128,17 +128,17 @@ export default function MessagesPage() {
 
   const C = t.cards
   const sections: { title: string; cards: Card[] }[] = [
+    { title: t.sections.reminders, cards: [
+      { id: 'r3d', icon: Bell, title: C.r3d[0], desc: C.r3d[1], channels: ['email'], kind: 'remind3d' },
+      { id: 'r24', icon: Bell, title: C.r24[0], desc: C.r24[1], channels: ['email'], kind: 'remind1d' },
+      { id: 'r1h', icon: Bell, title: C.r1h[0], desc: C.r1h[1], channels: ['email'], soon: true },
+    ] },
     { title: t.sections.updates, cards: [
       { id: 'newBooking', icon: CalendarPlus, title: C.newBooking[0], desc: C.newBooking[1], channels: ['email', 'push'], always: true },
       { id: 'confirmed', icon: CalendarCheck, title: C.confirmed[0], desc: C.confirmed[1], channels: ['email'], kind: 'confirmed' },
       { id: 'cancelled', icon: CalendarX, title: C.cancelled[0], desc: C.cancelled[1], channels: ['email'], kind: 'cancelled' },
       { id: 'thanks', icon: ThumbsUp, title: C.thanks[0], desc: C.thanks[1], channels: ['email'], kind: 'thanks' },
       { id: 'tip', icon: Heart, title: C.tip[0], desc: C.tip[1], channels: ['email'], kind: 'tip' },
-    ] },
-    { title: t.sections.reminders, cards: [
-      { id: 'r3d', icon: Bell, title: C.r3d[0], desc: C.r3d[1], channels: ['email'], soon: true },
-      { id: 'r24', icon: Bell, title: C.r24[0], desc: C.r24[1], channels: ['email'], soon: true },
-      { id: 'r1h', icon: Bell, title: C.r1h[0], desc: C.r1h[1], channels: ['email'], soon: true },
     ] },
     { title: t.sections.waitlist, cards: [
       { id: 'wJoin', icon: Hourglass, title: C.wJoin[0], desc: C.wJoin[1], channels: ['email'], soon: true },

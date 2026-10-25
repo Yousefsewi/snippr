@@ -234,11 +234,19 @@ export default function BookingPage() {
     // The id is made here so the notify route can be told which booking this is
     // (visitors can't read appointments back after inserting them)
     const appointmentId = newId()
-    const { error: err } = await supabase.from('appointments').insert({
+    const row = {
       id: appointmentId, barber_id: barber.id, service_id: service?.id ?? null, customer_name: name,
       customer_phone: phone || null, customer_email: email || null,
       start_time: start.toISOString(), end_time: end.toISOString(), status: 'pending',
+    }
+    // language + time zone make reminder emails right for this client (supabase/reminders.sql);
+    // if those columns don't exist yet, book without them
+    let { error: err } = await supabase.from('appointments').insert({
+      ...row, client_lang: lang, client_tz: Intl.DateTimeFormat().resolvedOptions().timeZone.slice(0, 64),
     })
+    if (err && (err.code === 'PGRST204' || /client_(lang|tz)/.test(err.message))) {
+      ({ error: err } = await supabase.from('appointments').insert(row))
+    }
     // 23P01 = the database's no-overlap rule: someone booked this slot a moment ago
     if (err?.code === '23P01') { slotTaken(); return }
     if (err) { setError(t.couldNot); setSubmitting(false); return }

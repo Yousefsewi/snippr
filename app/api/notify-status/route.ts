@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, rateLimited, isPlainEmail } from '@/lib/mailer'
-import { isOn, messageHtml, MSG_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { isOn, messageHtml, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
 
 // Sends one automatic email to a client after the barber changes an appointment
 // (confirmed, cancelled, completed → thanks, tip). The caller proves who they are with
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (!token) return NextResponse.json({ error: 'not signed in' }, { status: 401 })
 
   const { appointmentId, kind, timeZone, lang } = await req.json().catch(() => ({}))
-  if (typeof appointmentId !== 'string' || !UUID.test(appointmentId) || !MSG_KINDS.includes(kind)) {
+  if (typeof appointmentId !== 'string' || !UUID.test(appointmentId) || !STATUS_KINDS.includes(kind)) {
     return NextResponse.json({ error: 'invalid request' }, { status: 400 })
   }
 
@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
   const fits = k === 'confirmed' ? a.status === 'confirmed'
     : k === 'cancelled' ? a.status === 'cancelled'
     : k === 'thanks' ? a.status === 'completed'
-    : a.status === 'completed' && Number(a.tip_amount ?? 0) > 0
+    : k === 'tip' ? a.status === 'completed' && Number(a.tip_amount ?? 0) > 0
+    : false
   if (!fits) return NextResponse.json({ skipped: 'status does not match' })
   if (!isOn(a.barbers.message_settings, k)) return NextResponse.json({ skipped: 'switched off' })
   if (!a.customer_email || !isPlainEmail(a.customer_email)) return NextResponse.json({ skipped: 'no valid client email' })

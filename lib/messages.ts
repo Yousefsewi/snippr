@@ -1,9 +1,12 @@
 // Automated client emails: what they say and whether they are on.
 // Used by the server (app/api/notify-status) and by the dashboard preview, so both match.
 
-export type MsgKind = 'confirmed' | 'cancelled' | 'thanks' | 'tip'
-export const MSG_KINDS: MsgKind[] = ['confirmed', 'cancelled', 'thanks', 'tip']
-export const MSG_DEFAULTS: Record<MsgKind, boolean> = { confirmed: true, cancelled: true, thanks: true, tip: false }
+export type MsgKind = 'confirmed' | 'cancelled' | 'thanks' | 'tip' | 'remind1d' | 'remind3d'
+// sent right after the barber changes an appointment (app/api/notify-status)
+export const STATUS_KINDS: MsgKind[] = ['confirmed', 'cancelled', 'thanks', 'tip']
+// sent by the daily reminder job (app/api/cron/reminders)
+export const REMINDER_KINDS: MsgKind[] = ['remind1d', 'remind3d']
+export const MSG_DEFAULTS: Record<MsgKind, boolean> = { confirmed: true, cancelled: true, thanks: true, tip: false, remind1d: true, remind3d: false }
 
 export type MsgSettings = Partial<Record<MsgKind, boolean>>
 export const isOn = (s: MsgSettings | null | undefined, k: MsgKind) => s?.[k] ?? MSG_DEFAULTS[k]
@@ -41,6 +44,17 @@ export function buildMessage(kind: MsgKind, lang: Lang, d: MsgData) {
         ? (tr ? `Umarız yeni görünümünü sevmişsindir. Bir dakikanı ayırıp ${d.barber} için Google’da yorum bırakır mısın? Çok yardımcı olur.` : `We hope you love your new look. Could you spare a minute to leave ${d.barber} a Google review? It really helps.`)
         : (tr ? `Umarız yeni görünümünü sevmişsindir. Bir sonraki randevunu istediğin zaman alabilirsin.` : `We hope you love your new look. Book your next visit whenever you’re ready.`),
       button: d.reviewUrl ? { label: tr ? 'Google’da yorum yaz' : 'Leave a Google review', url: d.reviewUrl } : { label: tr ? 'Tekrar randevu al' : 'Book again', url: d.bookUrl },
+    }
+    case 'remind1d':
+    case 'remind3d': return {
+      subject: tr
+        ? (kind === 'remind1d' ? `Yarın randevun var: ${d.barber} ⏰` : `3 gün sonra randevun var: ${d.barber}`)
+        : (kind === 'remind1d' ? `Reminder: your appointment with ${d.barber} is tomorrow ⏰` : `Reminder: your appointment with ${d.barber} is in 3 days`),
+      heading: tr ? `Unutma, ${first(d.client)}!` : `Just a reminder, ${first(d.client)}!`,
+      text: tr
+        ? `${svc}${when} randevun var. Gelemeyeceksen lütfen ${d.barber}’e haber ver, böylece başkası o saati alabilir.`
+        : `You have an appointment (${svc}${when}). If you can’t make it, please let ${d.barber} know so someone else can take the slot.`,
+      button: { label: tr ? 'Randevu sayfası' : 'Booking page', url: d.bookUrl },
     }
     case 'tip': return {
       subject: tr ? `Bahşişin için teşekkürler 💛` : `Thank you for the tip 💛`,

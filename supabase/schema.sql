@@ -509,3 +509,19 @@ grant select (message_settings, google_review_url) on public.barbers to authenti
 
 -- which automatic emails were already sent for an appointment (never send the same one twice)
 alter table public.appointments add column if not exists messages_sent text[] not null default '{}';
+
+-- ── Reminders (same as supabase/reminders.sql) ──
+alter table public.appointments add column if not exists client_lang text;
+alter table public.appointments add column if not exists client_tz text;
+
+do $$ begin
+  alter table public.appointments add constraint appointments_client_lang_check
+    check (client_lang is null or client_lang in ('en', 'tr'));
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter table public.appointments add constraint appointments_client_tz_len
+    check (client_tz is null or char_length(client_tz) <= 64);
+exception when duplicate_object then null; end $$;
+
+-- the daily reminder job looks appointments up by start time
+create index if not exists appointments_start_time_idx on public.appointments (start_time);
