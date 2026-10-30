@@ -34,6 +34,32 @@ const COPY = {
       ["Marketing", "Ads and personalisation. Snippr doesn't use advertising cookies."],
     ] as [string, string][],
   },
+  nl: {
+    title: "Je privacy",
+    body: "Snippr gebruikt alleen cookies en browseropslag die nodig zijn om de site te laten werken: om je ingelogd te houden en instellingen zoals je taal te onthouden. We gebruiken geen advertentie- of trackingcookies. Je kunt alleen noodzakelijke cookies toestaan, alles accepteren of je voorkeuren beheren. Meer in ons",
+    policy: "Cookiebeleid",
+    necessary: "Alleen noodzakelijk", prefs: "Voorkeuren", all: "Alles accepteren",
+    prefsTitle: "Cookievoorkeuren", save: "Keuze opslaan", back: "Terug",
+    always: "Altijd aan", notUsed: "Niet in gebruik",
+    cats: [
+      ["Noodzakelijk", "Om je ingelogd te houden en deze keuze te onthouden. Zonder deze cookies werkt de site niet."],
+      ["Analyse", "Om te begrijpen hoe de site wordt gebruikt. We gebruiken nu geen analysetools; als we er een toevoegen, houden we rekening met deze keuze."],
+      ["Marketing", "Advertenties en personalisatie. Snippr gebruikt geen advertentiecookies."],
+    ] as [string, string][],
+  },
+  ar: {
+    title: "خصوصيتك",
+    body: "يستخدم Snippr فقط ملفات تعريف الارتباط وتخزين المتصفح اللازمة لعمل الموقع: لإبقائك مسجلًا للدخول وتذكّر إعداداتك مثل اللغة. لا نستخدم ملفات تعريف ارتباط إعلانية أو للتتبع. يمكنك السماح بالضرورية فقط، أو قبول الكل، أو إدارة تفضيلاتك. التفاصيل في",
+    policy: "سياسة ملفات تعريف الارتباط",
+    necessary: "الضرورية فقط", prefs: "التفضيلات", all: "قبول الكل",
+    prefsTitle: "تفضيلات ملفات تعريف الارتباط", save: "حفظ الاختيار", back: "رجوع",
+    always: "مفعّلة دائمًا", notUsed: "غير مستخدمة حاليًا",
+    cats: [
+      ["ضرورية", "لإبقائك مسجلًا للدخول وتذكّر هذا الاختيار. لا يعمل الموقع بدونها."],
+      ["تحليلات", "لفهم كيفية استخدام الموقع. لا نستخدم أي أدوات تحليل حاليًا؛ وإذا أضفنا واحدة فسنحترم هذا الاختيار."],
+      ["تسويق", "للإعلانات والتخصيص. لا يستخدم Snippr ملفات تعريف ارتباط إعلانية."],
+    ] as [string, string][],
+  },
 }
 
 const subscribe = (onChange: () => void) => {
@@ -66,11 +92,11 @@ export default function CookieConsent() {
   const lng = useSyncExternalStore(() => () => {}, () => {
     let saved: string | null = null
     try { saved = localStorage.getItem("snippr-lang") } catch { /* blocked */ }
-    if (saved && /tr/.test(saved)) return "tr"
-    if (saved && /en/.test(saved)) return "en"
-    return (navigator.language || "").toLowerCase().startsWith("tr") ? "tr" : "en"
+    if (saved === "tr" || saved === "en" || saved === "nl" || saved === "ar") return saved
+    const nav = (navigator.language || "").toLowerCase()
+    return nav.startsWith("tr") ? "tr" : nav.startsWith("nl") ? "nl" : nav.startsWith("ar") ? "ar" : "en"
   }, () => "en")
-  const t: (typeof COPY)["en"] = COPY[lng as "tr" | "en"]
+  const t: (typeof COPY)["en"] = COPY[lng as keyof typeof COPY]
 
   // the privacy page can open this window again
   useEffect(() => {
@@ -97,7 +123,7 @@ export default function CookieConsent() {
           style={{ colorScheme: "light", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           {/* dim the page behind, like the system privacy sheet */}
           <div className="absolute inset-0 bg-black/30" aria-hidden />
-          <motion.div role="dialog" aria-modal="true" aria-labelledby="cookie-title"
+          <motion.div role="dialog" aria-modal="true" aria-labelledby="cookie-title" dir={lng === "ar" ? "rtl" : "ltr"} lang={lng}
             className="relative w-full max-w-[620px] rounded-[28px] bg-white p-6 text-[#111] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.45)] sm:mb-[8vh] sm:p-7"
             initial={{ y: 40, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 30, opacity: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }} layout>

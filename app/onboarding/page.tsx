@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/site-url'
 import { DEFAULT_HOURS, type Day, type Hours } from '@/lib/hours'
 import { convertFromUSD, formatMoney, useCurrencyChoice, CURRENCIES } from '@/lib/currency'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
@@ -228,7 +229,7 @@ export default function OnboardingPage() {
     go('done')
   }
 
-  const origin = useClientValue(() => window.location.origin, '')
+  const origin = SITE_URL
   const link = slug ? `${origin}/b/${slug}` : ''
   const copy = async () => {
     try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch { /* clipboard blocked */ }

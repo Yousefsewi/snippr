@@ -51,7 +51,7 @@ export default function NotificationOptIn() {
 
   return (
     <div
-      className="fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-2xl px-4 py-3"
+      className="fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-2xl px-4 py-3 max-md:right-4 max-md:left-4 max-md:bottom-[calc(var(--tabbar-h)+12px)]"
       style={{ background: '#1b1b1d', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)', maxWidth: 320 }}
     >
       <div style={{ flex: 1 }}>

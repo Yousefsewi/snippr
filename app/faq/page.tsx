@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     question: 'How do customers book appointments?',
-    answer: 'Customers simply visit your booking link, select a service and time that works for them, and confirm. If they leave their email they get a confirmation right away; reminders before the appointment are coming soon.',
+    answer: 'Customers simply visit your booking link, select a service and time that works for them, and confirm. If they leave their email they get a confirmation right away and an automatic reminder before the appointment.',
   },
   {
     question: 'Can I manage multiple barbers?',
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     question: 'Do customers get a confirmation?',
-    answer: 'Yes — if a customer leaves their email, they get a confirmation with the date, time and price right after booking, and you get a notification. Automatic reminders are coming soon.',
+    answer: 'Yes — if a customer leaves their email, they get a confirmation with the date, time and price right after booking, and you get a notification. They also get an automatic reminder before the appointment.',
   },
   {
     question: 'Can I set my opening hours?',

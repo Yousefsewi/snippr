@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useClientValue } from '@/lib/use-stored'
+import { SITE_URL } from '@/lib/site-url'
 import QRCode from 'react-qr-code'
 
 export default function DownloadPopup() {
   const [open, setOpen] = useState(true)
-  const url = useClientValue(() => window.location.origin + '/register', '/register')
+  const url = `${SITE_URL}/register`
 
   if (!open) return null
 

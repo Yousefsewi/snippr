@@ -119,7 +119,7 @@ const FAQ_DATA: Record<string, { q: string; a: string }[]> = {
     { q: 'I’m not good with tech — is it hard?', a: 'Not at all. If you can use Instagram, you can use Snippr. Setup is guided, and we’re here if you get stuck.' },
   ],
   'Bookings': [
-    { q: 'What if a customer doesn’t show up?', a: 'You get a notification for every booking and can confirm or cancel it from your dashboard. Every booking includes the customer’s contact details, so you can reach them. Automatic reminders are on our roadmap.' },
+    { q: 'What if a customer doesn’t show up?', a: 'You get a notification for every booking and can confirm or cancel it from your dashboard. Every booking includes the customer’s contact details, so you can reach them. Customers who left an email also get an automatic reminder before their appointment.' },
     { q: 'Can customers cancel or reschedule?', a: 'For now they contact you directly, and you update the booking in your dashboard — your calendar updates live. Self-service changes for customers are coming soon.' },
     { q: 'Can two people book the same time?', a: 'Never. Once a slot is taken it disappears for everyone, so you can’t get double-booked.' },
     { q: 'Can I set my working hours and days off?', a: 'Yes — set your hours for each day of the week and switch off the days you’re closed. Those times are never offered to customers.' },
@@ -134,7 +134,7 @@ const FAQ_DATA: Record<string, { q: string; a: string }[]> = {
     { q: 'Does Snippr take a cut of my earnings?', a: 'No. You keep 100% of what your customers pay you.' },
   ],
   'Features': [
-    { q: 'Do customers get a confirmation?', a: 'Yes — if they leave their email, they get a confirmation with the date, time and price right after booking. Reminders before the appointment are coming soon.' },
+    { q: 'Do customers get a confirmation?', a: 'Yes — if they leave their email, they get a confirmation with the date, time and price right after booking, plus an automatic reminder before the appointment.' },
     { q: 'Can I offer discounts?', a: 'Not yet. Promotions such as a first-visit discount are planned for the paid plan.' },
     { q: 'Can I set my own services and prices?', a: 'Of course — add as many services as you like, each with its own duration and price.' },
     { q: 'Can I share my page on Instagram?', a: 'Yes — your link is made for Instagram bios, Stories and WhatsApp, and you get a QR code to print for your counter.' },
@@ -155,7 +155,7 @@ const FAQ_DATA_TR: Record<string, { q: string; a: string }[]> = {
     { q: 'Teknolojiyle aram iyi değil, zor mu?', a: 'Hiç değil. Instagram kullanabiliyorsan Snippr’ı da kullanırsın. Kurulum adım adım yönlendirir, takılırsan biz buradayız.' },
   ],
   'Randevular': [
-    { q: 'Müşteri gelmezse ne olur?', a: 'Her randevuda bildirim alırsın ve panelinden onaylayıp iptal edebilirsin. Her randevuda müşterinin iletişim bilgisi olduğu için ona ulaşabilirsin. Otomatik hatırlatmalar yol haritamızda.' },
+    { q: 'Müşteri gelmezse ne olur?', a: 'Her randevuda bildirim alırsın ve panelinden onaylayıp iptal edebilirsin. Her randevuda müşterinin iletişim bilgisi olduğu için ona ulaşabilirsin. E-postasını bırakan müşteriler randevudan önce otomatik hatırlatma da alır.' },
     { q: 'Müşteriler iptal/erteleme yapabilir mi?', a: 'Şimdilik seninle doğrudan iletişime geçerler, sen de randevuyu panelinden güncellersin — takvimin anında yenilenir. Müşterinin kendisi değiştirebilmesi yakında.' },
     { q: 'İki kişi aynı saati alabilir mi?', a: 'Asla. Bir saat dolunca herkes için kaybolur, böylece çift rezervasyon olmaz.' },
     { q: 'Çalışma saatlerimi ve izin günlerimi ayarlayabilir miyim?', a: 'Evet — haftanın her günü için saatlerini ayarla, kapalı olduğun günleri kapat. O saatler müşterilere hiç gösterilmez.' },
@@ -170,7 +170,7 @@ const FAQ_DATA_TR: Record<string, { q: string; a: string }[]> = {
     { q: 'Snippr kazancımdan pay alıyor mu?', a: 'Hayır. Müşterinin sana ödediğinin %100’ü senin.' },
   ],
   'Özellikler': [
-    { q: 'Müşteriye onay gider mi?', a: 'Evet — e-postasını yazdıysa randevudan hemen sonra tarih, saat ve fiyatla bir onay maili alır. Randevu öncesi hatırlatmalar yakında.' },
+    { q: 'Müşteriye onay gider mi?', a: 'Evet — e-postasını yazdıysa randevudan hemen sonra tarih, saat ve fiyatla bir onay maili alır, randevudan önce de otomatik bir hatırlatma gelir.' },
     { q: 'İndirim sunabilir miyim?', a: 'Henüz değil. İlk ziyaret indirimi gibi kampanyalar ücretli plan için planlanıyor.' },
     { q: 'Kendi hizmet ve fiyatlarımı koyabilir miyim?', a: 'Tabii — istediğin kadar hizmet ekle, her birinin kendi süresi ve fiyatı olsun.' },
     { q: 'Sayfamı Instagram’da paylaşabilir miyim?', a: 'Evet — linkin Instagram bio’su, hikâyeler ve WhatsApp için hazır; tezgâhın için yazdırabileceğin bir QR kod da alırsın.' },

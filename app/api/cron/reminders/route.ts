@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, isPlainEmail, rateLimited, clientIp } from '@/lib/mailer'
-import { isOn, messageHtml, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { isOn, messageHtml, normLang, LOCALE, type MsgKind, type MsgSettings } from '@/lib/messages'
 
 // Daily reminder job (vercel.json → crons). Emails clients whose appointment is
 // tomorrow (remind1d) or in 3 days (remind3d), if the barber has that reminder on.
@@ -77,9 +77,9 @@ export async function GET(req: NextRequest) {
         .select('id').maybeSingle()
       if (!claimed) continue
 
-      const lang = a.client_lang === 'en' ? 'en' : 'tr'
+      const lang = normLang(a.client_lang, 'nl')
       const tz = safeTimeZone(a.client_tz)
-      const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
+      const locale = LOCALE[lang]
       const start = new Date(a.start_time)
       const msg = messageHtml(w.kind, lang, {
         client: a.customer_name, barber: a.barbers.name || 'Snippr', service: a.services?.name,

@@ -6,8 +6,8 @@ import QRCode from 'react-qr-code'
 import { FaInstagram, FaTiktok, FaWhatsapp, FaFacebook, FaYoutube, FaXTwitter, FaGlobe } from 'react-icons/fa6'
 import { Palette, Link2, PlaySquare, ChevronUp, ChevronDown, Trash2, Check, Copy, ExternalLink, ImagePlus, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/site-url'
 import { AddressAutocomplete } from '@/components/address-autocomplete'
-import { useClientValue } from '@/lib/use-stored'
 import { glass, GLASS_PAGE_WASH } from '@/lib/glass'
 import { PAGE_THEMES, wallpaper } from '@/lib/page-themes'
 import {
@@ -65,7 +65,7 @@ export default function BookingLinkPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const coverRef = useRef<HTMLInputElement>(null)
   const qrRef = useRef<HTMLDivElement>(null)
-  const origin = useClientValue(() => window.location.origin, '')
+  const origin = SITE_URL
 
   const [slug, setSlug] = useState('')
   const [name, setName] = useState('')

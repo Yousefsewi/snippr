@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, esc, isPlainEmail } from '@/lib/mailer'
+import { bookingReceivedHtml, normLang, LOCALE } from '@/lib/messages'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import webpush from 'web-push'
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   if (!supabaseServiceKey) return NextResponse.json({ skipped: true, reason: 'SUPABASE_SERVICE_ROLE_KEY not set' })
 
   const { appointmentId, timeZone, lang } = await req.json().catch(() => ({}))
-  const tr = lang === 'tr' // the client's language on the booking page
+  const cl = normLang(lang) // the client's language on the booking page
   if (typeof appointmentId !== 'string' || !UUID.test(appointmentId)) {
     return NextResponse.json({ error: 'invalid appointment' }, { status: 400 })
   }
@@ -60,9 +61,9 @@ export async function POST(req: NextRequest) {
   const appt = data as unknown as Claimed
   const tz = safeTimeZone(timeZone)
   const start = new Date(appt.start_time)
-  const niceDate = start.toLocaleDateString(tr ? 'tr-TR' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz })
-  const niceTime = start.toLocaleTimeString(tr ? 'tr-TR' : 'en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz })
-  const barberName = appt.barbers?.name ?? (tr ? 'berberin' : 'your barber')
+  const niceDate = start.toLocaleDateString(LOCALE[cl], { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz })
+  const niceTime = start.toLocaleTimeString(LOCALE[cl], { hour: '2-digit', minute: '2-digit', timeZone: tz })
+  const barberName = appt.barbers?.name || 'Snippr'
   const discount = FIRST_VISIT_DISCOUNT ? (appt.discount_percent ?? 0) : 0
   const price = appt.services?.price ?? 0
   const money = (v: number) => (Math.round(v * 100) / 100).toFixed(2)
@@ -75,25 +76,10 @@ export async function POST(req: NextRequest) {
   else if (!mailerReady && !apiKey) result.email = 'email not configured'
   else {
     try {
-      const n = esc(appt.customer_name), b = esc(barberName), s = appt.services?.name ? esc(appt.services.name) : ''
-      const subject = tr ? `${barberName} ile randevun alındı` : `Your appointment with ${barberName} is booked`
-      const L = tr
-        ? { hi: `Randevun alındı, ${n}!`, intro: 'Randevu bilgilerin:', barber: 'Berber', service: 'Hizmet', date: 'Tarih', time: 'Saat', foot: `${b} adına Snippr tarafından gönderildi.` }
-        : { hi: `You're booked, ${n}!`, intro: 'Here are your appointment details:', barber: 'Barber', service: 'Service', date: 'Date', time: 'Time', foot: `Sent by Snippr on behalf of ${b}.` }
-      const html = `
-          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-            <h2 style="margin-bottom: 4px;">${L.hi}</h2>
-            <p style="color: #555;">${L.intro}</p>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
-              <tr><td style="padding: 6px 0; color: #888;">${L.barber}</td><td style="padding: 6px 0; font-weight: 600;">${b}</td></tr>
-              ${s ? `<tr><td style="padding: 6px 0; color: #888;">${L.service}</td><td style="padding: 6px 0; font-weight: 600;">${s}</td></tr>` : ''}
-              <tr><td style="padding: 6px 0; color: #888;">${L.date}</td><td style="padding: 6px 0; font-weight: 600;">${esc(niceDate)}</td></tr>
-              <tr><td style="padding: 6px 0; color: #888;">${L.time}</td><td style="padding: 6px 0; font-weight: 600;">${esc(niceTime)}</td></tr>
-              ${discount ? `<tr><td style="padding: 6px 0; color: #888;">First visit</td><td style="padding: 6px 0; font-weight: 600; color: #be185d;">🎁 ${discount}% off${price ? ` — you pay ${esc(money(price * (100 - discount) / 100))} instead of ${esc(money(price))}` : ''}</td></tr>` : ''}
-            </table>
-            <p style="color: #888; font-size: 13px; margin-top: 20px;">${L.foot}</p>
-          </div>
-        `
+      const extraRow = discount
+        ? `<tr><td style="padding: 6px 0; color: #888;">🎁</td><td style="padding: 6px 0; font-weight: 600; color: #be185d;">-${discount}%${price ? ` (${esc(money(price * (100 - discount) / 100))})` : ''}</td></tr>`
+        : ''
+      const { subject, html } = bookingReceivedHtml(cl, { client: appt.customer_name, barber: barberName, service: appt.services?.name, date: niceDate, time: niceTime, extraRow })
       if (mailerReady) await sendMail(appt.customer_email, subject, html)
       else await new Resend(apiKey).emails.send({ from: process.env.EMAIL_FROM || 'Snippr <onboarding@resend.dev>', to: appt.customer_email, subject, html })
       result.email = 'sent'

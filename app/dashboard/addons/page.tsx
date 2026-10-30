@@ -10,6 +10,7 @@ import {
   BarChart3, Bot, CalendarSync, CreditCard, Crown, Download, Gem, Globe, Headphones, Hourglass, MapPin, MessagesSquare, Star, X,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/site-url'
 import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
@@ -99,7 +100,7 @@ export default function AddonsPage() {
   const askedFromUrl = useClientValue(() => new URLSearchParams(window.location.search).has('google'), false)
   const [googleOpen, setGoogleOpen] = useState<boolean | null>(null)
   const showGoogle = googleOpen ?? askedFromUrl
-  const origin = useClientValue(() => window.location.origin, '')
+  const origin = SITE_URL
 
   useEffect(() => {
     let active = true

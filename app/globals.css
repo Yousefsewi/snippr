@@ -285,3 +285,7 @@ body {
   aside { display: none !important; }
   main { margin-left: 0 !important; border: none !important; box-shadow: none !important; }
 }
+
+/* height of the dashboard's bottom tab bar on phones (components/mobile-tab-bar.tsx) */
+:root { --tabbar-h: 0px; }
+@media (max-width: 767px) { :root { --tabbar-h: calc(58px + env(safe-area-inset-bottom)); } }

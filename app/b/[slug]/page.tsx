@@ -10,6 +10,7 @@ import { wallpaper } from '@/lib/page-themes'
 import { DEFAULT_HOURS } from '@/lib/hours'
 import { useClientValue } from '@/lib/use-stored'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
+import { CalendarDays, ChevronRight, Clock3, Mail, Phone, Scissors, UserRound, type LucideIcon } from 'lucide-react'
 
 /* ─────────────────────────  types  ───────────────────────── */
 interface Barber {
@@ -88,7 +89,38 @@ const BT = {
     wlJoin: 'Bekleme listesine katıl', wlJoining: 'Katılıyor…', wlDone: '✓ Bekleme listesindesin — yer açılırsa berber seninle iletişime geçecek.',
     wlNeedName: 'Lütfen adını yaz.', wlNeedContact: 'Berberin sana ulaşabilmesi için telefon ya da e-posta ekle.', wlFail: 'Bekleme listesine katılınamadı. Lütfen tekrar dene.',
   },
+  nl: {
+    taken: 'Die tijd is net bezet — kies een andere.', couldNot: 'Boeken is niet gelukt. Probeer het opnieuw.',
+    notAvailable: 'Deze pagina is niet beschikbaar', notAvailableSub: 'De link klopt misschien niet, of de kapper heeft een nieuwe pagina.',
+    openToday: (a: string, b: string) => `Vandaag open ${a}–${b}`, closedToday: 'Vandaag gesloten', firstOff: (n: number) => `🎁 ${n}% korting op je eerste bezoek`,
+    requested: 'Afspraak aangevraagd!', at: 'om', willConfirm: (n: string) => `${n} bevestigt je afspraak zo snel mogelijk.`, another: 'Nog een afspraak maken',
+    details: 'Afspraakgegevens', service: 'Dienst', optional: 'Optioneel', date: 'Datum', time: 'Tijd', choose: 'Kies', pickDate: 'Kies eerst een datum', min: 'min',
+    closedDay: 'Op deze dag gesloten — kies een andere datum.', footnote: 'Tijden in jouw lokale tijd. Je betaalt in de zaak — online wordt niets afgeschreven.',
+    yourDetails: 'Jouw gegevens', name: 'Naam', required: 'Verplicht', email: 'E-mail', forConfirm: 'Voor de bevestiging', phone: 'Telefoon',
+    payment: 'Betaling', total: 'Totaal', booking: 'Bezig met boeken…', book: 'Boeken', enterName: 'Vul je naam in om te boeken', powered: 'Mogelijk gemaakt door',
+    wlFull: '⏳ Volgeboekt — zet je op de wachtlijst', wlAsk: 'Geen geschikte tijd? Zet je op de wachtlijst', wlFor: (d: string) => `Zet je op de wachtlijst voor ${d}.`,
+    wlName: 'Je naam', wlPhone: 'Telefoon', wlEmail: 'E-mail (optioneel)', wlPrefs: ['Maakt niet uit', 'Ochtend', 'Middag', 'Avond'],
+    wlJoin: 'Op de wachtlijst zetten', wlJoining: 'Bezig…', wlDone: '✓ Je staat op de wachtlijst — de kapper neemt contact met je op als er plek vrijkomt.',
+    wlNeedName: 'Vul je naam in.', wlNeedContact: 'Voeg een telefoonnummer of e-mailadres toe, zodat de kapper je kan bereiken.', wlFail: 'Aanmelden voor de wachtlijst is niet gelukt. Probeer het opnieuw.',
+  },
+  ar: {
+    taken: 'تم حجز هذا الوقت للتو — اختر وقتًا آخر.', couldNot: 'تعذّر الحجز. يرجى المحاولة مرة أخرى.',
+    notAvailable: 'هذه الصفحة غير متاحة', notAvailableSub: 'قد يكون الرابط غير صحيح، أو أن الحلاق غيّر صفحته.',
+    openToday: (a: string, b: string) => `مفتوح اليوم \u2066${a}–${b}\u2069`, closedToday: 'مغلق اليوم', firstOff: (n: number) => `🎁 خصم ${n}% على زيارتك الأولى`,
+    requested: 'تم إرسال طلب الحجز!', at: 'الساعة', willConfirm: (n: string) => `سيؤكد ${n} موعدك قريبًا.`, another: 'احجز موعدًا آخر',
+    details: 'تفاصيل الحجز', service: 'الخدمة', optional: 'اختياري', date: 'التاريخ', time: 'الوقت', choose: 'اختر', pickDate: 'اختر التاريخ أولًا', min: 'دقيقة',
+    closedDay: 'مغلق في هذا اليوم — اختر تاريخًا آخر.', footnote: 'الأوقات معروضة حسب توقيتك المحلي. الدفع في المحل — لا يُدفع أي شيء عبر الإنترنت.',
+    yourDetails: 'بياناتك', name: 'الاسم', required: 'مطلوب', email: 'البريد الإلكتروني', forConfirm: 'لإرسال التأكيد', phone: 'الهاتف',
+    payment: 'تفاصيل الدفع', total: 'المجموع', booking: 'جارٍ الحجز…', book: 'احجز', enterName: 'أدخل اسمك لإتمام الحجز', powered: 'بدعم من',
+    wlFull: '⏳ محجوز بالكامل — انضم إلى قائمة الانتظار', wlAsk: 'لا يوجد وقت مناسب؟ انضم إلى قائمة الانتظار', wlFor: (d: string) => `انضم إلى قائمة الانتظار ليوم ${d}.`,
+    wlName: 'اسمك', wlPhone: 'الهاتف', wlEmail: 'البريد الإلكتروني (اختياري)', wlPrefs: ['أي وقت', 'صباحًا', 'بعد الظهر', 'مساءً'],
+    wlJoin: 'انضم إلى قائمة الانتظار', wlJoining: 'جارٍ الانضمام…', wlDone: '✓ أنت الآن في قائمة الانتظار — سيتواصل معك الحلاق إذا توفّر موعد.',
+    wlNeedName: 'يرجى إدخال اسمك.', wlNeedContact: 'أضف رقم هاتف أو بريدًا إلكترونيًا ليتمكن الحلاق من التواصل معك.', wlFail: 'تعذّر الانضمام إلى قائمة الانتظار. يرجى المحاولة مرة أخرى.',
+  },
 }
+// names shown in the language switch, each in its own language
+const LANG_NAMES: Record<'tr' | 'en' | 'nl' | 'ar', string> = { tr: 'Türkçe', en: 'English', nl: 'Nederlands', ar: 'العربية' }
+const LOCALES: Record<'tr' | 'en' | 'nl' | 'ar', string> = { tr: 'tr-TR', en: 'en-GB', nl: 'nl-NL', ar: 'ar-u-nu-latn' }
 type BLang = keyof typeof BT
 type BWords = (typeof BT)['en']
 
@@ -121,13 +153,15 @@ export default function BookingPage() {
   const inPreview = useClientValue(() => new URLSearchParams(window.location.search).has('preview'), false)
   // the client's language: their own pick, else their phone's language
   const autoLang = useClientValue<BLang>(() => {
-    try { const s = localStorage.getItem('snippr-lang'); if (s === 'tr' || s === 'en') return s } catch { /* storage blocked */ }
-    return (navigator.language || '').toLowerCase().startsWith('tr') ? 'tr' : 'en'
+    try { const s = localStorage.getItem('snippr-lang'); if (s === 'tr' || s === 'en' || s === 'nl' || s === 'ar') return s } catch { /* storage blocked */ }
+    const nav = (navigator.language || '').toLowerCase()
+    return nav.startsWith('tr') ? 'tr' : nav.startsWith('nl') ? 'nl' : nav.startsWith('ar') ? 'ar' : 'en'
   }, 'en')
   const [langPick, setLangPick] = useState<BLang | null>(null)
   const lang: BLang = langPick ?? autoLang
   const t = BT[lang]
-  const locale = lang === 'tr' ? 'tr-TR' : 'en-GB'
+  const locale = LOCALES[lang]
+  const dir = lang === 'ar' ? 'rtl' : 'ltr'
   const switchLang = (l: BLang) => { setLangPick(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
   const [waitlistOn, setWaitlistOn] = useState(false)
   const [openRow, setOpenRow] = useState<'service' | 'date' | 'time' | null>(null)
@@ -299,7 +333,7 @@ export default function BookingPage() {
   return (
     <GlassBackdrop image={backdrop} accent={accent}>
       {/* in the dashboard's phone preview (?preview=1) leave room for the status bar & notch */}
-      <div style={{ width: '100%', maxWidth: 470, margin: '0 auto', padding: `${inPreview ? 62 : 22}px 14px 48px`, boxSizing: 'border-box', color: '#fff' }}>
+      <div dir={dir} lang={lang} style={{ width: '100%', maxWidth: 470, margin: '0 auto', padding: `${inPreview ? 62 : 22}px 14px 48px`, boxSizing: 'border-box', color: '#fff' }}>
 
         {/* ══ the one big glass panel ══ */}
         <div style={{ ...GLASS_PANEL, borderRadius: 46, padding: 14 }}>
@@ -414,7 +448,7 @@ export default function BookingPage() {
                 <div style={IOS_GROUP}>
                   {services.length > 0 && (
                     <>
-                      <IosRow icon="✂️" tint="#ff9f0a" label={t.service} value={service ? service.name : t.optional} open={openRow === 'service'}
+                      <IosRow icon={Scissors} tint="linear-gradient(160deg,#ffc24d,#ff7a00)" label={t.service} value={service ? service.name : t.optional} open={openRow === 'service'}
                         onClick={() => setOpenRow(openRow === 'service' ? null : 'service')} />
                       {openRow === 'service' && (
                         <div style={IOS_PANEL}>
@@ -440,7 +474,7 @@ export default function BookingPage() {
                     </>
                   )}
 
-                  <IosRow icon="📅" tint="#ff453a" label={t.date} open={openRow === 'date'}
+                  <IosRow icon={CalendarDays} tint="linear-gradient(160deg,#ff7a7a,#ff2d55)" label={t.date} open={openRow === 'date'}
                     value={date ? date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' }) : t.choose}
                     onClick={() => setOpenRow(openRow === 'date' ? null : 'date')} />
                   {openRow === 'date' && (
@@ -461,7 +495,7 @@ export default function BookingPage() {
                   )}
 
                   <div style={IOS_SEPARATOR_LINE} />
-                  <IosRow icon="🕒" tint="#0a84ff" label={t.time} open={openRow === 'time'} disabled={!date}
+                  <IosRow icon={Clock3} tint="linear-gradient(160deg,#5ac8fa,#0a63e8)" label={t.time} open={openRow === 'time'} disabled={!date}
                     value={time || (date ? t.choose : t.pickDate)}
                     onClick={() => { if (date) setOpenRow(openRow === 'time' ? null : 'time') }} />
                   {openRow === 'time' && date && (
@@ -496,11 +530,11 @@ export default function BookingPage() {
                   <>
                     <p style={IOS_HEADER}>{t.yourDetails}</p>
                     <div style={IOS_GROUP}>
-                      <IosField icon="👤" tint="#30d158" label={t.name} value={name} onChange={setName} placeholder={t.required} />
+                      <IosField icon={UserRound} tint="linear-gradient(160deg,#6fe58f,#1fa44a)" label={t.name} value={name} onChange={setName} placeholder={t.required} />
                       <div style={IOS_SEPARATOR_LINE} />
-                      <IosField icon="✉️" tint="#5e5ce6" label={t.email} value={email} onChange={setEmail} placeholder={t.forConfirm} type="email" />
+                      <IosField icon={Mail} tint="linear-gradient(160deg,#9a8cff,#5e5ce6)" label={t.email} value={email} onChange={setEmail} placeholder={t.forConfirm} type="email" />
                       <div style={IOS_SEPARATOR_LINE} />
-                      <IosField icon="📞" tint="#64d2ff" label={t.phone} value={phone} onChange={setPhone} placeholder={t.optional} type="tel" />
+                      <IosField icon={Phone} tint="linear-gradient(160deg,#7fe0ff,#1aa3d9)" label={t.phone} value={phone} onChange={setPhone} placeholder={t.optional} type="tel" />
                     </div>
                     {firstVisit > 0 && (
                       <p style={IOS_FOOTNOTE}>🎁 First time here? Add your phone or email and {firstVisit}% is taken off automatically.</p>
@@ -551,11 +585,11 @@ export default function BookingPage() {
         <p style={{ textAlign: 'center', marginTop: 22, color: 'rgba(255,255,255,0.7)', fontSize: 12.5 }}>
           {t.powered} <Link href="/" style={{ color: '#fff', fontWeight: 700, textDecoration: 'none' }}>Snippr</Link>
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 10 }}>
-          {(['tr', 'en'] as BLang[]).map(l => (
+        <div lang="mul" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 10 }}>
+          {(['tr', 'nl', 'en', 'ar'] as BLang[]).map(l => (
             <button key={l} onClick={() => switchLang(l)} aria-pressed={lang === l}
               style={{ ...GLASS_CHIP, padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', color: '#fff', opacity: lang === l ? 1 : 0.55 }}>
-              {l.toUpperCase()}
+              {LANG_NAMES[l]}
             </button>
           ))}
         </div>
@@ -575,6 +609,7 @@ function GlassBackdrop({ image, accent, children }: { image: string | null; acce
         @keyframes spin{to{transform:rotate(360deg)}}
         .glass-input::placeholder{color:rgba(255,255,255,0.6)}
         .glass-input:focus{border-color:rgba(255,255,255,0.6)!important;background:rgba(255,255,255,0.16)!important}
+        [dir=rtl] .ios-chev{display:inline-block;scale:-1 1}
         .glass-scroll{scrollbar-width:none}
         .glass-scroll::-webkit-scrollbar{display:none}
       `}</style>
@@ -634,23 +669,23 @@ const IOS_HEADER: React.CSSProperties = { fontSize: 12.5, fontWeight: 500, color
 const IOS_FOOTNOTE: React.CSSProperties = { fontSize: 12.5, color: 'rgba(255,255,255,0.65)', margin: '7px 16px 0', lineHeight: 1.45 }
 
 // a tappable row: coloured icon square, label, value and a chevron that turns when open
-function IosRow({ icon, tint, label, value, open, disabled, onClick }: { icon: string; tint: string; label: string; value: string; open: boolean; disabled?: boolean; onClick: () => void }) {
+function IosRow({ icon: Icon, tint, label, value, open, disabled, onClick }: { icon: LucideIcon; tint: string; label: string; value: string; open: boolean; disabled?: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} disabled={disabled}
       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', background: open ? 'rgba(255,255,255,0.08)' : 'transparent', border: 'none', color: '#fff', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', textAlign: 'left', opacity: disabled ? 0.6 : 1 }}>
-      <span style={{ width: 30, height: 30, borderRadius: 8, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)' }}>{icon}</span>
+      <span style={{ width: 32, height: 32, borderRadius: 9, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 10px -4px rgba(0,0,0,0.45)' }}><Icon size={17} strokeWidth={2.2} /></span>
       <span style={{ fontSize: 15.5 }}>{label}</span>
       <span style={{ marginLeft: 'auto', fontSize: 15, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '55%' }}>{value}</span>
-      <span style={{ fontSize: 20, lineHeight: 1, color: 'rgba(255,255,255,0.45)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}>›</span>
+      <span className="ios-chev" style={{ display: 'flex', color: 'rgba(255,255,255,0.45)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}><ChevronRight size={18} strokeWidth={2.4} /></span>
     </button>
   )
 }
 
 // an iOS form row: icon, label on the left, input on the right
-function IosField({ icon, tint, label, value, onChange, placeholder, type = 'text' }: { icon: string; tint: string; label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string }) {
+function IosField({ icon: Icon, tint, label, value, onChange, placeholder, type = 'text' }: { icon: LucideIcon; tint: string; label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string }) {
   return (
     <label style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 14px', color: '#fff', cursor: 'text' }}>
-      <span style={{ width: 30, height: 30, borderRadius: 8, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)' }}>{icon}</span>
+      <span style={{ width: 32, height: 32, borderRadius: 9, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 10px -4px rgba(0,0,0,0.45)' }}><Icon size={17} strokeWidth={2.2} /></span>
       <span style={{ fontSize: 15.5, width: 64, flexShrink: 0 }}>{label}</span>
       <input className="glass-input" type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
         style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 15.5, textAlign: 'right', padding: '6px 0', fontFamily: 'inherit' }} />
@@ -708,7 +743,7 @@ function WaitlistJoin({ t, locale, barberId, date, serviceId, full }: { t: BWord
       p_service_id: serviceId, p_date: dayKey, p_time_pref: pref,
     })
     setBusy(false)
-    if (error) return setMsg(error.code === 'P0001' ? (locale === 'tr-TR' ? t.wlFail : error.message) : t.wlFail)
+    if (error) return setMsg(error.code === 'P0001' && locale === 'en-GB' ? error.message : t.wlFail)
     setDone(true)
   }
 

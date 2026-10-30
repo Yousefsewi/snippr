@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Check, Copy, ExternalLink, MapPin, QrCode } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/site-url'
 import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
@@ -98,7 +99,7 @@ export default function SocialPage() {
   const { lang } = useLang()
   const lng = lang === 'tr' ? 'tr' : 'en'
   const t = COPY[lng]
-  const origin = useClientValue(() => window.location.origin, '')
+  const origin = SITE_URL
   const startTab = useClientValue<Tab>(() => (window.location.hash === '#google' ? 'google' : 'instagram'), 'instagram')
   const [picked, setPicked] = useState<Tab | null>(null)
   const tab = picked ?? startTab

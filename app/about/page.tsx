@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Heart, MessagesSquare, ShieldCheck, Sparkle, Zap, CalendarCheck, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Heart, MessagesSquare, ShieldCheck, Zap, CalendarCheck, type LucideIcon } from 'lucide-react'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
 
@@ -92,11 +92,7 @@ export default function AboutPage() {
 
         {/* hero */}
         <header className="mx-auto mt-14 max-w-[760px] text-center">
-          <motion.div {...enter()} className="flex flex-col items-center gap-2 text-[#ff6a00]">
-            <Sparkle size={22} />
-            <p className="font-mono text-[13px] font-semibold tracking-[0.12em]">{t.eyebrow}</p>
-          </motion.div>
-          <motion.h1 {...enter(0.05)} className="mt-4 text-[clamp(40px,7vw,76px)] leading-[1.02] font-semibold tracking-[-0.035em]" style={{ textWrap: 'balance' }}>
+          <motion.h1 {...enter(0.05)} className="text-[clamp(40px,7vw,76px)] leading-[1.02] font-semibold tracking-[-0.035em]" style={{ textWrap: 'balance' }}>
             <span className="block bg-gradient-to-b from-[#8e95b0] to-[#a9aec4] bg-clip-text text-transparent">{t.h1a}</span>
             <span className="block">{t.h1b}</span>
           </motion.h1>

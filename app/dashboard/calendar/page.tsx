@@ -11,6 +11,7 @@ import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { useCurrency } from '@/lib/currency'
 import { useLang } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
+import { useIsMobile } from '@/lib/use-mobile'
 import { DEFAULT_HOURS, type Day as HDay, type Hours } from '@/lib/hours'
 import { blockName, blockReason, isBlock } from '@/lib/blocks'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
@@ -211,7 +212,10 @@ export default function CalendarPage() {
     return () => { supabase.removeChannel(channel) }
   }, [barberId])
 
-  const [view, setView] = useState<View>('week')
+  // phones start on the day view; a choice the barber makes sticks
+  const isMobile = useIsMobile()
+  const [viewPick, setView] = useState<View | null>(null)
+  const view: View = viewPick ?? (isMobile ? 'day' : 'week')
   const [anchor, setAnchor] = useState(atDay(now))
   const [selectedDay, setSelectedDay] = useState<Date | null>(atDay(now))
   const [menuOpen, setMenuOpen] = useState(false)
@@ -294,6 +298,8 @@ export default function CalendarPage() {
       : `${fmtShort(columns[0])} – ${fmtShort(columns[columns.length - 1])}`
 
   const selectDay = (date: Date, inMonth: boolean) => {
+    // no room for the side panel on a phone: open that day instead
+    if (isMobile) { setAnchor(atDay(date)); setSelectedDay(atDay(date)); setView('day'); return }
     if (!inMonth) setAnchor(new Date(date.getFullYear(), date.getMonth(), 1))
     setSelectedDay(toKey(date) === selectedKey ? null : date)
   }
@@ -416,7 +422,7 @@ export default function CalendarPage() {
   const jumps = moreJumps ? [6, 8, 12, 26] : [1, 2, 3, 4, 5]
 
   return (
-    <div className="flex h-screen flex-col bg-white" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif' }}>
+    <div className="flex flex-col bg-white" style={{ height: 'calc(100dvh - var(--tabbar-h))', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif' }}>
 
       {/* ── TOOLBAR ── */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#ededec] px-6 py-3">

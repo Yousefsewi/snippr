@@ -516,7 +516,7 @@ alter table public.appointments add column if not exists client_tz text;
 
 do $$ begin
   alter table public.appointments add constraint appointments_client_lang_check
-    check (client_lang is null or client_lang in ('en', 'tr'));
+    check (client_lang is null or client_lang in ('tr', 'nl', 'en', 'ar'));
 exception when duplicate_object then null; end $$;
 do $$ begin
   alter table public.appointments add constraint appointments_client_tz_len

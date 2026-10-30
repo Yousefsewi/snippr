@@ -14,7 +14,7 @@ export const mailerReady = Boolean(user && pass)
 
 // Links in emails always use this fixed address, never the request's Host header,
 // so nobody can make a reset email point at their own site.
-export const SITE_URL = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '')
+export { SITE_URL } from './site-url'
 
 const transport = mailerReady
   ? nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user, pass } })
@@ -29,11 +29,15 @@ export const esc = (s: string) =>
 export const isPlainEmail = (to: unknown): to is string =>
   typeof to === 'string' && to.length <= 254 && /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/.test(to)
 
-export async function sendMail(to: string, subject: string, html: string) {
+export async function sendMail(to: string, subject: string, html: string, opts: { replyTo?: string } = {}) {
   if (!transport) throw new Error('Email is not configured (GMAIL_USER / GMAIL_APP_PASSWORD missing).')
   if (!isPlainEmail(to)) throw new Error('Invalid email address.')
-  // passing an address object skips nodemailer's address parser entirely
-  await transport.sendMail({ from: `"Snippr" <${user}>`, to: { name: '', address: to }, subject, html })
+  if (opts.replyTo !== undefined && !isPlainEmail(opts.replyTo)) throw new Error('Invalid reply-to address.')
+  // passing address objects skips nodemailer's address parser entirely
+  await transport.sendMail({
+    from: `"Snippr" <${user}>`, to: { name: '', address: to }, subject, html,
+    ...(opts.replyTo ? { replyTo: { name: '', address: opts.replyTo } } : {}),
+  })
 }
 
 // Simple branded layout with one big button

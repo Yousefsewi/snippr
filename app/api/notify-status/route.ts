@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, rateLimited, isPlainEmail } from '@/lib/mailer'
-import { isOn, messageHtml, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { isOn, messageHtml, normLang, LOCALE, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
 
 // Sends one automatic email to a client after the barber changes an appointment
 // (confirmed, cancelled, completed → thanks, tip). The caller proves who they are with
@@ -19,7 +19,7 @@ const safeTimeZone = (tz: unknown) => {
 
 type Row = {
   id: string; status: string; customer_name: string; customer_email: string | null; start_time: string
-  tip_amount?: number | null; messages_sent?: string[] | null
+  tip_amount?: number | null; messages_sent?: string[] | null; client_lang?: string | null
   services: { name: string } | null
   barbers: { user_id: string; name: string; slug: string; message_settings: MsgSettings | null; google_review_url: string | null } | null
 }
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   if (rateLimited(`status:${user.id}`, 60, 60 * 60000)) return NextResponse.json({ error: 'too many emails' }, { status: 429 })
 
   const { data, error } = await supabase.from('appointments')
-    .select('id, status, customer_name, customer_email, start_time, tip_amount, messages_sent, services(name), barbers(user_id, name, slug, message_settings, google_review_url)')
+    .select('id, status, customer_name, customer_email, start_time, tip_amount, messages_sent, client_lang, services(name), barbers(user_id, name, slug, message_settings, google_review_url)')
     .eq('id', appointmentId).maybeSingle()
   if (error) return NextResponse.json({ skipped: 'run supabase/messages.sql' }) // columns missing
   const a = data as unknown as Row | null
@@ -68,8 +68,8 @@ export async function POST(req: NextRequest) {
   if (!claimed) return NextResponse.json({ skipped: 'already sent' })
 
   const tz = safeTimeZone(timeZone)
-  const l = lang === 'tr' ? 'tr' : 'en'
-  const locale = l === 'tr' ? 'tr-TR' : 'en-GB'
+  const l = normLang(a.client_lang, normLang(lang))
+  const locale = LOCALE[l]
   const start = new Date(a.start_time)
   const msg = messageHtml(k, l, {
     client: a.customer_name, barber: a.barbers.name || 'Snippr', service: a.services?.name,

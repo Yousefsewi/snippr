@@ -9,8 +9,9 @@ import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
 import { CurrencyProvider } from '@/lib/currency'
 import { ThemeProvider, useTheme } from '@/lib/theme'
-import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
+import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, PanelLeftClose, PanelLeftOpen, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
 import NotificationOptIn from '@/components/notification-opt-in'
+import MobileTabBar from '@/components/mobile-tab-bar'
 import { useStored } from '@/lib/use-stored'
 import { glass, glassHover, GLASS_WASH, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
 
@@ -92,7 +93,7 @@ function Chrome({ children }: { children: ReactNode }) {
   const salonStyle = getSalonStyle(useStored(SALON_STYLE_KEY))
 
   // Full-bleed dashboard views render their own background — no narrow centered box
-  const fullBleed = pathname === '/dashboard/calendar' || pathname === '/dashboard/appointments' || pathname === '/dashboard' || pathname === '/dashboard/profile' || pathname === '/dashboard/link'
+  const fullBleed = pathname === '/dashboard/calendar' || pathname === '/dashboard/appointments' || pathname === '/dashboard/plans' || pathname === '/dashboard' || pathname === '/dashboard/profile' || pathname === '/dashboard/link'
 
   // Load the signed-in barber for the sidebar profile card.
   // If the account exists but the barber profile row was never created
@@ -160,8 +161,8 @@ function Chrome({ children }: { children: ReactNode }) {
   return (
     <div dir={isRTL ? 'rtl' : 'ltr'} style={{ display: 'flex', minHeight: '100vh', background: '#f7f7f5', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 500, ['--accent' as string]: salonStyle.key === 'barber' ? salonStyle.accent : theme.accent, ['--accent-2' as string]: salonStyle.accent2, ['--glass-wash' as string]: salonStyle.wash, ['--glass-page-wash' as string]: salonStyle.pageWash } as React.CSSProperties}>
 
-      {/* ── Sidebar (Notion light) ── */}
-      <aside style={{
+      {/* ── Sidebar (Notion light) — on phones the bottom tab bar replaces it ── */}
+      <aside className="max-md:!hidden" style={{
         width: collapsed ? 56 : 250,
         flexShrink: 0,
         // soft colour wash behind the glass tiles so the frosting is visible
@@ -177,15 +178,17 @@ function Chrome({ children }: { children: ReactNode }) {
       }}>
 
         {/* Workspace header */}
+        {/* collapsed: logo on top, expand button under it (the 56px column has no room side by side) */}
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 12px 10px',
+          display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between',
+          flexDirection: collapsed ? 'column' : 'row', gap: collapsed ? 8 : 0,
+          padding: collapsed ? '14px 0 10px' : '14px 12px 10px',
           borderBottom: '1px solid #e9e9e7',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
             {collapsed ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src="/icon-192.png" alt="Snippr" style={{ width: 32, height: 32, borderRadius: 9, flexShrink: 0, display: 'block' }} />
+              <img src="/icon-192.png" alt="Snippr" style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, display: 'block' }} />
             ) : (
               <div style={{ overflow: 'hidden' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -196,9 +199,13 @@ function Chrome({ children }: { children: ReactNode }) {
           </div>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            style={{ background: 'none', border: 'none', color: '#9b9a97', cursor: 'pointer', fontSize: 15, padding: 4 }}
+            title={collapsed ? (tr ? 'Menüyü aç' : 'Expand menu') : (tr ? 'Menüyü daralt' : 'Collapse menu')}
+            aria-label={collapsed ? (tr ? 'Menüyü aç' : 'Expand menu') : (tr ? 'Menüyü daralt' : 'Collapse menu')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 9, background: 'none', border: 'none', color: '#9b9a97', cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s, color 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#37352f' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#9b9a97' }}
           >
-            {collapsed ? '→' : '←'}
+            {collapsed ? <PanelLeftOpen size={18} strokeWidth={1.8} /> : <PanelLeftClose size={18} strokeWidth={1.8} />}
           </button>
         </div>
 
@@ -475,7 +482,7 @@ function Chrome({ children }: { children: ReactNode }) {
       </aside>
 
       {/* ── Main ── */}
-      <main style={{
+      <main className="min-w-0 max-md:!ml-0 max-md:!rounded-none max-md:!border-0 max-md:!shadow-none max-md:pb-[var(--tabbar-h)]" style={{
         marginLeft: collapsed ? 56 : 250,
         flex: 1,
         transition: 'margin-left 0.2s ease',
@@ -490,12 +497,35 @@ function Chrome({ children }: { children: ReactNode }) {
         {fullBleed ? (
           children
         ) : (
-          <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 40px 80px' }}>
+          <div className="max-md:!px-4 max-md:!pt-6 max-md:!pb-10" style={{ maxWidth: 900, margin: '0 auto', padding: '48px 40px 80px' }}>
             {children}
           </div>
         )}
       </main>
 
+      {/* ── Phone navigation ── */}
+      <MobileTabBar
+        pathname={pathname}
+        tr={tr}
+        me={me}
+        onLogout={handleLogout}
+        tabs={[
+          { href: '/dashboard', label: t.overview, Icon: Home },
+          { href: '/dashboard/calendar', label: t.calendar, Icon: Calendar },
+          { href: '/dashboard/appointments', label: t.appointmentsNav, Icon: ListChecks },
+          { href: '/dashboard/sales', label: t.sales, Icon: Receipt },
+        ]}
+        more={[
+          { href: '/dashboard/waitlist', label: t.waitlist, Icon: Hourglass },
+          ...(servicesOn ? [{ href: '/dashboard/services', label: t.services, Icon: Scissors }] : []),
+          { href: '/dashboard/profile', label: t.profile, Icon: User },
+          { href: '/dashboard/link', label: tr ? 'Randevu linki' : 'Booking link', Icon: Link2 },
+          { href: '/dashboard/addons', label: t.addons, Icon: Blocks },
+          { href: '/dashboard/plans', label: t.plansBilling, Icon: CreditCard },
+          { href: '/dashboard/settings', label: t.settings, Icon: Settings },
+          { href: '/dashboard/help', label: t.help, Icon: HelpCircle },
+        ]}
+      />
     </div>
   )
 }
