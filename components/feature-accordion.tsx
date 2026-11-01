@@ -135,7 +135,8 @@ function Mock({ i, lng }: { i: number; lng: Lng }) {
 
 export default function FeatureAccordion({ lng }: { lng: Lng }) {
   const c = COPY[lng]
-  const [active, setActive] = useState(0)
+  // the card under the mouse opens; when the mouse leaves, all cards close again
+  const [active, setActive] = useState<number | null>(null)
 
   return (
     <section id="how" className="fa-section py-16 px-4" style={{ background: 'transparent' }}>
@@ -170,7 +171,7 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
           </Link>
         </div>
 
-        <div className="fa-row">
+        <div className="fa-row" onMouseLeave={() => setActive(null)}>
           {c.cards.map((card, i) => {
             const open = active === i
             return (
@@ -179,6 +180,7 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
                 className={`fa-card ${open ? 'is-open' : ''}`}
                 onMouseEnter={() => setActive(i)}
                 onFocus={() => setActive(i)}
+                onBlur={() => setActive(null)}
                 onClick={() => setActive(i)}
                 tabIndex={0}
                 style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: '#ffffff', cursor: 'pointer', outline: 'none',
