@@ -685,12 +685,20 @@ export default function Home() {
 
         {/* ── Dotted 3D cube on the right (wide screens) — dots move away from the mouse ── */}
         {SHOW_HERO_CUBE && (
-          <motion.div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center pr-[4vw] pt-16 lg:flex"
-            initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}>
-            <div style={{ width: 'min(40vw, 640px)', aspectRatio: '1 / 1' }}>
-              <ParticleCube />
-            </div>
-          </motion.div>
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center justify-center pt-16 lg:flex" style={{ width: '54%' }}>
+            <motion.div className="flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+              {/* the cube's own size; the drawing area around it is larger so a burst isn't cut off */}
+              <div className="relative" style={{ width: 'min(32vw, 540px)', aspectRatio: '1 / 1' }}>
+                <div className="pointer-events-auto absolute cursor-pointer select-none" style={{ inset: '-35%' }}>
+                  <ParticleCube />
+                </div>
+              </div>
+              <p className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[#1d1d1f]/45" style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}>
+                {lng === 'tr' ? 'Tıkla — dağılsın' : 'Click to scatter'}
+              </p>
+            </motion.div>
+          </div>
         )}
 
         {/* ── Interactive calendar on the right (wide screens) ── */}

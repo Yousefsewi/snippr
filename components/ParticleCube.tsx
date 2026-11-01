@@ -12,10 +12,10 @@ const EDGE_MOBILE    = 22
 const SECONDS_PER_TURN = 45   // full rotation duration
 const DAMPING        = 0.88
 const SPRING         = 0.045
-const REPEL_RADIUS   = 0.4
 const REPEL_STRENGTH = 1.1
-const MIN_DIST       = 2.4    // depth normalisation range
-const MAX_DIST       = 4.5
+const CAM_Z          = 5.8    // camera distance: the canvas is ~1.7× the cube, so a burst has room to fly
+const MIN_DIST       = 4.8    // depth normalisation range
+const MAX_DIST       = 6.9
 
 /* ── shaders ─────────────────────────────────────────────── */
 const vert = /* glsl */`
@@ -109,7 +109,7 @@ export default function ParticleCube() {
 
     const scene  = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(50, mount.clientWidth / mount.clientHeight, 0.01, 100)
-    camera.position.z = 3.4
+    camera.position.z = CAM_Z
 
     const orig = buildPoints(grid, edgeN)
     const COUNT = orig.length / 3
@@ -124,7 +124,7 @@ export default function ParticleCube() {
 
     const mat = new THREE.ShaderMaterial({
       uniforms: {
-        uScale: { value: 26.0 },
+        uScale: { value: 44.0 },
         uMin:   { value: MIN_DIST },
         uMax:   { value: MAX_DIST },
       },
@@ -139,19 +139,63 @@ export default function ParticleCube() {
     mesh.rotation.x = 0.4   // gentle tilt for 3D read
     scene.add(mesh)
 
-    /* mouse repel → cube local space */
-    const ndc = new THREE.Vector2(9999, 9999)
-    const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)
-    const world = new THREE.Vector3()
-    const ray = new THREE.Raycaster()
-    function onMove(e: MouseEvent) {
+    /* ── interaction, measured on screen (pixels) so every visible dot reacts ──
+       hover: dots near the pointer move away · click / tap: the cube bursts and rebuilds */
+    const pointer = { x: -1e4, y: -1e4, inside: false }
+    let burstAt = -1e4            // time of the last burst (ms)
+    function toLocal(e: PointerEvent) {
       const r = mount.getBoundingClientRect()
-      ndc.x =  ((e.clientX - r.left) / r.width)  * 2 - 1
-      ndc.y = -((e.clientY - r.top)  / r.height) * 2 + 1
+      return { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom }
     }
-    function onLeave() { ndc.set(9999, 9999) }
-    window.addEventListener('mousemove', onMove)
-    mount.addEventListener('mouseleave', onLeave)
+    function onMove(e: PointerEvent) { Object.assign(pointer, toLocal(e)) }
+    function onLeave() { pointer.inside = false; pointer.x = pointer.y = -1e4 }
+    function onDown(e: PointerEvent) {
+      const p = toLocal(e)
+      if (!p.inside) return
+      Object.assign(pointer, p)
+      burst(p.x, p.y)
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onDown, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onLeave)
+
+    const proj = new THREE.Vector3()
+    const invQ = new THREE.Quaternion()
+    const dirW = new THREE.Vector3()
+    const screenX = new Float32Array(COUNT), screenY = new Float32Array(COUNT)
+
+    function project() {
+      const w = mount.clientWidth, h = mount.clientHeight
+      mesh.updateMatrixWorld()
+      const arr = (geo.attributes.position as THREE.BufferAttribute).array as Float32Array
+      for (let i = 0; i < COUNT; i++) {
+        proj.set(arr[i*3], arr[i*3+1], arr[i*3+2]).applyMatrix4(mesh.matrixWorld).project(camera)
+        screenX[i] = (proj.x * 0.5 + 0.5) * w
+        screenY[i] = (-proj.y * 0.5 + 0.5) * h
+      }
+    }
+
+    // push dots away from (x, y) on screen; direction is turned into the cube's own space
+    function burst(x: number, y: number) {
+      burstAt = performance.now()
+      project()
+      invQ.copy(mesh.quaternion).invert()
+      const size = Math.min(mount.clientWidth, mount.clientHeight)
+      for (let i = 0; i < COUNT; i++) {
+        const b = i * 3
+        let dx = screenX[i] - x, dy = screenY[i] - y
+        const d = Math.hypot(dx, dy) || 1
+        dx /= d; dy /= d
+        const near = Math.max(0, 1 - d / (size * 0.9))          // strongest under the finger
+        const k = (0.05 + near * near * 0.22) * (0.7 + Math.random() * 0.6)
+        // outward on screen, plus outward from the cube centre and a bit of depth
+        dirW.set(dx, -dy, (Math.random() - 0.5) * 1.2).applyQuaternion(invQ)
+        const ox = orig[b], oy = orig[b+1], oz = orig[b+2], ol = Math.hypot(ox, oy, oz) || 1
+        vel[b]   += dirW.x * k + (ox / ol) * k * 0.6
+        vel[b+1] += dirW.y * k + (oy / ol) * k * 0.6
+        vel[b+2] += dirW.z * k + (oz / ol) * k * 0.6
+      }
+    }
 
     const speed = (Math.PI * 2) / SECONDS_PER_TURN   // rad / sec
     let raf = 0
@@ -161,36 +205,43 @@ export default function ParticleCube() {
       raf = requestAnimationFrame(tick)
       const dt = Math.min((now - last) / 1000, 0.05)
       last = now
+      const f60 = dt * 60                               // same feel at any frame rate
 
-      mesh.rotation.y += speed * dt
+      // spins a little faster for a moment after a burst
+      const sinceBurst = (now - burstAt) / 1000
+      mesh.rotation.y += speed * dt * (1 + 2.5 * Math.max(0, 1 - sinceBurst / 1.5))
 
-      ray.setFromCamera(ndc, camera)
-      ray.ray.intersectPlane(plane, world)
-      const lm = mesh.worldToLocal(world.clone())
-      const active = ndc.x < 999
+      // after a burst the dots drift back slowly, then snap into place
+      const spring = SPRING * (sinceBurst < 2.2 ? 0.18 + 0.82 * Math.min(1, sinceBurst / 2.2) ** 2 : 1)
+      const damping = Math.pow(DAMPING, f60)
+
+      const hover = pointer.inside
+      if (hover) { project(); invQ.copy(mesh.quaternion).invert() }
+      const radius = Math.min(mount.clientWidth, mount.clientHeight) * 0.16
 
       const arr = (geo.attributes.position as THREE.BufferAttribute).array as Float32Array
       for (let i = 0; i < COUNT; i++) {
         const b = i * 3
         const px = arr[b], py = arr[b+1], pz = arr[b+2]
-        let fx = (orig[b]   - px) * SPRING
-        let fy = (orig[b+1] - py) * SPRING
-        let fz = (orig[b+2] - pz) * SPRING
-        if (active) {
-          const dx = px - lm.x, dy = py - lm.y, dz = pz - lm.z
-          const dd = Math.sqrt(dx*dx + dy*dy + dz*dz)
-          if (dd < REPEL_RADIUS && dd > 0.0001) {
-            const f = ((REPEL_RADIUS - dd) / REPEL_RADIUS) * REPEL_STRENGTH
-            const inv = 1 / dd
-            fx += dx * inv * f; fy += dy * inv * f; fz += dz * inv * f
+        let fx = (orig[b]   - px) * spring
+        let fy = (orig[b+1] - py) * spring
+        let fz = (orig[b+2] - pz) * spring
+        if (hover) {
+          const dx = screenX[i] - pointer.x, dy = screenY[i] - pointer.y
+          const d = Math.hypot(dx, dy)
+          if (d < radius && d > 0.01) {
+            const t = 1 - d / radius
+            const f = t * t * REPEL_STRENGTH * 0.06
+            dirW.set(dx / d, -dy / d, 0.35).applyQuaternion(invQ)
+            fx += dirW.x * f; fy += dirW.y * f; fz += dirW.z * f
           }
         }
-        vel[b]   = (vel[b]   + fx) * DAMPING
-        vel[b+1] = (vel[b+1] + fy) * DAMPING
-        vel[b+2] = (vel[b+2] + fz) * DAMPING
-        arr[b]   = px + vel[b]
-        arr[b+1] = py + vel[b+1]
-        arr[b+2] = pz + vel[b+2]
+        vel[b]   = (vel[b]   + fx * f60) * damping
+        vel[b+1] = (vel[b+1] + fy * f60) * damping
+        vel[b+2] = (vel[b+2] + fz * f60) * damping
+        arr[b]   = px + vel[b]   * f60
+        arr[b+1] = py + vel[b+1] * f60
+        arr[b+2] = pz + vel[b+2] * f60
       }
       ;(geo.attributes.position as THREE.BufferAttribute).needsUpdate = true
       renderer.render(scene, camera)
@@ -206,13 +257,14 @@ export default function ParticleCube() {
 
     return () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
       window.removeEventListener('resize', onResize)
-      mount.removeEventListener('mouseleave', onLeave)
+      document.documentElement.removeEventListener('pointerleave', onLeave)
       renderer.dispose(); geo.dispose(); mat.dispose()
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
     }
   }, [])
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
+  return <div ref={mountRef} style={{ width: '100%', height: '100%', touchAction: 'pan-y' }} />
 }
