@@ -50,7 +50,7 @@ const SHOW_RIBBON = false
 
 // Halftone cloud picture next to the big headline (public/hero-clouds.webp), with a dot field
 // behind it and two small glass cards on top. Wide screens only.
-const SHOW_HERO_ART = true
+const SHOW_HERO_ART = false
 
 function HeroArt({ lng }: { lng: string }) {
   const tr = lng === 'tr'
