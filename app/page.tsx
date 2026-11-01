@@ -688,8 +688,9 @@ export default function Home() {
           <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center justify-center pt-16 lg:flex" style={{ width: '54%' }}>
             <motion.div className="flex flex-col items-center"
               initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}>
-              {/* the cube's own size; the drawing area around it is larger so a burst isn't cut off */}
-              <div className="relative" style={{ width: 'min(32vw, 540px)', aspectRatio: '1 / 1' }}>
+              {/* the cube's own size: grows with the screen but never reaches the headline (300–760px);
+                 the drawing area around it is larger so a burst isn't cut off */}
+              <div className="relative" style={{ width: 'clamp(300px, calc(146vw - 1680px), 760px)', aspectRatio: '1 / 1' }}>
                 <div className="pointer-events-auto absolute cursor-pointer select-none" style={{ inset: '-35%' }}>
                   <ParticleCube />
                 </div>
