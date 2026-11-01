@@ -56,19 +56,20 @@ const ICONS = [
   [Mail, Sparkles, MapPin],
   [Gift, QrCode, TrendingUp],
 ]
-const ICON_TINT = ['#d9f99d', '#bfdbfe', '#99f6e4']
+// step icon chips in the same soft palette (sand, blush, sage)
+const ICON_TINT = ['#efe2d0', '#f5dcdc', '#dbe8dc']
 
-// colourful wash behind each card: soft, blurred glows (like light through frosted glass)
-// 01 sky blue + warm yellow · 02 mint, white and dusty rose on charcoal
-// 03 hot pink, orange and deep blue · 04 electric blue, cyan, white and a touch of pink
+// soft wash behind each card, taken from the site's own palette (the beige page and the
+// caramel, blush and powder-blue glows in the hero, plus the sage of the feature section)
+// 01 sand & caramel · 02 blush & peach · 03 powder blue & lilac · 04 sage & cream
 const GRADIENTS = [
-  'radial-gradient(55% 75% at 18% 92%, #2f8fe6 0%, transparent 70%), radial-gradient(50% 70% at 88% 35%, #f8d465 0%, transparent 72%), radial-gradient(45% 55% at 55% 62%, #ffffff 0%, transparent 70%), linear-gradient(160deg, #8fdcf0 0%, #5bb8ea 100%)',
-  'radial-gradient(50% 65% at 32% 62%, #b9f3d8 0%, transparent 70%), radial-gradient(35% 45% at 66% 82%, #df9a98 0%, transparent 72%), radial-gradient(45% 55% at 58% 38%, #ffffff 0%, transparent 70%), linear-gradient(175deg, #dfe6e2 0%, #8b958f 55%, #22262a 100%)',
-  'radial-gradient(45% 55% at 28% 70%, #ff4f8b 0%, transparent 72%), radial-gradient(45% 55% at 72% 55%, #ffb547 0%, transparent 72%), radial-gradient(60% 55% at 50% 100%, #2340ff 0%, transparent 75%), radial-gradient(35% 45% at 88% 88%, #22c8ff 0%, transparent 72%), linear-gradient(165deg, #f1f2f7 0%, #b8a8ff 100%)',
-  'radial-gradient(55% 65% at 22% 88%, #1f4dff 0%, transparent 72%), radial-gradient(45% 55% at 78% 62%, #5fe3ff 0%, transparent 72%), radial-gradient(40% 50% at 50% 45%, #ffffff 0%, transparent 70%), radial-gradient(30% 40% at 92% 96%, #ff7ad6 0%, transparent 72%), linear-gradient(165deg, #e3ecff 0%, #6f8dff 100%)',
+  'radial-gradient(60% 75% at 18% 95%, #d9b68c 0%, transparent 72%), radial-gradient(45% 55% at 82% 55%, #f3d7c9 0%, transparent 72%), radial-gradient(45% 50% at 55% 55%, #fffaf3 0%, transparent 70%), linear-gradient(165deg, #f5ede2 0%, #e8d6bf 100%)',
+  'radial-gradient(60% 75% at 22% 95%, #f0b3c0 0%, transparent 72%), radial-gradient(45% 55% at 85% 50%, #f8dcc8 0%, transparent 72%), radial-gradient(45% 50% at 55% 55%, #fff8f6 0%, transparent 70%), linear-gradient(165deg, #f8ece9 0%, #f0d3d3 100%)',
+  'radial-gradient(60% 75% at 20% 95%, #a9caf2 0%, transparent 72%), radial-gradient(45% 55% at 85% 55%, #dcd5f3 0%, transparent 72%), radial-gradient(45% 50% at 55% 55%, #f8fbff 0%, transparent 70%), linear-gradient(165deg, #eef2f8 0%, #d2e0f2 100%)',
+  'radial-gradient(60% 75% at 20% 95%, #b3cfb6 0%, transparent 72%), radial-gradient(45% 55% at 85% 55%, #f2e8d2 0%, transparent 72%), radial-gradient(45% 50% at 55% 55%, #fbfdf9 0%, transparent 70%), linear-gradient(165deg, #eef2ec 0%, #d6e4d5 100%)',
 ]
-// step number colour per card (light on the dark one)
-const NUM_COLOR = ['rgba(255,255,255,0.55)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0.55)', 'rgba(255,255,255,0.55)']
+// step numbers: the site's dark ink, faint
+const NUM_COLOR = ['rgba(29,29,31,0.16)', 'rgba(29,29,31,0.16)', 'rgba(29,29,31,0.16)', 'rgba(29,29,31,0.16)']
 
 function Mock({ i, lng }: { i: number; lng: Lng }) {
   const tr = lng === 'tr'
@@ -151,7 +152,7 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
         .fa-card.is-open { flex-grow: 1.75; }
         .fa-detail { opacity: 0; transform: translateY(10px); transition: opacity .35s ease .12s, transform .45s cubic-bezier(.22,1,.36,1) .12s; pointer-events: none; }
         .fa-card.is-open .fa-detail { opacity: 1; transform: none; pointer-events: auto; }
-        .fa-wash { opacity: .8; transition: opacity .45s ease; }
+        .fa-wash { opacity: .9; transition: opacity .45s ease; }
         /* closed cards: big step number + the three step icons, so they never look empty */
         .fa-peek { opacity: 1; transition: opacity .3s ease; }
         .fa-card.is-open .fa-peek { opacity: 0; pointer-events: none; }
@@ -196,7 +197,7 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
 
                 {/* peek for closed cards */}
                 <div className="fa-peek" aria-hidden style={{ position: 'absolute', left: 28, right: 20, bottom: 26, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14 }}>
-                  <span style={{ fontSize: 'clamp(52px, 5vw, 80px)', fontWeight: 700, lineHeight: 0.8, letterSpacing: '-0.05em', color: NUM_COLOR[i], textShadow: '0 2px 18px rgba(0,0,0,0.08)' }}>0{i + 1}</span>
+                  <span style={{ fontSize: 'clamp(52px, 5vw, 80px)', fontWeight: 700, lineHeight: 0.8, letterSpacing: '-0.05em', color: NUM_COLOR[i] }}>0{i + 1}</span>
                   <span style={{ display: 'flex', gap: 6 }}>
                     {ICONS[i].map((Icon, k) => (
                       <span key={k} style={{ width: 34, height: 34, borderRadius: 11, background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 12px rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0f172a' }}><Icon size={15} /></span>
