@@ -26,7 +26,7 @@ const T = {
   en: {
     monthly: 'Monthly', yearly: 'Yearly', save: '2 months free',
     perMonth: '/mo', billedYearly: (n: string) => `Billed yearly as ${n}`, billedMonthly: 'Billed monthly', freeNote: 'Free while you grow',
-    included: "What's included:", get: 'Get', access: 'access', soon: 'Coming soon', current: 'Your plan',
+    included: "What's included:", get: 'Get', access: 'access', soon: 'Coming soon', current: 'Your plan', vatNote: 'Prices exclude VAT (BTW). Amounts in your local currency are approximate.',
     plans: [
       { id: 'free', name: 'Free', tagline: 'Everything Snippr does today.', monthly: 0, yearly: 0, available: true, badge: 'FREE',
         orb: 'conic-gradient(from 200deg, #34c759, #30d5c8, #0a84ff, #34c759)', ring: '#111',
@@ -66,7 +66,7 @@ const T = {
   tr: {
     monthly: 'Aylık', yearly: 'Yıllık', save: '2 ay bedava',
     perMonth: '/ay', billedYearly: (n: string) => `Yıllık ${n} olarak ödenir`, billedMonthly: 'Aylık ödenir', freeNote: 'Büyürken ücretsiz',
-    included: 'Neler dahil:', get: '', access: 'erişimi al', soon: 'Yakında', current: 'Mevcut planın',
+    included: 'Neler dahil:', get: '', access: 'erişimi al', soon: 'Yakında', current: 'Mevcut planın', vatNote: 'Fiyatlara KDV (BTW) dahil değildir. Yerel para birimindeki tutarlar yaklaşıktır.',
     plans: [
       { id: 'free', name: 'Free', tagline: 'Snippr’ın bugün yaptığı her şey.', monthly: 0, yearly: 0, available: true, badge: 'FREE',
         orb: 'conic-gradient(from 200deg, #34c759, #30d5c8, #0a84ff, #34c759)', ring: '#111',
@@ -246,6 +246,7 @@ export default function PricingPlans({ lng, cur, mode = 'public' }: { lng: Lng; 
             )
           })}
         </div>
+        <p className="mx-auto mt-8 max-w-xl text-center text-[13px] text-[#86868b]">{t.vatNote}</p>
       </section>
     </>
   )

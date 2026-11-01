@@ -151,7 +151,7 @@ const FOOTER_HREFS: Record<string, string> = {
   'Barbershops': '/register', 'Hair salons': '/register', 'Beauty salons': '/register', 'Get started': '/register',
   'Online Booking': '#how', 'Calendar': '#how', 'Notifications': '#how', 'Confirmation emails': '#faq',
   'Opening hours': '#faq', 'Working hours': '#faq', 'Booking link': '#how', 'QR code': '#how',
-  'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Help & support': '/help', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms', 'Imprint': '/imprint', 'Cookie settings': '#cookie-settings',
+  'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Help & support': '/help', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms', 'Imprint': '/imprint', 'DPA': '/dpa', 'Cookie settings': '#cookie-settings',
 }
 
 function FooterLinks({ links }: { links: string[] }) {
@@ -795,7 +795,7 @@ export default function Home() {
 
             {/* INFO + CONNECT */}
             <div className="lg:col-span-2">
-              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms', 'Imprint', 'Cookie settings']} serif={serif.className} />
+              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms', 'DPA', 'Imprint', 'Cookie settings']} serif={serif.className} />
               <div className="mt-8">
               </div>
             </div>

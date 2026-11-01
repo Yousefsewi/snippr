@@ -7,12 +7,20 @@ import { TIMEZONES, TZ_REGIONS, gmtOffset, tzCity, detectTimezone, TZ_KEY } from
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
 import { CURRENCIES, useCurrency } from '@/lib/currency'
 import { supabase } from '@/lib/supabase'
+import { downloadMyData } from '@/lib/export-data'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { glass, SALON_STYLES, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
 
 const text = 'text-[#37352f]'
 const muted = 'text-[#9b9a97]'
 const border = 'border-[#e9e9e7]'
+
+const DATA_T = {
+  en: { title: 'Your data', btn: 'Download my data', sub: 'Your profile, services, appointments and waiting list as one file (JSON).', action: 'Download', err: 'Download failed. Please try again.' },
+  tr: { title: 'Verilerin', btn: 'Verilerimi indir', sub: 'Profilin, hizmetlerin, randevuların ve bekleme listen tek dosyada (JSON).', action: 'İndir', err: 'İndirilemedi. Lütfen tekrar dene.' },
+  nl: { title: 'Jouw gegevens', btn: 'Mijn gegevens downloaden', sub: 'Je profiel, diensten, afspraken en wachtlijst in één bestand (JSON).', action: 'Downloaden', err: 'Downloaden mislukt. Probeer het opnieuw.' },
+  ar: { title: 'بياناتك', btn: 'تنزيل بياناتي', sub: 'ملفك الشخصي وخدماتك ومواعيدك وقائمة الانتظار في ملف واحد (JSON).', action: 'تنزيل', err: 'فشل التنزيل. حاول مرة أخرى.' },
+}
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (
@@ -75,6 +83,14 @@ export default function SettingsPage() {
 
   const chooseTz = (value: string) => { writeStored(TZ_KEY, value); setTzOpen(false) }
   const isAutoDetected = tz && tz === detectTimezone()
+
+  const [exporting, setExporting] = useState(false)
+  const [exportError, setExportError] = useState('')
+  const exportData = async () => {
+    setExporting(true); setExportError('')
+    try { await downloadMyData() } catch { setExportError((DATA_T[lang as keyof typeof DATA_T] ?? DATA_T.en).err) }
+    setExporting(false)
+  }
 
   const deleteAccount = async () => {
     setDeleting(true)
@@ -298,6 +314,21 @@ export default function SettingsPage() {
             </div>
             <Toggle on={servicesOn} onClick={toggleServices} />
           </div>
+        </div>
+      </section>
+
+      {/* Your data: GDPR export */}
+      <section>
+        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{DATA_T[lang as keyof typeof DATA_T]?.title ?? DATA_T.en.title}</p>
+        <div className={`flex items-center justify-between gap-3 rounded-2xl border ${border} bg-white p-4`}>
+          <div>
+            <p className="text-sm font-medium text-[#37352f]">{(DATA_T[lang as keyof typeof DATA_T] ?? DATA_T.en).btn}</p>
+            <p className="text-xs text-[#9b9a97]">{exportError || (DATA_T[lang as keyof typeof DATA_T] ?? DATA_T.en).sub}</p>
+          </div>
+          <button onClick={exportData} disabled={exporting}
+            className="flex-shrink-0 rounded-md border border-[#e9e9e7] bg-white px-3 py-1.5 text-xs font-medium text-[#37352f] transition hover:bg-[#f7f7f5] disabled:opacity-50">
+            {exporting ? '…' : (DATA_T[lang as keyof typeof DATA_T] ?? DATA_T.en).action}
+          </button>
         </div>
       </section>
 

@@ -15,6 +15,7 @@ const PAGES: { path: string; priority: number }[] = [
   { path: '/privacy', priority: 0.2 },
   { path: '/terms', priority: 0.2 },
   { path: '/imprint', priority: 0.2 },
+  { path: '/dpa', priority: 0.2 },
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
