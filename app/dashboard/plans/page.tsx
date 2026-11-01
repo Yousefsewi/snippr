@@ -2,7 +2,6 @@
 
 // Dashboard → Plans & billing. Same plan cards as the public pricing page
 // (components/pricing-plans.tsx), with Free marked as the barber's current plan.
-import { Sparkles } from 'lucide-react'
 import PricingPlans from '@/components/pricing-plans'
 import { useCurrency } from '@/lib/currency'
 import { useLang } from '@/lib/i18n'
@@ -30,10 +29,7 @@ export default function PlansPage() {
         <h1 className="text-[32px] font-semibold tracking-[-0.025em]">{t.title}</h1>
         <p className="mt-1 text-[16px] text-[#6e6e73]">{t.sub}</p>
 
-        <div className="mt-6 mb-8 flex items-start gap-3 rounded-[20px] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-          <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] text-white" style={{ background: 'linear-gradient(145deg,#34c759,#0a84ff)' }}>
-            <Sparkles size={18} />
-          </span>
+        <div className="mt-6 mb-8 rounded-[20px] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           <p className="text-[15px] leading-relaxed text-[#3a3a3c]"><strong className="text-[#1d1d1f]">{t.noteStrong}</strong> {t.note}</p>
         </div>
 
