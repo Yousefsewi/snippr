@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { openCookieSettings } from '@/lib/consent'
 import { motion } from 'framer-motion'
 import { Inter, Playfair_Display } from 'next/font/google'
@@ -51,6 +52,11 @@ const SHOW_RIBBON = false
 // Halftone cloud picture next to the big headline (public/hero-clouds.webp), with a dot field
 // behind it and two small glass cards on top. Wide screens only.
 const SHOW_HERO_ART = false
+
+// Dotted 3D cube next to the big headline (components/ParticleCube.tsx). Wide screens only.
+const SHOW_HERO_CUBE = true
+// three.js is big: load the cube only in the browser, after the page itself
+const ParticleCube = dynamic(() => import("@/components/ParticleCube"), { ssr: false })
 
 function HeroArt({ lng }: { lng: string }) {
   const tr = lng === 'tr'
@@ -676,6 +682,16 @@ export default function Home() {
 
         {/* ── Cloud artwork on the right (wide screens) ── */}
         {SHOW_HERO_ART && <HeroArt lng={lng} />}
+
+        {/* ── Dotted 3D cube on the right (wide screens) — dots move away from the mouse ── */}
+        {SHOW_HERO_CUBE && (
+          <motion.div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center pr-[4vw] pt-16 lg:flex"
+            initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+            <div style={{ width: 'min(46vw, 680px)', aspectRatio: '1 / 1' }}>
+              <ParticleCube />
+            </div>
+          </motion.div>
+        )}
 
         {/* ── Interactive calendar on the right (wide screens) ── */}
         {SHOW_HERO_CALENDAR && (
