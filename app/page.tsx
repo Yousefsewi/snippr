@@ -43,6 +43,9 @@ const SHOW_STEPS_TIMELINE = false
 // Interactive calendar next to / under the hero (components/hero-calendar.tsx). Off for now.
 const SHOW_HERO_CALENDAR = false
 
+// "Snippr on your phone" QR box in the bottom corner (components/ui/download-popup.tsx). Off for now.
+const SHOW_PHONE_POPUP = false
+
 // Hero video fades to fully transparent towards the bottom (long, eased fade that starts
 // below the headline/button so the white text keeps its dark backdrop).
 const HERO_FADE_MASK: React.CSSProperties = {
@@ -204,7 +207,7 @@ const LC: Record<Lng, {
     nav: { how: 'How it works', pricing: 'Pricing', faq: 'FAQ', about: 'About', help: 'Help & support' },
     login: 'Login', getStarted: 'Get started', badge: 'Online booking 24/7', downloadApp: 'Download App',
     heroBig: 'NEVER MISS\nA CUSTOMER.',
-    heroSub: 'Smart scheduling for modern barbershops — set up in minutes, book online 24/7.',
+    heroSub: 'Booking made beautifully simple — scheduling, reminders, waitlist, sales and more.',
     appTag: 'Mobile app', appTitle: 'Want Snippr as an app?',
     appBody: 'Snippr already works great in your phone’s browser. We’re also building native iOS & Android apps — want to hear first when they’re ready?',
     appBtn: 'Email me when it’s ready', appDone: 'Thanks! Send that email and you’ll be the first to know.',
@@ -240,7 +243,7 @@ const LC: Record<Lng, {
     nav: { how: 'Nasıl çalışır', pricing: 'Fiyatlandırma', faq: 'SSS', about: 'Hakkında', help: 'Yardım ve destek' },
     login: 'Giriş', getStarted: 'Başla', badge: '7/24 online randevu', downloadApp: 'Uygulamayı İndir',
     heroBig: 'MÜŞTERİNİ\nKAÇIRMA.',
-    heroSub: 'Modern berberler için akıllı randevu sistemi — dakikalar içinde kur, 7/24 online rezervasyon al.',
+    heroSub: 'Kolayca randevu almanın güzelliği — planlama, hatırlatmalar, bekleme listesi, satışlar ve daha fazlası.',
     appTag: 'Mobil uygulama', appTitle: 'Snippr’ı uygulama olarak ister misin?',
     appBody: 'Snippr telefonunun tarayıcısında zaten sorunsuz çalışıyor. iOS ve Android uygulamalarını da geliştiriyoruz — hazır olunca ilk sen mi duymak istersin?',
     appBtn: 'Hazır olunca bana yaz', appDone: 'Teşekkürler! O e-postayı gönder, ilk sen haber alacaksın.',
@@ -778,7 +781,7 @@ export default function Home() {
       </footer>
 
       <BackToTop />
-      <DownloadPopup />
+      {SHOW_PHONE_POPUP && <DownloadPopup />}
     </main>
   )
 }
