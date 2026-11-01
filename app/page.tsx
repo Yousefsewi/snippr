@@ -10,6 +10,7 @@ import DownloadPopup from '@/components/ui/download-popup'
 import TwistingRibbon from '@/components/ui/twisting-ribbon'
 import { Rocket, Link2, Share2, CalendarCheck } from 'lucide-react'
 import { SUPPORT_EMAIL } from '@/lib/site'
+import FeatureExplorer from '@/components/feature-explorer'
 import FeatureAccordion from '@/components/feature-accordion'
 import HeroCalendar from '@/components/hero-calendar'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
@@ -692,6 +693,9 @@ export default function Home() {
       {/* ══ HOW IT WORKS ══ */}
       {/* Calendly-style expanding cards; the older step timeline is kept behind a flag */}
       {SHOW_STEPS_TIMELINE ? <HowItWorksSection lng={lng} /> : <FeatureAccordion lng={lng} />}
+
+      {/* ══ FEATURE EXPLORER (tabs + spec list) ══ */}
+      <FeatureExplorer lng={lng} />
 
       {/* ══ STATS ══ */}
       <StatsSection lng={lng} />

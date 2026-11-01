@@ -289,3 +289,25 @@ body {
 /* height of the dashboard's bottom tab bar on phones (components/mobile-tab-bar.tsx) */
 :root { --tabbar-h: 0px; }
 @media (max-width: 767px) { :root { --tabbar-h: calc(58px + env(safe-area-inset-bottom)); } }
+
+/* Feature explorer (components/feature-explorer.tsx): opt out of the glass button style above */
+.editorial-site > section.feature-explorer:not(:first-child) button:not(.bg-black) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: #4b5563 !important;
+}
+.editorial-site > section.feature-explorer:not(:first-child) button.fx-tab[aria-selected="true"] {
+  background: #e3ece4 !important;
+  color: #1d1d1f !important;
+}
+.editorial-site > section.feature-explorer:not(:first-child) button.fx-tab:hover {
+  color: #1d1d1f !important;
+}
+.editorial-site > section.feature-explorer:not(:first-child) button.fx-point {
+  background: rgba(233, 239, 233, 0.92) !important;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.25), inset 0 0 0 1px #ffffff !important;
+  color: #1d1d1f !important;
+}
