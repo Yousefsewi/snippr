@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { openCookieSettings } from '@/lib/consent'
 import { motion } from 'framer-motion'
 import { Inter, Playfair_Display } from 'next/font/google'
 import BackToTop from '@/components/ui/back-to-top'
@@ -150,7 +151,7 @@ const FOOTER_HREFS: Record<string, string> = {
   'Barbershops': '/register', 'Hair salons': '/register', 'Beauty salons': '/register', 'Get started': '/register',
   'Online Booking': '#how', 'Calendar': '#how', 'Notifications': '#how', 'Confirmation emails': '#faq',
   'Opening hours': '#faq', 'Working hours': '#faq', 'Booking link': '#how', 'QR code': '#how',
-  'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Help & support': '/help', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms',
+  'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Help & support': '/help', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms', 'Imprint': '/imprint', 'Cookie settings': '#cookie-settings',
 }
 
 function FooterLinks({ links }: { links: string[] }) {
@@ -159,6 +160,7 @@ function FooterLinks({ links }: { links: string[] }) {
       {links.map((l) => (
         <li key={l}>
           <a href={FOOTER_HREFS[l] ?? '#'} className="text-[13.5px] uppercase tracking-wide transition-colors" style={{ color: 'rgba(255,255,255,0.6)' }}
+            onClick={FOOTER_HREFS[l] === '#cookie-settings' ? (e) => { e.preventDefault(); openCookieSettings() } : undefined}
             onMouseEnter={e => { e.currentTarget.style.color = '#fff' }}
             onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
           >{l}</a>
@@ -793,7 +795,7 @@ export default function Home() {
 
             {/* INFO + CONNECT */}
             <div className="lg:col-span-2">
-              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms']} serif={serif.className} />
+              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms', 'Imprint', 'Cookie settings']} serif={serif.className} />
               <div className="mt-8">
               </div>
             </div>
