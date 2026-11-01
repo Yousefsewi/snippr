@@ -45,6 +45,9 @@ const SHOW_STEPS_TIMELINE = false
 // Interactive calendar next to / under the hero (components/hero-calendar.tsx). Off for now.
 const SHOW_HERO_CALENDAR = false
 
+// Colourful twisting ribbon above the FAQ (components/ui/twisting-ribbon.tsx). Off for now.
+const SHOW_RIBBON = false
+
 // Halftone cloud picture next to the big headline (public/hero-clouds.webp), with a dot field
 // behind it and two small glass cards on top. Wide screens only.
 const SHOW_HERO_ART = true
@@ -757,12 +760,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ TWISTING RIBBON ══ */}
+      {/* ══ TWISTING RIBBON (switched off) ══ */}
+      {SHOW_RIBBON && (
       <section className="ribbon-section pt-10 pb-0" style={{ background: 'transparent' }}>
         <div className="w-full h-[360px]">
           <TwistingRibbon className="rounded-none" />
         </div>
       </section>
+      )}
 
       {/* ══ FAQ ══ */}
       <div id="faq" className="scroll-mt-24">
