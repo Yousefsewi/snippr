@@ -70,7 +70,7 @@ const BT = {
     details: 'Booking Details', service: 'Service', optional: 'Optional', date: 'Date', time: 'Time', choose: 'Choose', pickDate: 'Pick a date first', min: 'min',
     closedDay: 'Closed on this day — pick another date.', footnote: 'Times shown in your local time. You pay in the shop — nothing is charged online.',
     yourDetails: 'Your details', name: 'Name', required: 'Required', email: 'Email', forConfirm: 'For confirmation', phone: 'Phone',
-    payment: 'Payment details', total: 'Total', booking: 'Booking…', book: 'Book', enterName: 'Enter your name to book', powered: 'Powered by',
+    payment: 'Payment details', total: 'Total', booking: 'Booking…', book: 'Book', enterName: 'Enter your name to book', ageOk: 'I am 16 or older, or a parent or guardian booking for my child.', ageHint: 'Please confirm the age box to book', privacy: 'Privacy', powered: 'Powered by',
     wlFull: '⏳ Fully booked — join the waitlist', wlAsk: 'No time that suits you? Join the waitlist', wlFor: (d: string) => `Join the waitlist for ${d}.`,
     wlName: 'Your name', wlPhone: 'Phone', wlEmail: 'Email (optional)', wlPrefs: ['Any time', 'Morning', 'Afternoon', 'Evening'],
     wlJoin: 'Join the waitlist', wlJoining: 'Joining…', wlDone: '✓ You’re on the waitlist — the barber will contact you if a spot opens.',
@@ -84,7 +84,7 @@ const BT = {
     details: 'Randevu bilgileri', service: 'Hizmet', optional: 'İsteğe bağlı', date: 'Tarih', time: 'Saat', choose: 'Seç', pickDate: 'Önce tarih seç', min: 'dk',
     closedDay: 'Bu gün kapalı — başka bir gün seç.', footnote: 'Saatler senin saat dilimine göre. Ödeme dükkânda yapılır — online hiçbir ücret alınmaz.',
     yourDetails: 'Bilgilerin', name: 'Ad', required: 'Zorunlu', email: 'E-posta', forConfirm: 'Onay için', phone: 'Telefon',
-    payment: 'Ödeme bilgileri', total: 'Toplam', booking: 'Randevu alınıyor…', book: 'Randevu al', enterName: 'Randevu almak için adını yaz', powered: 'Altyapı:',
+    payment: 'Ödeme bilgileri', total: 'Toplam', booking: 'Randevu alınıyor…', book: 'Randevu al', enterName: 'Randevu almak için adını yaz', ageOk: '16 yaşından büyüğüm ya da çocuğum için randevu alan ebeveyn/vasiyim.', ageHint: 'Randevu için yaş kutusunu işaretle', privacy: 'Gizlilik', powered: 'Altyapı:',
     wlFull: '⏳ Bu gün dolu — bekleme listesine katıl', wlAsk: 'Uygun saat yok mu? Bekleme listesine katıl', wlFor: (d: string) => `${d} için bekleme listesine katıl.`,
     wlName: 'Adın', wlPhone: 'Telefon', wlEmail: 'E-posta (isteğe bağlı)', wlPrefs: ['Herhangi bir saat', 'Sabah', 'Öğleden sonra', 'Akşam'],
     wlJoin: 'Bekleme listesine katıl', wlJoining: 'Katılıyor…', wlDone: '✓ Bekleme listesindesin — yer açılırsa berber seninle iletişime geçecek.',
@@ -98,7 +98,7 @@ const BT = {
     details: 'Afspraakgegevens', service: 'Dienst', optional: 'Optioneel', date: 'Datum', time: 'Tijd', choose: 'Kies', pickDate: 'Kies eerst een datum', min: 'min',
     closedDay: 'Op deze dag gesloten — kies een andere datum.', footnote: 'Tijden in jouw lokale tijd. Je betaalt in de zaak — online wordt niets afgeschreven.',
     yourDetails: 'Jouw gegevens', name: 'Naam', required: 'Verplicht', email: 'E-mail', forConfirm: 'Voor de bevestiging', phone: 'Telefoon',
-    payment: 'Betaling', total: 'Totaal', booking: 'Bezig met boeken…', book: 'Boeken', enterName: 'Vul je naam in om te boeken', powered: 'Mogelijk gemaakt door',
+    payment: 'Betaling', total: 'Totaal', booking: 'Bezig met boeken…', book: 'Boeken', enterName: 'Vul je naam in om te boeken', ageOk: 'Ik ben 16 jaar of ouder, of een ouder/voogd die voor mijn kind boekt.', ageHint: 'Vink het leeftijdsvakje aan om te boeken', privacy: 'Privacy', powered: 'Mogelijk gemaakt door',
     wlFull: '⏳ Volgeboekt — zet je op de wachtlijst', wlAsk: 'Geen geschikte tijd? Zet je op de wachtlijst', wlFor: (d: string) => `Zet je op de wachtlijst voor ${d}.`,
     wlName: 'Je naam', wlPhone: 'Telefoon', wlEmail: 'E-mail (optioneel)', wlPrefs: ['Maakt niet uit', 'Ochtend', 'Middag', 'Avond'],
     wlJoin: 'Op de wachtlijst zetten', wlJoining: 'Bezig…', wlDone: '✓ Je staat op de wachtlijst — de kapper neemt contact met je op als er plek vrijkomt.',
@@ -112,7 +112,7 @@ const BT = {
     details: 'تفاصيل الحجز', service: 'الخدمة', optional: 'اختياري', date: 'التاريخ', time: 'الوقت', choose: 'اختر', pickDate: 'اختر التاريخ أولًا', min: 'دقيقة',
     closedDay: 'مغلق في هذا اليوم — اختر تاريخًا آخر.', footnote: 'الأوقات معروضة حسب توقيتك المحلي. الدفع في المحل — لا يُدفع أي شيء عبر الإنترنت.',
     yourDetails: 'بياناتك', name: 'الاسم', required: 'مطلوب', email: 'البريد الإلكتروني', forConfirm: 'لإرسال التأكيد', phone: 'الهاتف',
-    payment: 'تفاصيل الدفع', total: 'المجموع', booking: 'جارٍ الحجز…', book: 'احجز', enterName: 'أدخل اسمك لإتمام الحجز', powered: 'بدعم من',
+    payment: 'تفاصيل الدفع', total: 'المجموع', booking: 'جارٍ الحجز…', book: 'احجز', enterName: 'أدخل اسمك لإتمام الحجز', ageOk: 'عمري 16 عامًا أو أكثر، أو أنا ولي أمر أحجز لطفلي.', ageHint: 'يرجى تأكيد خانة العمر لإتمام الحجز', privacy: 'الخصوصية', powered: 'بدعم من',
     wlFull: '⏳ محجوز بالكامل — انضم إلى قائمة الانتظار', wlAsk: 'لا يوجد وقت مناسب؟ انضم إلى قائمة الانتظار', wlFor: (d: string) => `انضم إلى قائمة الانتظار ليوم ${d}.`,
     wlName: 'اسمك', wlPhone: 'الهاتف', wlEmail: 'البريد الإلكتروني (اختياري)', wlPrefs: ['أي وقت', 'صباحًا', 'بعد الظهر', 'مساءً'],
     wlJoin: 'انضم إلى قائمة الانتظار', wlJoining: 'جارٍ الانضمام…', wlDone: '✓ أنت الآن في قائمة الانتظار — سيتواصل معك الحلاق إذا توفّر موعد.',
@@ -139,6 +139,8 @@ export default function BookingPage() {
   const [date, setDate] = useState<Date | null>(null)
   const [time, setTime] = useState('')
   const [name, setName] = useState('')
+  // age confirmation: 16+ or a parent booking for a child (GDPR digital-consent age in NL)
+  const [ageOk, setAgeOk] = useState(false)
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   // Busy ranges (minutes from midnight) for one day; `day` guards against showing another day's data while loading.
@@ -248,7 +250,7 @@ export default function BookingPage() {
   }
 
   const submit = async () => {
-    if (!barber || !date || !time || !name) return // service is optional
+    if (!barber || !date || !time || !name || !ageOk) return // service is optional
     setSubmitting(true); setError('')
     const [h, m] = time.split(':').map(Number)
     const start = new Date(date); start.setHours(h, m, 0, 0)
@@ -276,12 +278,14 @@ export default function BookingPage() {
     }
     // language + time zone make reminder emails right for this client (supabase/reminders.sql);
     // if those columns don't exist yet, book without them
-    let { error: err } = await supabase.from('appointments').insert({
-      ...row, client_lang: lang, client_tz: Intl.DateTimeFormat().resolvedOptions().timeZone.slice(0, 64),
-    })
-    if (err && (err.code === 'PGRST204' || /client_(lang|tz)/.test(err.message))) {
-      ({ error: err } = await supabase.from('appointments').insert(row))
-    }
+    // age_confirmed_at = when the age box was ticked (supabase/age-confirm.sql).
+    // If a column doesn't exist yet, retry with fewer extras so booking never breaks.
+    const client = { client_lang: lang, client_tz: Intl.DateTimeFormat().resolvedOptions().timeZone.slice(0, 64) }
+    const missingColumn = (e: { code?: string; message: string } | null) =>
+      !!e && (e.code === 'PGRST204' || e.code === '42703' || /client_(lang|tz)|age_confirmed_at/.test(e.message))
+    let { error: err } = await supabase.from('appointments').insert({ ...row, ...client, age_confirmed_at: new Date().toISOString() })
+    if (missingColumn(err)) ({ error: err } = await supabase.from('appointments').insert({ ...row, ...client }))
+    if (missingColumn(err)) ({ error: err } = await supabase.from('appointments').insert(row))
     // 23P01 = the database's no-overlap rule: someone booked this slot a moment ago
     if (err?.code === '23P01') { slotTaken(); return }
     if (err) { setError(t.couldNot); setSubmitting(false); return }
@@ -541,6 +545,16 @@ export default function BookingPage() {
                       <p style={IOS_FOOTNOTE}>🎁 First time here? Add your phone or email and {firstVisit}% is taken off automatically.</p>
                     )}
 
+                    {/* age confirmation (required) */}
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, margin: '14px 6px 0', cursor: 'pointer', fontSize: 13, lineHeight: 1.45, color: 'rgba(255,255,255,0.85)' }}>
+                      <input type="checkbox" checked={ageOk} onChange={e => setAgeOk(e.target.checked)}
+                        style={{ width: 18, height: 18, marginTop: 1, flexShrink: 0, accentColor: '#ffffff', cursor: 'pointer' }} />
+                      <span>
+                        {t.ageOk}{' '}
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'underline' }}>{t.privacy}</a>
+                      </span>
+                    </label>
+
                     {/* group 3: payment details */}
                     {service && (
                       <>
@@ -571,15 +585,15 @@ export default function BookingPage() {
         {/* ══ white "Book" pill under the panel ══ */}
         {!done && date && time && (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-            <button onClick={submit} disabled={submitting || !name}
+            <button onClick={submit} disabled={submitting || !name || !ageOk}
               style={{ padding: '15px 34px', borderRadius: 999, background: '#ffffff', border: 'none', color: '#111', fontSize: 15.5, fontWeight: 700, fontFamily: 'inherit',
-                boxShadow: '0 12px 30px rgba(0,0,0,0.25)', cursor: submitting || !name ? 'not-allowed' : 'pointer', opacity: submitting || !name ? 0.6 : 1 }}>
+                boxShadow: '0 12px 30px rgba(0,0,0,0.25)', cursor: submitting || !name || !ageOk ? 'not-allowed' : 'pointer', opacity: submitting || !name || !ageOk ? 0.6 : 1 }}>
               {submitting ? t.booking : service ? `${t.book} · ${formatMoney(total, ccy)}` : t.book}
             </button>
           </div>
         )}
-        {!done && date && time && !name && (
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.75)', margin: '8px 0 0' }}>{t.enterName}</p>
+        {!done && date && time && (!name || !ageOk) && (
+          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.75)', margin: '8px 0 0' }}>{!name ? t.enterName : t.ageHint}</p>
         )}
 
         {/* footer */}
