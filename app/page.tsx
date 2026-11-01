@@ -43,6 +43,70 @@ const SHOW_STEPS_TIMELINE = false
 // Interactive calendar next to / under the hero (components/hero-calendar.tsx). Off for now.
 const SHOW_HERO_CALENDAR = false
 
+// Halftone cloud picture next to the big headline (public/hero-clouds.webp), with a dot field
+// behind it and two small glass cards on top. Wide screens only.
+const SHOW_HERO_ART = true
+
+function HeroArt({ lng }: { lng: string }) {
+  const tr = lng === 'tr'
+  const glass: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(18px) saturate(160%)', WebkitBackdropFilter: 'blur(18px) saturate(160%)',
+    border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 18px 40px -18px rgba(40,60,80,0.35)',
+  }
+  const dots = 'radial-gradient(closest-side, #000 35%, transparent 100%)'
+  return (
+    <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center pr-[7vw] pt-20 xl:flex" aria-hidden>
+      <style>{`
+        @keyframes heroFloat { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+        .hero-float { animation: heroFloat 7s ease-in-out infinite }
+        .hero-float-late { animation: heroFloat 7s ease-in-out -3.5s infinite }
+        @media (prefers-reduced-motion: reduce) { .hero-float, .hero-float-late { animation: none } }
+      `}</style>
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1.1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        className="relative" style={{ width: 'clamp(330px, 29vw, 540px)' }}
+      >
+        {/* print-dot field behind the picture, echoing its halftone */}
+        <div className="absolute -left-28 -bottom-24 h-[75%] w-[85%]" style={{ backgroundImage: 'radial-gradient(rgba(52,112,142,0.5) 1.6px, transparent 1.9px)', backgroundSize: '16px 16px', maskImage: dots, WebkitMaskImage: dots }} />
+        <div className="absolute -right-24 -top-20 h-[45%] w-[60%]" style={{ backgroundImage: 'radial-gradient(rgba(52,112,142,0.4) 1.6px, transparent 1.9px)', backgroundSize: '16px 16px', maskImage: dots, WebkitMaskImage: dots }} />
+        {/* soft sky-blue glow so the picture sits in the page's colour wash */}
+        <div className="absolute -inset-8 rounded-[60px]" style={{ background: 'radial-gradient(circle at 60% 40%, rgba(96,165,196,0.35), transparent 70%)', filter: 'blur(40px)' }} />
+
+        <div className="hero-float relative">
+          <div className="relative overflow-hidden rounded-[34px]"
+            style={{ aspectRatio: '968 / 1380', transform: 'rotate(2.5deg)', boxShadow: '0 50px 90px -35px rgba(30,70,95,0.55), 0 0 0 6px rgba(255,255,255,0.55)' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/hero-clouds.webp" alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
+            {/* warm paper tint at the bottom, matching the beige page */}
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(236,226,212,0.45), rgba(236,226,212,0) 38%)' }} />
+          </div>
+        </div>
+
+        {/* "confirmed" chip, top right */}
+        <div className="hero-float-late absolute -right-8 top-12 flex items-center gap-2.5 rounded-full py-2 pl-2 pr-4" style={glass}>
+          <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ background: '#1f9d55' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7" /></svg>
+          </span>
+          <span className="text-[13px] font-semibold text-[#1d1d1f]">{tr ? 'Cmt 14:30 · Onaylandı' : 'Sat 14:30 · Confirmed'}</span>
+        </div>
+
+        {/* phone-style booking notification, overlapping the lower left corner */}
+        <div className="hero-float-late absolute -left-20 bottom-16 w-[270px] rounded-[20px] px-4 pt-3 pb-3.5" style={glass}>
+          <div className="mb-1.5 flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icon-192.png" alt="" width={18} height={18} className="rounded-[5px]" />
+            <span className="text-[10.5px] font-semibold tracking-[0.06em] text-[#6b7280]">SNIPPR</span>
+            <span className="ml-auto text-[11px] text-[#9ca3af]">{tr ? 'şimdi' : 'now'}</span>
+          </div>
+          <p className="text-[13.5px] font-semibold text-[#1d1d1f]">{tr ? 'Yeni randevu' : 'New booking'}</p>
+          <p className="mt-0.5 text-[12.5px] leading-snug text-[#4b5563]">{tr ? 'Ali, Cumartesi 14:30 için saç kesimi randevusu aldı.' : 'Ali booked a haircut for Saturday at 14:30.'}</p>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 // "Snippr on your phone" QR box in the bottom corner (components/ui/download-popup.tsx). Off for now.
 const SHOW_PHONE_POPUP = false
 
@@ -603,6 +667,9 @@ export default function Home() {
 
           </motion.div>
         </div>
+
+        {/* ── Cloud artwork on the right (wide screens) ── */}
+        {SHOW_HERO_ART && <HeroArt lng={lng} />}
 
         {/* ── Interactive calendar on the right (wide screens) ── */}
         {SHOW_HERO_CALENDAR && (
