@@ -140,18 +140,23 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
   return (
     <section id="how" className="fa-section py-16 px-4" style={{ background: 'transparent' }}>
       <style>{`
-        .fa-row { display: flex; gap: 16px; height: 580px; }
+        /* height follows the screen: shorter on laptops, never taller than before */
+        .fa-row { display: flex; gap: 16px; height: clamp(430px, 60vh, 580px); }
         .fa-card { flex: 1 1 0; min-width: 0; transition: flex-grow .55s cubic-bezier(.22,1,.36,1), box-shadow .3s; }
         .fa-card.is-open { flex-grow: 1.75; }
         .fa-detail { opacity: 0; transform: translateY(10px); transition: opacity .35s ease .12s, transform .45s cubic-bezier(.22,1,.36,1) .12s; pointer-events: none; }
         .fa-card.is-open .fa-detail { opacity: 1; transform: none; pointer-events: auto; }
-        .fa-wash { opacity: .28; transition: opacity .45s ease; }
+        .fa-wash { opacity: .45; transition: opacity .45s ease; }
+        /* closed cards: big step number + the three step icons, so they never look empty */
+        .fa-peek { opacity: 1; transition: opacity .3s ease; }
+        .fa-card.is-open .fa-peek { opacity: 0; pointer-events: none; }
         .fa-card.is-open .fa-wash { opacity: 1; }
         @media (max-width: 900px) {
           .fa-row { flex-direction: column; height: auto; }
           .fa-card, .fa-card.is-open { flex: none; }
           .fa-detail { opacity: 1; transform: none; pointer-events: auto; }
           .fa-wash { opacity: 1; }
+          .fa-peek { display: none; }
         }
       `}</style>
 
@@ -182,6 +187,16 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
                 {/* colour wash at the bottom (pale when closed, vivid when open) */}
                 <div className="fa-wash" aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '52%', background: GRADIENTS[i],
                   WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, #000 45%)', maskImage: 'linear-gradient(to bottom, transparent 0%, #000 45%)' }} />
+
+                {/* peek for closed cards */}
+                <div className="fa-peek" aria-hidden style={{ position: 'absolute', left: 28, right: 20, bottom: 26, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14 }}>
+                  <span style={{ fontSize: 'clamp(52px, 5vw, 80px)', fontWeight: 700, lineHeight: 0.8, letterSpacing: '-0.05em', color: 'rgba(15,23,42,0.13)' }}>0{i + 1}</span>
+                  <span style={{ display: 'flex', gap: 6 }}>
+                    {ICONS[i].map((Icon, k) => (
+                      <span key={k} style={{ width: 34, height: 34, borderRadius: 11, background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 12px rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0f172a' }}><Icon size={15} /></span>
+                    ))}
+                  </span>
+                </div>
 
                 <div style={{ position: 'relative', padding: '30px 28px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <h3 style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: '#0f172a', margin: 0 }}>{card.title}</h3>
