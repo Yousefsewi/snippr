@@ -7,6 +7,7 @@ import { detectTimezone, setSavedTimezone } from '@/lib/timezones'
 import { detectCurrency, setSavedCurrency } from '@/lib/currency'
 import { Auth5 } from '@/components/watermelon-ui/auth-5'
 import { suggestEmail } from '@/lib/email-typo'
+import { ageFrom, AGE_ERRORS, MIN_AGE } from '@/lib/age'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -24,6 +25,12 @@ export default function RegisterPage() {
     const last = (form.querySelector('#Auth5-lastname') as HTMLInputElement)?.value.trim() ?? ''
     const email = (form.querySelector('#Auth5-email') as HTMLInputElement)?.value ?? ''
     const password = (form.querySelector('#Auth5-password') as HTMLInputElement)?.value ?? ''
+    const birthDate = (form.querySelector('#Auth5-birthdate') as HTMLInputElement)?.value ?? ''
+
+    // Legal age check before anything is created (checked again on the server)
+    const age = ageFrom(birthDate)
+    if (age === null) { setError(AGE_ERRORS.invalid); return }
+    if (age < MIN_AGE) { setError(AGE_ERRORS.tooYoung); return }
 
     const emailPrefix = email.split('@')[0]
     const fullName = `${first} ${last}`.trim() || emailPrefix
@@ -51,7 +58,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, slug }),
+        body: JSON.stringify({ email, password, fullName, slug, birthDate }),
       })
       const result = await res.json()
       if (!res.ok) {

@@ -121,6 +121,13 @@ export function Auth5({
                 </div>
               )}
 
+              {/* Age check at sign-up: account holders must be 18 or older (see /terms) */}
+              {showName && (
+                <Field id="Auth5-birthdate" label="Date of birth">
+                  <input id="Auth5-birthdate" type="date" autoComplete="bday" min="1900-01-01" className={INPUT} required />
+                </Field>
+              )}
+
               <Field id="Auth5-email" label="Email">
                 <input id="Auth5-email" name="email" type="email" autoComplete="username" placeholder="you@example.com" className={INPUT} required />
               </Field>

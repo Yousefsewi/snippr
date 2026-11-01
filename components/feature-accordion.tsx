@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import QRCode from 'react-qr-code'
+import { SITE_URL } from '@/lib/site-url'
 import { MousePointerClick, Bell, Mail, TrendingUp, Check, CalendarDays, Gift, QrCode, MapPin, Sparkles } from 'lucide-react'
 
 // "How Snippr works" — four cards in a row; the one under the mouse (or tapped) expands
@@ -65,49 +67,67 @@ const GRADIENTS = [
 ]
 
 function Mock({ i, lng }: { i: number; lng: Lng }) {
+  const tr = lng === 'tr'
   const card: React.CSSProperties = { background: '#fff', borderRadius: 18, padding: 16, boxShadow: '0 10px 30px rgba(15,23,42,0.12)', border: '1px solid rgba(255,255,255,0.9)' }
+  // the shop's own avatar, like a barber would upload: initials on a warm colour
+  const shopAvatar = (size: number) => (
+    <span style={{ width: size, height: size, borderRadius: '50%', background: '#7c5a3a', color: '#f6ead9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-noto-serif), Georgia, serif', fontSize: size * 0.4, fontWeight: 600, flexShrink: 0, letterSpacing: '0.02em' }}>GS</span>
+  )
   if (i === 0) return (
     <div style={card}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <span style={{ width: 34, height: 34, borderRadius: 10, background: '#111827', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>✦</span>
-        <div><p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Golden Scissors</p><p style={{ margin: 0, fontSize: 11.5, color: '#64748b' }}>{lng === 'tr' ? 'Saç kesimi · 30 dk' : 'Haircut · 30 min'}</p></div>
+        {shopAvatar(36)}
+        <div style={{ minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Golden Scissors</p>
+          <p style={{ margin: 0, fontSize: 11.5, color: '#64748b' }}>{tr ? 'Saç kesimi · 30 dk · €25' : 'Haircut · 30 min · €25'}</p>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: 6, background: '#f1f5f9', borderRadius: 12, padding: 8 }}>
-        {['10:00', '14:30', '16:00'].map(t => (
-          <span key={t} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 600, padding: '7px 0', borderRadius: 8, background: t === '14:30' ? '#111827' : '#dbeafe', color: t === '14:30' ? '#fff' : '#1e3a8a' }}>{t}</span>
-        ))}
+      <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 600, color: '#64748b' }}>{tr ? 'Cumartesi, 1 Kasım' : 'Saturday, 1 November'}</p>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {['10:00', '14:30', '16:00'].map(t => {
+          const on = t === '14:30'
+          return (
+            <span key={t} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 600, padding: '8px 0', borderRadius: 10, border: `1px solid ${on ? '#111827' : '#e2e8f0'}`, background: on ? '#111827' : '#fff', color: on ? '#fff' : '#334155' }}>{t}</span>
+          )
+        })}
       </div>
     </div>
   )
   if (i === 1) return (
-    <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span style={{ width: 38, height: 38, borderRadius: 11, background: '#111827', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>✦</span>
-      <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{lng === 'tr' ? 'Yeni randevu 🎉' : 'New booking 🎉'}</p>
-        <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569' }}>{lng === 'tr' ? 'Ali — Cumartesi 14:30, saç kesimi' : 'Ali — Saturday 14:30, haircut'}</p>
+    // looks like a phone lock-screen notification from the Snippr app
+    <div style={{ ...card, padding: '11px 14px 13px', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icon-192.png" alt="" width={18} height={18} style={{ borderRadius: 5, display: 'block' }} />
+        <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.06em', color: '#64748b' }}>SNIPPR</span>
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94a3b8' }}>{tr ? 'şimdi' : 'now'}</span>
       </div>
-      <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>{lng === 'tr' ? 'şimdi' : 'now'}</span>
+      <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{tr ? 'Yeni randevu' : 'New booking'}</p>
+      <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#334155', lineHeight: 1.4 }}>{tr ? 'Ali, Cumartesi 14:30 için saç kesimi randevusu aldı.' : 'Ali booked a haircut for Saturday at 14:30.'}</p>
     </div>
   )
   if (i === 2) return (
     <div style={card}>
-      <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{lng === 'tr' ? 'Randevun hazır, Ali!' : 'You’re booked, Ali!'}</p>
-      {[[lng === 'tr' ? 'Tarih' : 'Date', lng === 'tr' ? 'Cumartesi, 1 Kasım' : 'Saturday, 1 November'], [lng === 'tr' ? 'Saat' : 'Time', '14:30'], [lng === 'tr' ? 'Hizmet' : 'Service', lng === 'tr' ? 'Saç kesimi · €25' : 'Haircut · €25']].map(([k, v]) => (
+      <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{tr ? 'Randevun hazır, Ali!' : 'You’re booked, Ali!'}</p>
+      {[[tr ? 'Tarih' : 'Date', tr ? 'Cumartesi, 1 Kasım' : 'Saturday, 1 November'], [tr ? 'Saat' : 'Time', '14:30'], [tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi · €25' : 'Haircut · €25']].map(([k, v]) => (
         <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '5px 0', borderTop: '1px solid #f1f5f9' }}>
-          <span style={{ color: '#94a3b8' }}>{k}</span><span style={{ fontWeight: 600, color: k.includes('First') || k.includes('İlk') ? '#be185d' : '#0f172a' }}>{v}</span>
+          <span style={{ color: '#94a3b8' }}>{k}</span><span style={{ fontWeight: 600, color: '#0f172a' }}>{v}</span>
         </div>
       ))}
     </div>
   )
   return (
+    // a real, scannable QR code (opens the Snippr homepage)
     <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 14 }}>
-      {/* simple QR-like grid */}
-      <div style={{ width: 64, height: 64, borderRadius: 10, background: '#fff', border: '1px solid #e2e8f0', padding: 6, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 2, flexShrink: 0 }}>
-        {Array.from({ length: 25 }).map((_, k) => <span key={k} style={{ borderRadius: 2, background: [0, 1, 3, 4, 5, 9, 12, 15, 19, 20, 21, 23, 24, 7, 17].includes(k) ? '#0f172a' : 'transparent' }} />)}
+      <div style={{ padding: 6, borderRadius: 10, border: '1px solid #e2e8f0', background: '#fff', flexShrink: 0, lineHeight: 0 }}>
+        <QRCode value={SITE_URL} size={60} fgColor="#0f172a" />
       </div>
-      <div>
-        <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 700, color: '#9d174d', background: '#fce7f3', borderRadius: 999, padding: '3px 10px' }}>✦ {lng === 'tr' ? 'Golden Scissors' : 'Golden Scissors'}</span>
-        <p style={{ margin: '6px 0 0', fontSize: 12, color: '#475569' }}>{lng === 'tr' ? 'Tara ve randevu al' : 'Scan to book'}</p>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {shopAvatar(22)}
+          <p style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: '#0f172a' }}>Golden Scissors</p>
+        </div>
+        <p style={{ margin: '6px 0 0', fontSize: 12, color: '#475569' }}>{tr ? 'Kameranla tara, randevunu al' : 'Scan with your camera to book'}</p>
       </div>
     </div>
   )

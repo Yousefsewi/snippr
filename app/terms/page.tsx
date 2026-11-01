@@ -15,7 +15,7 @@ export default function TermsPage() {
         },
         {
           heading: 'Your account',
-          body: 'You are responsible for keeping your login details safe and for the information you publish on your booking page, including services, prices and opening hours.',
+          body: 'You must be at least 18 years old to create a Snippr account; we ask for your date of birth when you sign up. You are responsible for keeping your login details safe and for the information you publish on your booking page, including services, prices and opening hours.',
         },
         {
           heading: 'Bookings',
