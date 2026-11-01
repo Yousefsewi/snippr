@@ -687,7 +687,7 @@ export default function Home() {
         {SHOW_HERO_CUBE && (
           <motion.div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center pr-[4vw] pt-16 lg:flex"
             initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}>
-            <div style={{ width: 'min(46vw, 680px)', aspectRatio: '1 / 1' }}>
+            <div style={{ width: 'min(40vw, 640px)', aspectRatio: '1 / 1' }}>
               <ParticleCube />
             </div>
           </motion.div>
