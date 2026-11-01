@@ -1,5 +1,6 @@
 'use client'
 
+import YoutubeClickToLoad from '@/components/youtube-click-to-load'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useParams } from 'next/navigation'
@@ -402,7 +403,7 @@ export default function BookingPage() {
                     if (!ytId) return null
                     return (
                       <div key={b.id} style={{ borderRadius: 22, overflow: 'hidden', aspectRatio: '16/9', width: '100%', border: '1px solid rgba(255,255,255,0.25)' }}>
-                        <iframe src={`https://www.youtube-nocookie.com/embed/${ytId}`} title={b.title} width="100%" height="100%" style={{ border: 'none', display: 'block' }} allowFullScreen />
+                        <YoutubeClickToLoad id={ytId} title={b.title} lang={lang} />
                       </div>
                     )
                   }

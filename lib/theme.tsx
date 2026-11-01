@@ -42,7 +42,7 @@ export const THEMES: ThemeDef[] = [
   {
     // 5 — foggy green forest (photo)
     key: 'forest', label: 'Forest', swatch: '#374b3f',
-    background: photo('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80', '#e8efe9'),
+    background: photo('/themes/forest.jpg', '#e8efe9'),
     accent: '#0f766e',
   },
   {
