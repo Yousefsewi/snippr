@@ -541,6 +541,8 @@ function AppInterestCTA({ serif, lng }: { serif: string; lng: Lng }) {
 
 export default function Home() {
   const [lng, setLng] = useState<Lng>('en')
+  // hero cube: scattered (true) or a cube (false) — changes the hint under it
+  const [cubeScattered, setCubeScattered] = useState(false)
   const chooseLng = (l: Lng) => { setLng(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
   const c = LC[lng]
   const isRTL = false
@@ -692,11 +694,11 @@ export default function Home() {
                  the drawing area around it is larger so a burst isn't cut off */}
               <div className="relative" style={{ width: 'clamp(300px, calc(146vw - 1680px), 760px)', aspectRatio: '1 / 1' }}>
                 <div className="pointer-events-auto absolute cursor-pointer select-none" style={{ inset: '-35%' }}>
-                  <ParticleCube />
+                  <ParticleCube onToggle={setCubeScattered} />
                 </div>
               </div>
               <p className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[#1d1d1f]/45" style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}>
-                {lng === 'tr' ? 'Tıkla — dağılsın' : 'Click to scatter'}
+                {cubeScattered ? (lng === 'tr' ? 'Tekrar tıkla — toplansın' : 'Click again to rebuild') : (lng === 'tr' ? 'Tıkla — dağılsın' : 'Click to scatter')}
               </p>
             </motion.div>
           </div>

@@ -92,8 +92,11 @@ function buildPoints(grid: number, edgeN: number): Float32Array {
   return new Float32Array(pts)
 }
 
-export default function ParticleCube() {
+// onToggle: told when the cube scatters (true) or comes back together (false)
+export default function ParticleCube({ onToggle }: { onToggle?: (scattered: boolean) => void } = {}) {
   const mountRef = useRef<HTMLDivElement>(null)
+  const onToggleRef = useRef(onToggle)
+  useEffect(() => { onToggleRef.current = onToggle }, [onToggle])
 
   useEffect(() => {
     const mount = mountRef.current!
@@ -140,9 +143,26 @@ export default function ParticleCube() {
     scene.add(mesh)
 
     /* ── interaction, measured on screen (pixels) so every visible dot reacts ──
-       hover: dots near the pointer move away · click / tap: the cube bursts and rebuilds */
+       hover: dots near the pointer move away
+       first click / tap: the cube bursts and the dots stay scattered, floating gently
+       next click / tap: the dots fly back and rebuild the cube */
     const pointer = { x: -1e4, y: -1e4, inside: false }
-    let burstAt = -1e4            // time of the last burst (ms)
+    let burstAt = -1e4            // time of the last change (ms)
+    let scattered = false
+    // where each dot floats while scattered: around the cube, inside the visible area
+    const target = new Float32Array(COUNT * 3)
+    const phase = new Float32Array(COUNT)
+    for (let i = 0; i < COUNT; i++) phase[i] = Math.random() * Math.PI * 2
+    function pickTargets() {
+      for (let i = 0; i < COUNT; i++) {
+        const b = i * 3
+        let x = orig[b] + (Math.random() - 0.5) * 0.9, y = orig[b+1] + (Math.random() - 0.5) * 0.9, z = orig[b+2] + (Math.random() - 0.5) * 0.9
+        const l = Math.hypot(x, y, z) || 1
+        const r = 1.0 + Math.pow(Math.random(), 0.7) * 1.2       // 1.0 – 2.2: never outside the canvas
+        x = (x / l) * r; y = (y / l) * r; z = (z / l) * r
+        target[b] = x; target[b+1] = y; target[b+2] = z
+      }
+    }
     function toLocal(e: PointerEvent) {
       const r = mount.getBoundingClientRect()
       return { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom }
@@ -153,7 +173,9 @@ export default function ParticleCube() {
       const p = toLocal(e)
       if (!p.inside) return
       Object.assign(pointer, p)
-      burst(p.x, p.y)
+      if (!scattered) { pickTargets(); burst(p.x, p.y) } else burstAt = performance.now()
+      scattered = !scattered
+      onToggleRef.current?.(scattered)
     }
     window.addEventListener('pointermove', onMove, { passive: true })
     window.addEventListener('pointerdown', onDown, { passive: true })
@@ -187,7 +209,7 @@ export default function ParticleCube() {
         const d = Math.hypot(dx, dy) || 1
         dx /= d; dy /= d
         const near = Math.max(0, 1 - d / (size * 0.9))          // strongest under the finger
-        const k = (0.05 + near * near * 0.22) * (0.7 + Math.random() * 0.6)
+        const k = (0.03 + near * near * 0.11) * (0.7 + Math.random() * 0.6)
         // outward on screen, plus outward from the cube centre and a bit of depth
         dirW.set(dx, -dy, (Math.random() - 0.5) * 1.2).applyQuaternion(invQ)
         const ox = orig[b], oy = orig[b+1], oz = orig[b+2], ol = Math.hypot(ox, oy, oz) || 1
@@ -211,21 +233,27 @@ export default function ParticleCube() {
       const sinceBurst = (now - burstAt) / 1000
       mesh.rotation.y += speed * dt * (1 + 2.5 * Math.max(0, 1 - sinceBurst / 1.5))
 
-      // after a burst the dots drift back slowly, then snap into place
-      const spring = SPRING * (sinceBurst < 2.2 ? 0.18 + 0.82 * Math.min(1, sinceBurst / 2.2) ** 2 : 1)
+      // scattered: a soft pull towards the floating spots · coming back: slow at first, then snaps into place
+      const spring = scattered ? 0.012 : SPRING * (sinceBurst < 2.2 ? 0.18 + 0.82 * Math.min(1, sinceBurst / 2.2) ** 2 : 1)
+      const t = now / 1000
       const damping = Math.pow(DAMPING, f60)
 
       const hover = pointer.inside
       if (hover) { project(); invQ.copy(mesh.quaternion).invert() }
-      const radius = Math.min(mount.clientWidth, mount.clientHeight) * 0.16
+      const radius = Math.min(mount.clientWidth, mount.clientHeight) * 0.12
 
       const arr = (geo.attributes.position as THREE.BufferAttribute).array as Float32Array
       for (let i = 0; i < COUNT; i++) {
         const b = i * 3
         const px = arr[b], py = arr[b+1], pz = arr[b+2]
-        let fx = (orig[b]   - px) * spring
-        let fy = (orig[b+1] - py) * spring
-        let fz = (orig[b+2] - pz) * spring
+        let tx = orig[b], ty = orig[b+1], tz = orig[b+2]
+        if (scattered) {
+          const w = Math.sin(t * 0.6 + phase[i]) * 0.06, w2 = Math.cos(t * 0.45 + phase[i] * 1.7) * 0.06
+          tx = target[b] + w; ty = target[b+1] + w2; tz = target[b+2] - w
+        }
+        let fx = (tx - px) * spring
+        let fy = (ty - py) * spring
+        let fz = (tz - pz) * spring
         if (hover) {
           const dx = screenX[i] - pointer.x, dy = screenY[i] - pointer.y
           const d = Math.hypot(dx, dy)
