@@ -12,6 +12,7 @@ import TwistingRibbon from '@/components/ui/twisting-ribbon'
 import { Rocket, Link2, Share2, CalendarCheck } from 'lucide-react'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import FeatureExplorer from '@/components/feature-explorer'
+import WhySnippr from '@/components/why-snippr'
 import FeatureAccordion from '@/components/feature-accordion'
 import HeroCalendar from '@/components/hero-calendar'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
@@ -220,7 +221,7 @@ const FAQ_DATA: Record<string, { q: string; a: string }[]> = {
     { q: 'Can I add my team / multiple barbers?', a: 'Not yet — today each account is one barber with one calendar. Team calendars are on our roadmap.' },
   ],
   'Support': [
-    { q: 'How do I get help?', a: `Email us at ${SUPPORT_EMAIL} — we usually reply within a day.` },
+    { q: 'How do I get help?', a: `Email us at ${SUPPORT_EMAIL} and we’ll reply by email.` },
     { q: 'Do you help me get set up?', a: 'Yes — email us and we’ll help you set up your services, hours and booking page, for free.' },
     { q: 'Is my data safe?', a: 'Your data is stored securely in the EU and never sold. Only you can see your customers’ details, and you can delete your account and all its data anytime from Settings.' },
   ],
@@ -256,7 +257,7 @@ const FAQ_DATA_TR: Record<string, { q: string; a: string }[]> = {
     { q: 'Ekibimi / birden fazla berberi ekleyebilir miyim?', a: 'Henüz değil — şu an her hesap tek berber ve tek takvim. Ekip takvimi yol haritamızda.' },
   ],
   'Destek': [
-    { q: 'Nasıl yardım alırım?', a: `${SUPPORT_EMAIL} adresine yaz — genelde bir gün içinde yanıtlarız.` },
+    { q: 'Nasıl yardım alırım?', a: `${SUPPORT_EMAIL} adresine yaz, e-postana cevap verelim.` },
     { q: 'Kurulumda yardımcı olur musunuz?', a: 'Evet — bize yaz, hizmetlerini, saatlerini ve rezervasyon sayfanı ücretsiz birlikte hazırlayalım.' },
     { q: 'Verim güvende mi?', a: 'Verin AB’de güvenle saklanır ve asla satılmaz. Müşteri bilgilerini sadece sen görürsün; hesabını ve tüm verini Ayarlar’dan istediğin an silebilirsin.' },
   ],
@@ -304,7 +305,7 @@ const LC: Record<Lng, {
       ['Clients asking “where are you?”', 'Your address opens straight in Maps'],
     ],
     questions: 'Questions?',
-    briefTitle: 'TALK TO US', briefBody: 'Questions, ideas, or want help setting up your page? We read every email and usually reply within a day.',
+    briefTitle: 'TALK TO US', briefBody: 'Questions, ideas, or want help setting up your page? We read every email.',
     briefPlaceholder: '', briefBtn: 'EMAIL US',
     trustTag: 'Built for the long view', trustTitle: 'Make room for the work that matters.',
     trustBody: 'Snippr keeps the details moving quietly in the background, so every appointment feels considered from first click to final look.',
@@ -340,7 +341,7 @@ const LC: Record<Lng, {
       ['“Neredesin?” diye soran müşteriler', 'Adresin direkt Haritalar’da açılır'],
     ],
     questions: 'Sorular?',
-    briefTitle: 'BİZE YAZ', briefBody: 'Sorun, fikrin ya da sayfanı kurmak için yardım mı lazım? Her e-postayı okuyoruz, genelde bir gün içinde yanıtlıyoruz.',
+    briefTitle: 'BİZE YAZ', briefBody: 'Sorun, fikrin ya da sayfanı kurmak için yardım mı lazım? Her e-postayı okuyoruz.',
     briefPlaceholder: '', briefBtn: 'E-POSTA GÖNDER',
     trustTag: 'Uzun vadeli düşünüldü', trustTitle: 'Önemli işe zaman ayır.',
     trustBody: 'Snippr detayları sessizce arka planda yürütür — her randevu ilk tıktan son ana kadar özenle planlanır.',
@@ -660,6 +661,12 @@ export default function Home() {
             transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             className="max-w-3xl mb-9"
           >
+            {/* small welcome label above the headline */}
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium"
+              style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.85)', color: SHOW_HERO_VIDEO ? '#f4efe7' : '#3a3a3c', boxShadow: '0 4px 14px rgba(29,29,31,0.06)' }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#34c759' }} />
+              {lng === 'tr' ? 'Snippr’a hoş geldin · Berberler için ücretsiz online randevu' : 'Welcome to Snippr · Free online booking for barbers'}
+            </p>
             <h1 className={`${serif.className} leading-[0.95] whitespace-pre-line`} style={{ fontSize: 'clamp(44px, 8vw, 110px)', fontWeight: 600, letterSpacing: '-0.03em', color: SHOW_HERO_VIDEO ? '#f4efe7' : '#1d1d1f', textShadow: SHOW_HERO_VIDEO ? '0 8px 40px rgba(0,0,0,0.4)' : 'none' }}>
               {c.heroBig}
             </h1>
@@ -720,6 +727,11 @@ export default function Home() {
       </section>
       )}
 
+      {/* Page story, top to bottom: welcome → quick facts → how it works → every feature →
+           what makes us different → old way vs Snippr → promise → questions → app interest */}
+      {/* ══ STATS ══ */}
+      <StatsSection lng={lng} />
+
       {/* ══ HOW IT WORKS ══ */}
       {/* Calendly-style expanding cards; the older step timeline is kept behind a flag */}
       {SHOW_STEPS_TIMELINE ? <HowItWorksSection lng={lng} /> : <FeatureAccordion lng={lng} />}
@@ -727,11 +739,8 @@ export default function Home() {
       {/* ══ FEATURE EXPLORER (tabs + spec list) ══ */}
       <FeatureExplorer lng={lng} />
 
-      {/* ══ STATS ══ */}
-      <StatsSection lng={lng} />
-
-      {/* ══ APP INTEREST CTA ══ */}
-      <AppInterestCTA serif={serif.className} lng={lng} />
+      {/* ══ WHY SNIPPR (what makes us different) ══ */}
+      <WhySnippr lng={lng} />
 
       {/* ══ BEFORE / AFTER ══ */}
       <section className="py-28 px-6" style={{ background: 'transparent' }}>
@@ -800,6 +809,9 @@ export default function Home() {
       <div id="faq" className="scroll-mt-24">
         <FAQ serif={playfair.className} lng={lng} />
       </div>
+
+      {/* ══ APP INTEREST CTA ══ */}
+      <AppInterestCTA serif={serif.className} lng={lng} />
 
       {/* ══ FOOTER (cinematic mega) ══ */}
       <footer
