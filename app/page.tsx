@@ -311,9 +311,9 @@ const LC: Record<Lng, {
     trustTag: 'Built for the long view', trustTitle: 'Make room for the work that matters.',
     trustBody: 'Snippr keeps the details moving quietly in the background, so every appointment feels considered from first click to final look.',
     stats: [
-      { name: 'To get started — no credit card', value: 'Free' },
-      { name: 'Average setup time', value: '2 min' },
-      { name: 'Online booking, every day', value: '24/7' },
+      { name: 'Free to start, no credit card', value: 'Free' },
+      { name: 'Set up in about 2 minutes', value: '2 min' },
+      { name: 'Customers book 24/7', value: '24/7' },
     ],
     tagline: 'Helping barbers fill every chair, effortlessly.', rights: `© ${new Date().getFullYear()} Snippr. All rights reserved.`, builtWith: 'Built with',
   },
@@ -347,9 +347,9 @@ const LC: Record<Lng, {
     trustTag: 'Uzun vadeli düşünüldü', trustTitle: 'Önemli işe zaman ayır.',
     trustBody: 'Snippr detayları sessizce arka planda yürütür — her randevu ilk tıktan son ana kadar özenle planlanır.',
     stats: [
-      { name: 'Başlamak için — kredi kartı yok', value: 'Ücretsiz' },
-      { name: 'Ortalama kurulum süresi', value: '2 dk' },
-      { name: 'Her gün online randevu', value: '7/24' },
+      { name: 'Ücretsiz başla, kredi kartı yok', value: 'Ücretsiz' },
+      { name: 'Yaklaşık 2 dakikada kurulur', value: '2 dk' },
+      { name: 'Müşteriler 7/24 randevu alır', value: '7/24' },
     ],
     tagline: 'Berberlerin her koltuğu zahmetsizce doldurmasına yardım ediyoruz.', rights: `© ${new Date().getFullYear()} Snippr. Tüm hakları saklıdır.`, builtWith: 'Şununla yapıldı:',
   },
@@ -485,22 +485,19 @@ function HowItWorksSection({ lng }: { lng: Lng }) {
   )
 }
 
+// quick facts: one thin line of plain text, no boxes
 function StatsSection({ lng }: { lng: Lng }) {
   const c = LC[lng]
   return (
-    <section className="py-16 px-6" style={{ background: 'transparent' }}>
-      <div className="mx-auto max-w-5xl">
-        <dl className="grid grid-cols-1 gap-x-4 gap-y-12 text-center sm:grid-cols-3">
-          {c.stats.map((stat) => (
-            <div key={stat.name} className="glass-card flex w-full flex-col gap-y-2 rounded-[28px] px-6 py-8">
-              <dd className="font-semibold" style={{ fontSize: 'clamp(32px, 4vw, 44px)', color: '#1d1d1f', letterSpacing: '-0.02em' }}>
-                {stat.value}
-              </dd>
-              <dt className="text-[14px]" style={{ color: 'rgba(29, 29, 31,0.6)' }}>{stat.name}</dt>
-            </div>
-          ))}
-        </dl>
-      </div>
+    <section className="py-6 px-6" style={{ background: 'transparent' }}>
+      <ul className="mx-auto flex max-w-4xl list-none flex-wrap items-center justify-center gap-x-6 gap-y-2 p-0 text-[14px] text-[#1d1d1f]/60">
+        {c.stats.map((stat, i) => (
+          <li key={stat.name} className="flex items-center gap-6">
+            {i > 0 && <span aria-hidden className="h-1 w-1 rounded-full bg-[#1d1d1f]/25" />}
+            <span>{stat.name}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }
