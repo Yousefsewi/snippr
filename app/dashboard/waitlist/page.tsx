@@ -327,10 +327,10 @@ export default function WaitlistPage() {
             <div className="flex justify-center py-20"><span className="h-6 w-6 animate-spin rounded-full border-2 border-[#e9e9e7] border-t-[#37352f]" /></div>
           ) : sorted.length === 0 ? (
             <div className="flex flex-col items-center py-20 text-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-[18px] text-white shadow-[0_10px_30px_-10px_rgba(98,80,214,0.6)]" style={{ background: 'linear-gradient(160deg,#8b7bff,#6250d6)' }}>
-                <Hourglass size={28} />
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#e9e9e7] bg-[#f7f7f5] text-[#9b9a97]">
+                <Hourglass size={24} strokeWidth={1.6} />
               </span>
-              <p className="mt-5 text-[18px] font-semibold text-[#37352f]">{t.empty[tab][0]}</p>
+              <p className="mt-4 text-[16px] font-semibold text-[#37352f]">{t.empty[tab][0]}</p>
               <p className="mt-1 text-[14.5px] text-[#9b9a97]">{t.empty[tab][1]}</p>
             </div>
           ) : (
