@@ -92,9 +92,14 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
   // iOS-style rows with coloured icon tiles — with sample shop data
   if (k === 'booking') {
     const ios = { fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }
-    const row = (tile: string, Icon: typeof CalendarDays, label: string, value: string, last?: boolean) => (
+    // glossy icon tile: colour gradient, a light edge on top, a soft glow in its own colour
+    const row = (tile: [string, string, string], Icon: typeof CalendarDays, label: string, value: string, last?: boolean) => (
       <div className="flex items-center gap-3 px-3 py-2.5" style={last ? undefined : { borderBottom: '1px solid rgba(255,255,255,0.12)', marginLeft: 0 }}>
-        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[8px] text-white" style={{ background: tile }}><Icon size={15} strokeWidth={2.2} /></span>
+        <span className="relative flex h-[30px] w-[30px] flex-shrink-0 items-center justify-center overflow-hidden rounded-[9px] text-white"
+          style={{ background: `linear-gradient(160deg, ${tile[0]} 0%, ${tile[1]} 100%)`, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -3px 6px rgba(0,0,0,0.16), 0 4px 14px ${tile[2]}` }}>
+          <span aria-hidden className="absolute inset-x-0 top-0 h-1/2" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0))' }} />
+          <Icon size={15} strokeWidth={2.3} className="relative drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" />
+        </span>
         <span className="text-[14px] text-white">{label}</span>
         <span className="ml-auto flex items-center gap-1 text-[13.5px] text-white/60">{value}<ChevronRight size={14} className="text-white/40" /></span>
       </div>
@@ -129,9 +134,9 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
             <div className="mt-0.5 flex items-center justify-center gap-1 text-[12px] text-white/70"><MapPin size={12} /><span className="underline">Assen</span></div>
           <div className="mt-3 px-1 text-[13px] font-semibold text-white">{tr ? 'Randevu bilgileri' : 'Appointment details'}</div>
           <div className="mt-2 overflow-hidden rounded-[16px]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}>
-            {row('linear-gradient(160deg,#ff6b81,#e8344e)', CalendarDays, tr ? 'Tarih' : 'Date', tr ? 'Cmt 1 Kas' : 'Sat 1 Nov')}
-            {row('linear-gradient(160deg,#5aa9ff,#2b6fd6)', Clock3, tr ? 'Saat' : 'Time', '14:30')}
-            {row('linear-gradient(160deg,#6fe58f,#1fa44a)', Scissors, tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi' : 'Haircut', true)}
+            {row(['#ff9a8b', '#e5485f', 'rgba(229,72,95,0.45)'], CalendarDays, tr ? 'Tarih' : 'Date', tr ? 'Cmt 1 Kas' : 'Sat 1 Nov')}
+            {row(['#7cc4ff', '#3a78e0', 'rgba(58,120,224,0.45)'], Clock3, tr ? 'Saat' : 'Time', '14:30')}
+            {row(['#ffd27a', '#d98a2b', 'rgba(217,138,43,0.45)'], Scissors, tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi' : 'Haircut', true)}
           </div>
           <div className="mt-2 px-1 text-[10.5px] leading-snug text-white/55">{tr ? 'Ödemeyi dükkânda yaparsın — online para çekilmez.' : 'You pay in the shop — nothing is charged online.'}</div>
           </div>
