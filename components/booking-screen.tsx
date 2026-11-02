@@ -49,33 +49,24 @@ export default function BookingScreen({ lng, days }: { lng: Lng; days: Date[] })
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={ios}>
-      {/* page background: the shop photo, blurred and darkened */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/demo/barbershop-cover.webp" alt="" className="absolute inset-0 h-full w-full object-cover" style={{ filter: 'blur(30px) saturate(1.1)', transform: 'scale(1.4)' }} />
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(40,26,18,0.55) 0%, rgba(20,16,16,0.8) 50%, rgba(10,10,12,0.92) 100%)' }} />
+      {/* page background: warm espresso with a soft caramel glow at the top */}
+      <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 60% at 50% 0%, rgba(217,182,140,0.28) 0%, rgba(217,182,140,0) 60%), linear-gradient(180deg, #3a2b23 0%, #241c18 50%, #161210 100%)' }} />
 
       <div className="absolute inset-x-0 bottom-0 overflow-y-auto px-3.5 pb-8" style={{ top: 58, scrollbarWidth: 'none' }}>
         {/* glass sheet */}
         <div className="rounded-[34px] p-3" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.16)' }}>
           <div className="mx-auto mb-3 h-[5px] w-10 rounded-full bg-white/30" />
-          {/* cover photo */}
-          <div className="relative h-[200px] overflow-hidden rounded-[26px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/demo/barbershop-cover.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 100%)' }} />
-            <span className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-[13px] text-white" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.35)' }}>
+          {/* cover: soft caramel, blush and cream wash (the site's own colours) */}
+          <div className="relative h-[170px] overflow-hidden rounded-[26px]"
+            style={{ background: 'radial-gradient(70% 90% at 15% 100%, #d9b68c 0%, rgba(217,182,140,0) 70%), radial-gradient(60% 80% at 90% 20%, #e8b4a8 0%, rgba(232,180,168,0) 70%), radial-gradient(50% 60% at 55% 45%, #fbf3e8 0%, rgba(251,243,232,0) 70%), linear-gradient(160deg, #f1e3d0 0%, #c99a74 100%)' }}>
+            <span className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-[13px] text-white" style={{ background: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.55)', color: '#4a3428' }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" /></svg>
             </span>
-            <span className="absolute top-3 left-3 flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-semibold text-white" style={{ background: 'rgba(20,16,14,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}>
+            <span className="absolute bottom-3 left-3 flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-semibold text-white" style={{ background: 'rgba(58,40,30,0.55)', border: '1px solid rgba(255,255,255,0.35)' }}>
               <span className="h-2 w-2 rounded-full bg-[#34c759]" />{t.open}
             </span>
           </div>
-          {/* barber photo */}
-          <div className="relative -mt-10 flex justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/demo/barber-avatar.webp" alt="" width={84} height={84} className="h-[84px] w-[84px] rounded-full object-cover" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.92), 0 10px 24px rgba(0,0,0,0.35)' }} />
-          </div>
-          <div className="mt-2.5 text-center text-[24px] font-bold text-white">Golden Scissors</div>
+          <div className="mt-4 text-center text-[24px] font-bold text-white">Golden Scissors</div>
           <div className="mt-1 flex items-center justify-center gap-1.5 text-[14px] text-white/70">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
             <span className="underline">Assen</span>
