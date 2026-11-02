@@ -34,7 +34,10 @@ export default function RegisterPage() {
 
     const emailPrefix = email.split('@')[0]
     const fullName = `${first} ${last}`.trim() || emailPrefix
-    const slug =
+    // a name picked on the homepage (?slug=) wins; otherwise one is made from the full name.
+    // If it is taken, the database adds a number (supabase/schema.sql).
+    const wanted = (new URLSearchParams(window.location.search).get('slug') ?? '').toLowerCase().replace(/[^a-z0-9-]+/g, '').replace(/^-+|-+$/g, '').slice(0, 40)
+    const slug = wanted ||
       (fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')) || emailPrefix.toLowerCase()
 
     // Catch "gamil.com"-style typos before creating an account nobody can reach

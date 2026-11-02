@@ -13,6 +13,7 @@ import { Rocket, Link2, Share2, CalendarCheck } from 'lucide-react'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import FeatureExplorer from '@/components/feature-explorer'
 import WhySnippr from '@/components/why-snippr'
+import ClaimLink from '@/components/claim-link'
 import FeatureAccordion from '@/components/feature-accordion'
 import HeroCalendar from '@/components/hero-calendar'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
@@ -804,6 +805,9 @@ export default function Home() {
         </div>
       </section>
       )}
+
+      {/* ══ CLAIM YOUR LINK ══ */}
+      <ClaimLink lng={lng} />
 
       {/* ══ FAQ ══ */}
       <div id="faq" className="scroll-mt-24">
