@@ -190,6 +190,8 @@ export default function BookingPage() {
   }, [slug])
 
   const accent = isHexColor(barber?.accent) ? barber.accent : '#111827'
+  // plain white page (the default): no background photo and the White theme or no theme picked
+  const plain = !barber?.cover_url && (!isHexColor(barber?.accent) || barber.accent.toLowerCase() === '#ffffff')
   const firstVisit = FIRST_VISIT_DISCOUNT ? (barber?.first_visit_discount ?? 0) : 0
   const discounted = (price: number) => Math.round(price * (100 - firstVisit)) / 100
 
@@ -306,21 +308,21 @@ export default function BookingPage() {
 
   /* ───────── loading / 404 ───────── */
   if (loading) return (
-    <GlassBackdrop image={null} accent="#111827">
+    <GlassBackdrop image={null} accent="#111827" plain>
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ ...GLASS_PANEL, width: 76, height: 76, borderRadius: 26, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ width: 26, height: 26, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.25)', borderTopColor: '#fff', animation: 'spin .7s linear infinite' }} />
+          <div style={{ width: 26, height: 26, borderRadius: '50%', border: '3px solid rgba(var(--ink),0.25)', borderTopColor: 'var(--fg)', animation: 'spin .7s linear infinite' }} />
         </div>
       </div>
     </GlassBackdrop>
   )
   if (notFound || !barber) return (
-    <GlassBackdrop image={null} accent="#111827">
+    <GlassBackdrop image={null} accent="#111827" plain>
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-        <div style={{ ...GLASS_PANEL, borderRadius: 36, padding: '34px 30px', textAlign: 'center', color: '#fff', maxWidth: 360 }}>
+        <div style={{ ...GLASS_PANEL, borderRadius: 36, padding: '34px 30px', textAlign: 'center', color: 'var(--fg)', maxWidth: 360 }}>
           <p style={{ fontSize: 40, margin: 0 }}>✂️</p>
           <p style={{ fontSize: 19, fontWeight: 700, margin: '10px 0 6px' }}>{t.notAvailable}</p>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, margin: 0 }}>{t.notAvailableSub}</p>
+          <p style={{ color: 'rgba(var(--ink),0.7)', fontSize: 14, margin: 0 }}>{t.notAvailableSub}</p>
         </div>
       </div>
     </GlassBackdrop>
@@ -336,26 +338,45 @@ export default function BookingPage() {
   const total = firstVisit > 0 ? discounted(price) : price
 
   return (
-    <GlassBackdrop image={backdrop} accent={accent}>
+    <GlassBackdrop image={backdrop} accent={accent} plain={plain}>
       {/* in the dashboard's phone preview (?preview=1) leave room for the status bar & notch */}
-      <div dir={dir} lang={lang} style={{ width: '100%', maxWidth: 470, margin: '0 auto', padding: `${inPreview ? 62 : 22}px 14px 48px`, boxSizing: 'border-box', color: '#fff' }}>
+      <div dir={dir} lang={lang} style={{ width: '100%', maxWidth: 470, margin: '0 auto', padding: `${inPreview ? 62 : 22}px 14px 48px`, boxSizing: 'border-box', color: 'var(--fg)' }}>
 
         {/* ══ the one big glass panel ══ */}
         <div style={{ ...GLASS_PANEL, borderRadius: 46, padding: 14 }}>
           {/* grabber */}
-          <div style={{ width: 38, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.45)', margin: '2px auto 12px' }} />
+          {!plain && <div style={{ width: 38, height: 5, borderRadius: 3, background: 'rgba(var(--ink),0.45)', margin: '2px auto 12px' }} />}
 
+          {plain ? (
+          <>
+          {/* plain page: round profile photo, share button top right */}
+          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', paddingTop: 10 }}>
+            <button onClick={share} aria-label="Share"
+              style={{ position: 'absolute', top: 0, right: 2, width: 38, height: 38, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#f4f4f5', border: '1px solid #ececec', color: '#1d1d1f' }}>
+              {copied
+                ? <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
+                : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>}
+            </button>
+            <div style={{ width: 116, height: 116, borderRadius: '50%', overflow: 'hidden', background: '#ececec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1d1d1f', fontSize: 44, fontWeight: 700, boxShadow: '0 0 0 4px #fff, 0 8px 24px rgba(0,0,0,0.10)' }}>
+              {bgImage
+                ? <img src={bgImage} alt={barber.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : barber.name?.charAt(0).toUpperCase()}
+            </div>
+          </div>
+          </>
+          ) : (
+          <>
           {/* photo with glass chips */}
           <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 0.82', borderRadius: 34, overflow: 'hidden', background: bgImage ? '#1a1a1a' : `linear-gradient(160deg, ${accent} 0%, #1a1a1a 100%)` }}>
             {bgImage
               ? <img src={bgImage} alt={barber.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.92)', fontSize: 92, fontWeight: 800 }}>{barber.name?.charAt(0).toUpperCase()}</div>}
+              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(var(--ink),0.92)', fontSize: 92, fontWeight: 800 }}>{barber.name?.charAt(0).toUpperCase()}</div>}
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%)' }} />
 
             {/* logo + share */}
             <div style={{ ...GLASS_CHIP, position: 'absolute', top: 14, left: 14, width: 40, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800 }}>✦</div>
             <button onClick={share} aria-label="Share"
-              style={{ ...GLASS_CHIP, position: 'absolute', top: 14, right: 14, width: 40, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}>
+              style={{ ...GLASS_CHIP, position: 'absolute', top: 14, right: 14, width: 40, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--chip-fg)' }}>
               {copied
                 ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
                 : <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>}
@@ -374,13 +395,15 @@ export default function BookingPage() {
               )}
             </div>
           </div>
+          </>
+          )}
 
           <div style={{ padding: '18px 10px 6px' }}>
             {/* who */}
             <h1 style={{ fontSize: 25, fontWeight: 700, margin: 0, letterSpacing: '-0.02em', textAlign: 'center' }}>{barber.name}</h1>
             {barber.address && (
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(barber.address)}`} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 5, color: 'rgba(255,255,255,0.82)', fontSize: 13.5, margin: '6px 0 0', textDecoration: 'none' }}>
+                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 5, color: 'rgba(var(--ink),0.82)', fontSize: 13.5, margin: '6px 0 0', textDecoration: 'none' }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                 <span style={{ textDecoration: 'underline', textUnderlineOffset: 2 }}>{barber.address}</span>
               </a>
@@ -389,13 +412,26 @@ export default function BookingPage() {
               <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginTop: 14 }}>
                 {barber.links.filter(l => safeUrl(l.url)).map((l, i) => (
                   <a key={i} href={safeUrl(l.url) ?? '#'} target="_blank" rel="noopener noreferrer"
-                    style={{ ...GLASS_CHIP, width: 40, height: 40, borderRadius: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                    style={{ ...GLASS_CHIP, width: 40, height: 40, borderRadius: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--chip-fg)' }}>
                     <SocialIcon platform={l.platform} size={19} />
                   </a>
                 ))}
               </div>
             )}
-            {barber.bio && <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.82)', fontSize: 14, margin: '14px auto 0', maxWidth: 360, lineHeight: 1.5 }}>{barber.bio}</p>}
+            {plain && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 999, fontSize: 12.5, fontWeight: 600, background: '#f4f4f5', border: '1px solid #ececec', color: '#3a3a3c' }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: todayHours?.open ? '#22c55e' : '#a1a1aa' }} />
+                  {todayHours?.open ? t.openToday(todayHours.start, todayHours.end) : t.closedToday}
+                </span>
+                {firstVisit > 0 && (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', borderRadius: 999, fontSize: 12.5, fontWeight: 600, background: '#f4f4f5', border: '1px solid #ececec', color: '#3a3a3c' }}>
+                    {t.firstOff(firstVisit)}
+                  </span>
+                )}
+              </div>
+            )}
+            {barber.bio && <p style={{ textAlign: 'center', color: 'rgba(var(--ink),0.82)', fontSize: 14, margin: '14px auto 0', maxWidth: 360, lineHeight: 1.5 }}>{barber.bio}</p>}
 
             {/* link buttons + videos */}
             {barber.blocks && barber.blocks.length > 0 && (
@@ -406,19 +442,29 @@ export default function BookingPage() {
                     const ytId = youtubeId(b.url)
                     if (!ytId) return null
                     return (
-                      <div key={b.id} style={{ borderRadius: 22, overflow: 'hidden', aspectRatio: '16/9', width: '100%', border: '1px solid rgba(255,255,255,0.25)' }}>
+                      <div key={b.id} style={{ borderRadius: 22, overflow: 'hidden', aspectRatio: '16/9', width: '100%', border: '1px solid rgba(var(--ink),0.25)' }}>
                         <YoutubeClickToLoad id={ytId} title={b.title} lang={lang} />
                       </div>
                     )
                   }
+                  if (plain && b.image) return (
+                    <a key={b.id} href={safeUrl(b.url) ?? '#'} target="_blank" rel="noopener noreferrer"
+                      style={{ position: 'relative', display: 'block', aspectRatio: '16 / 9', borderRadius: 18, overflow: 'hidden', textDecoration: 'none', background: '#ececec', transition: 'transform .15s' }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.01)' }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}>
+                      <img src={b.image} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.65) 100%)' }} />
+                      <span style={{ position: 'absolute', left: 16, right: 16, bottom: 14, color: '#fff', fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{b.title}</span>
+                    </a>
+                  )
                   return (
                     <a key={b.id} href={safeUrl(b.url) ?? '#'} target="_blank" rel="noopener noreferrer"
-                      style={{ ...GLASS_ROW, display: 'flex', alignItems: 'center', minHeight: 52, padding: 7, borderRadius: 999, color: '#fff', textDecoration: 'none', transition: 'transform .15s' }}
+                      style={{ ...GLASS_ROW, display: 'flex', alignItems: 'center', minHeight: 52, padding: 7, borderRadius: 999, color: 'var(--fg)', textDecoration: 'none', transition: 'transform .15s' }}
                       onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.015)' }}
                       onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}>
                       {b.image
                         ? <img src={b.image} alt="" style={{ width: 38, height: 38, borderRadius: 999, objectFit: 'cover', flexShrink: 0 }} />
-                        : <span style={{ width: 38, height: 38, borderRadius: 999, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>🔗</span>}
+                        : <span style={{ width: 38, height: 38, borderRadius: 999, background: 'rgba(var(--ink),0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>🔗</span>}
                       <span style={{ flex: 1, textAlign: 'center', fontSize: 14.5, fontWeight: 600, padding: '0 38px 0 0' }}>{b.title}</span>
                     </a>
                   )
@@ -433,7 +479,7 @@ export default function BookingPage() {
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
                 </div>
                 <h2 style={{ fontSize: 21, fontWeight: 700, margin: '16px 0 6px' }}>{t.requested}</h2>
-                <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: 14, margin: 0 }}>
+                <p style={{ color: 'rgba(var(--ink),0.82)', fontSize: 14, margin: 0 }}>
                   {service ? `${service.name} · ` : ''}{date?.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })} {t.at} {time}
                 </p>
                 {appliedDiscount > 0 && (
@@ -441,7 +487,7 @@ export default function BookingPage() {
                     🎁 {appliedDiscount}% first-visit discount applied{service && service.price > 0 ? ` — you pay ${formatMoney(Math.round(service.price * (100 - appliedDiscount)) / 100, ccy)} instead of ${formatMoney(service.price, ccy)}` : ''}
                   </p>
                 )}
-                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, margin: '12px 0 0' }}>{t.willConfirm(barber.name)}</p>
+                <p style={{ color: 'rgba(var(--ink),0.65)', fontSize: 13, margin: '12px 0 0' }}>{t.willConfirm(barber.name)}</p>
                 <button onClick={reset} style={{ ...GLASS_PILL_BTN, marginTop: 20 }}>{t.another}</button>
               </div>
             ) : (
@@ -464,11 +510,11 @@ export default function BookingPage() {
                                 style={{ ...IOS_OPTION, borderTop: k ? IOS_SEPARATOR : 'none' }}>
                                 <span style={{ flex: 1, minWidth: 0 }}>
                                   <span style={{ display: 'block', fontSize: 15 }}>{s.name}</span>
-                                  <span style={{ display: 'block', fontSize: 12.5, color: 'rgba(255,255,255,0.65)', marginTop: 1 }}>
+                                  <span style={{ display: 'block', fontSize: 12.5, color: 'rgba(var(--ink),0.65)', marginTop: 1 }}>
                                     {s.duration_min} {t.min}{firstVisit > 0 && s.price > 0 ? ` · first visit ${formatMoney(discounted(s.price), ccy)}` : ''}
                                   </span>
                                 </span>
-                                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)' }}>{formatMoney(s.price, ccy)}</span>
+                                <span style={{ fontSize: 15, color: 'rgba(var(--ink),0.85)' }}>{formatMoney(s.price, ccy)}</span>
                                 <span style={{ width: 22, textAlign: 'right', color: '#0a84ff', fontSize: 17, fontWeight: 700 }}>{sel ? '✓' : ''}</span>
                               </button>
                             )
@@ -489,7 +535,7 @@ export default function BookingPage() {
                           const sel = date && toLocalKey(d) === toLocalKey(date)
                           return (
                             <button key={d.toISOString()} onClick={() => { setDate(d); setTime(''); setOpenRow('time') }}
-                              style={{ ...(sel ? GLASS_SELECTED : GLASS_ROW), flexShrink: 0, width: 54, padding: '8px 0', borderRadius: 16, cursor: 'pointer', textAlign: 'center', color: sel ? '#111' : '#fff', fontFamily: 'inherit' }}>
+                              style={{ ...(sel ? GLASS_SELECTED : GLASS_ROW), flexShrink: 0, width: 54, padding: '8px 0', borderRadius: 16, cursor: 'pointer', textAlign: 'center', color: sel ? 'var(--sel-fg)' : 'var(--fg)', fontFamily: 'inherit' }}>
                               <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', opacity: 0.75 }}>{d.toLocaleDateString(locale, { weekday: 'short' })}</div>
                               <div style={{ fontSize: 17, fontWeight: 700, marginTop: 2 }}>{d.getDate()}</div>
                             </button>
@@ -506,7 +552,7 @@ export default function BookingPage() {
                   {openRow === 'time' && date && (
                     <div style={{ ...IOS_PANEL, padding: 12 }}>
                       {isClosed ? (
-                        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 14, padding: '10px 0', margin: 0 }}>{t.closedDay}</p>
+                        <p style={{ textAlign: 'center', color: 'rgba(var(--ink),0.8)', fontSize: 14, padding: '10px 0', margin: 0 }}>{t.closedDay}</p>
                       ) : (
                         <div className="glass-scroll" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, maxHeight: 200, overflowY: 'auto' }}>
                           {slots.map(t => {
@@ -514,7 +560,7 @@ export default function BookingPage() {
                             const sel = time === t
                             return (
                               <button key={t} disabled={taken} onClick={() => { setTime(t); setOpenRow(null) }}
-                                style={{ ...(sel ? GLASS_SELECTED : GLASS_ROW), padding: '9px 0', borderRadius: 12, color: sel ? '#111' : '#fff', fontSize: 13.5, fontWeight: 600, cursor: taken ? 'not-allowed' : 'pointer', opacity: taken ? 0.32 : 1, textDecoration: taken ? 'line-through' : 'none', fontFamily: 'inherit' }}>
+                                style={{ ...(sel ? GLASS_SELECTED : GLASS_ROW), padding: '9px 0', borderRadius: 12, color: sel ? 'var(--sel-fg)' : 'var(--fg)', fontSize: 13.5, fontWeight: 600, cursor: taken ? 'not-allowed' : 'pointer', opacity: taken ? 0.32 : 1, textDecoration: taken ? 'line-through' : 'none', fontFamily: 'inherit' }}>
                                 {t}
                               </button>
                             )
@@ -546,12 +592,12 @@ export default function BookingPage() {
                     )}
 
                     {/* age confirmation (required) */}
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, margin: '14px 6px 0', cursor: 'pointer', fontSize: 13, lineHeight: 1.45, color: 'rgba(255,255,255,0.85)' }}>
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, margin: '14px 6px 0', cursor: 'pointer', fontSize: 13, lineHeight: 1.45, color: 'rgba(var(--ink),0.85)' }}>
                       <input type="checkbox" checked={ageOk} onChange={e => setAgeOk(e.target.checked)}
-                        style={{ width: 18, height: 18, marginTop: 1, flexShrink: 0, accentColor: '#ffffff', cursor: 'pointer' }} />
+                        style={{ width: 18, height: 18, marginTop: 1, flexShrink: 0, accentColor: 'var(--fg)', cursor: 'pointer' }} />
                       <span>
                         {t.ageOk}{' '}
-                        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'underline' }}>{t.privacy}</a>
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--fg)', textDecoration: 'underline' }}>{t.privacy}</a>
                       </span>
                     </label>
 
@@ -560,11 +606,11 @@ export default function BookingPage() {
                       <>
                         <p style={IOS_HEADER}>{t.payment}</p>
                         <div style={IOS_GROUP}>
-                          <div style={IOS_STATIC_ROW}><span>{service.name}</span><span style={{ color: 'rgba(255,255,255,0.8)' }}>{formatMoney(price, ccy)}</span></div>
+                          <div style={IOS_STATIC_ROW}><span>{service.name}</span><span style={{ color: 'rgba(var(--ink),0.8)' }}>{formatMoney(price, ccy)}</span></div>
                           {firstVisit > 0 && price > 0 && (
                             <>
                               <div style={IOS_SEPARATOR_LINE} />
-                              <div style={{ ...IOS_STATIC_ROW, color: '#fbcfe8' }}><span>🎁 First visit −{firstVisit}%</span><span>−{formatMoney(price - total, ccy)}</span></div>
+                              <div style={{ ...IOS_STATIC_ROW, color: 'var(--pink)' }}><span>🎁 First visit −{firstVisit}%</span><span>−{formatMoney(price - total, ccy)}</span></div>
                             </>
                           )}
                           <div style={IOS_SEPARATOR_LINE} />
@@ -576,7 +622,7 @@ export default function BookingPage() {
                   </>
                 )}
 
-                {error && <p style={{ color: '#fecaca', fontSize: 13, margin: '14px 0 0', textAlign: 'center', fontWeight: 600 }}>{error}</p>}
+                {error && <p style={{ color: 'var(--err)', fontSize: 13, margin: '14px 0 0', textAlign: 'center', fontWeight: 600 }}>{error}</p>}
               </>
             )}
           </div>
@@ -586,24 +632,24 @@ export default function BookingPage() {
         {!done && date && time && (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
             <button onClick={submit} disabled={submitting || !name || !ageOk}
-              style={{ padding: '15px 34px', borderRadius: 999, background: '#ffffff', border: 'none', color: '#111', fontSize: 15.5, fontWeight: 700, fontFamily: 'inherit',
+              style={{ padding: '15px 34px', borderRadius: 999, background: 'var(--sel-bg)', border: 'none', color: 'var(--sel-fg)', fontSize: 15.5, fontWeight: 700, fontFamily: 'inherit',
                 boxShadow: '0 12px 30px rgba(0,0,0,0.25)', cursor: submitting || !name || !ageOk ? 'not-allowed' : 'pointer', opacity: submitting || !name || !ageOk ? 0.6 : 1 }}>
               {submitting ? t.booking : service ? `${t.book} · ${formatMoney(total, ccy)}` : t.book}
             </button>
           </div>
         )}
         {!done && date && time && (!name || !ageOk) && (
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.75)', margin: '8px 0 0' }}>{!name ? t.enterName : t.ageHint}</p>
+          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(var(--ink),0.75)', margin: '8px 0 0' }}>{!name ? t.enterName : t.ageHint}</p>
         )}
 
         {/* footer */}
-        <p style={{ textAlign: 'center', marginTop: 22, color: 'rgba(255,255,255,0.7)', fontSize: 12.5 }}>
-          {t.powered} <Link href="/" style={{ color: '#fff', fontWeight: 700, textDecoration: 'none' }}>Snippr</Link>
+        <p style={{ textAlign: 'center', marginTop: 22, color: 'rgba(var(--ink),0.7)', fontSize: 12.5 }}>
+          {t.powered} <Link href="/" style={{ color: 'var(--fg)', fontWeight: 700, textDecoration: 'none' }}>Snippr</Link>
         </p>
         <div lang="mul" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 10 }}>
           {(['tr', 'nl', 'en', 'ar'] as BLang[]).map(l => (
             <button key={l} onClick={() => switchLang(l)} aria-pressed={lang === l}
-              style={{ ...GLASS_CHIP, padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', color: '#fff', opacity: lang === l ? 1 : 0.55 }}>
+              style={{ ...GLASS_CHIP, padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', color: 'var(--chip-fg)', opacity: lang === l ? 1 : 0.55 }}>
               {LANG_NAMES[l]}
             </button>
           ))}
@@ -617,51 +663,69 @@ export default function BookingPage() {
 
 // Full-screen photo behind everything (the barber's photo, or a default), softly blurred and
 // tinted with the barber's colour, so the glass panel has something to refract.
-function GlassBackdrop({ image, accent, children }: { image: string | null; accent: string; children: React.ReactNode }) {
+// plain = the simple white page (default); otherwise dark glass over the theme / background photo
+const VARS_GLASS = {
+  '--fg': '#ffffff', '--ink': '255,255,255', '--sel-bg': '#ffffff', '--sel-fg': '#111111', '--err': '#fecaca', '--pink': '#fbcfe8',
+  '--chip-bg': 'rgba(255,255,255,0.18)', '--chip-fg': '#ffffff', '--chip-border': '1px solid rgba(255,255,255,0.32)', '--chip-shadow': 'inset 0 1px 0 rgba(255,255,255,0.35)',
+  '--panel-bg': 'linear-gradient(160deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 100%), rgba(24,22,30,0.24)',
+  '--panel-border': '1px solid rgba(255,255,255,0.28)',
+  '--row-bg': 'rgba(255,255,255,0.10)', '--row-border': '1px solid rgba(255,255,255,0.18)', '--row-shadow': 'inset 0 1px 0 rgba(255,255,255,0.14)', '--panel2-bg': 'rgba(0,0,0,0.14)',
+  '--group-bg': 'rgba(255,255,255,0.13)', '--group-border': '1px solid rgba(255,255,255,0.20)', '--group-shadow': 'inset 0 1px 0 rgba(255,255,255,0.16)',
+  '--panel-shadow': 'inset 0 1px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(255,255,255,0.06), 0 30px 80px rgba(0,0,0,0.35)',
+} as React.CSSProperties
+const VARS_PLAIN = {
+  '--fg': '#1d1d1f', '--ink': '29,29,31', '--sel-bg': '#1d1d1f', '--sel-fg': '#ffffff', '--err': '#c62828', '--pink': '#be185d',
+  '--chip-bg': '#1d1d1f', '--chip-fg': '#ffffff', '--chip-border': '1px solid #1d1d1f', '--chip-shadow': 'none',
+  '--row-bg': '#ffffff', '--row-border': '1px solid #e4e4e7', '--row-shadow': 'none', '--panel2-bg': '#f4f4f5',
+  '--group-bg': '#fafafa', '--group-border': '1px solid #ececec', '--group-shadow': 'none',
+  '--panel-bg': '#ffffff', '--panel-border': '1px solid #ececec', '--panel-shadow': '0 1px 2px rgba(0,0,0,0.04), 0 20px 50px -30px rgba(0,0,0,0.18)',
+} as React.CSSProperties
+
+function GlassBackdrop({ image, accent, plain = false, children }: { image: string | null; accent: string; plain?: boolean; children: React.ReactNode }) {
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif', overflow: 'hidden', background: '#1a1a1c' }}>
+    <div style={{ ...(plain ? VARS_PLAIN : VARS_GLASS), position: 'relative', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif', overflow: 'hidden', background: plain ? '#f4f4f5' : '#1a1a1c' }}>
       <style>{`
         @keyframes spin{to{transform:rotate(360deg)}}
-        .glass-input::placeholder{color:rgba(255,255,255,0.6)}
-        .glass-input:focus{border-color:rgba(255,255,255,0.6)!important;background:rgba(255,255,255,0.16)!important}
+        .glass-input::placeholder{color:rgba(var(--ink),0.6)}
+        .glass-input:focus{border-color:rgba(var(--ink),0.6)!important;background:rgba(var(--ink),0.16)!important}
         [dir=rtl] .ios-chev{display:inline-block;scale:-1 1}
         .glass-scroll{scrollbar-width:none}
         .glass-scroll::-webkit-scrollbar{display:none}
       `}</style>
-      <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
+      {!plain && <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
         {image
           ? <img src={image} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.12)', filter: 'blur(14px) saturate(1.15)' }} />
           : <div style={{ position: 'absolute', inset: 0, background: wallpaper(accent), filter: 'blur(40px) saturate(1.2)', transform: 'scale(1.2)' }} />}
         <div style={{ position: 'absolute', inset: 0, background: image ? `radial-gradient(circle at 20% 10%, ${accent}55 0%, transparent 55%), linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.35) 100%)` : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.18) 100%)' }} />
-      </div>
+      </div>}
       <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
     </div>
   )
 }
 
 const GLASS_PANEL: React.CSSProperties = {
-  background: 'linear-gradient(160deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 100%), rgba(24,22,30,0.24)',
+  background: 'var(--panel-bg)',
   backdropFilter: 'blur(40px) saturate(170%)',
   WebkitBackdropFilter: 'blur(40px) saturate(170%)',
-  border: '1px solid rgba(255,255,255,0.28)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(255,255,255,0.06), 0 30px 80px rgba(0,0,0,0.35)',
+  border: 'var(--panel-border)',
+  boxShadow: 'var(--panel-shadow)',
 }
 const GLASS_CHIP: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.18)',
+  background: 'var(--chip-bg)',
   backdropFilter: 'blur(20px) saturate(170%)',
   WebkitBackdropFilter: 'blur(20px) saturate(170%)',
-  border: '1px solid rgba(255,255,255,0.32)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)',
-  color: '#fff',
+  border: 'var(--chip-border)',
+  boxShadow: 'var(--chip-shadow)',
+  color: 'var(--chip-fg)',
 }
 const GLASS_ROW: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.10)',
-  border: '1px solid rgba(255,255,255,0.18)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14)',
+  background: 'var(--row-bg)',
+  border: 'var(--row-border)',
+  boxShadow: 'var(--row-shadow)',
 }
 const GLASS_SELECTED: React.CSSProperties = {
-  background: '#ffffff',
-  border: '1px solid #ffffff',
+  background: 'var(--sel-bg)',
+  border: '1px solid var(--sel-bg)',
   boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
 }
 const GLASS_PILL_BTN: React.CSSProperties = {
@@ -669,32 +733,32 @@ const GLASS_PILL_BTN: React.CSSProperties = {
 }
 // ── iPhone Settings-style grouped list ──
 const IOS_GROUP: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.20)', borderRadius: 22, overflow: 'hidden',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16)',
+  background: 'var(--group-bg)', border: 'var(--group-border)', borderRadius: 22, overflow: 'hidden',
+  boxShadow: 'var(--group-shadow)',
 }
-const IOS_SEPARATOR = '0.5px solid rgba(255,255,255,0.22)'
+const IOS_SEPARATOR = '0.5px solid rgba(var(--ink),0.22)'
 const IOS_SEPARATOR_LINE: React.CSSProperties = { height: 0, borderTop: IOS_SEPARATOR, marginLeft: 58 }
-const IOS_PANEL: React.CSSProperties = { background: 'rgba(0,0,0,0.14)', borderTop: IOS_SEPARATOR }
+const IOS_PANEL: React.CSSProperties = { background: 'var(--panel2-bg)', borderTop: IOS_SEPARATOR }
 const IOS_OPTION: React.CSSProperties = {
   width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px 11px 58px', background: 'transparent',
-  border: 'none', color: '#fff', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit',
+  border: 'none', color: 'var(--fg)', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit',
 }
-const IOS_STATIC_ROW: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', gap: 12, padding: '13px 16px', fontSize: 15, color: '#fff' }
-const IOS_HEADER: React.CSSProperties = { fontSize: 12.5, fontWeight: 500, color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', letterSpacing: '0.04em', margin: '22px 16px 7px' }
-const IOS_FOOTNOTE: React.CSSProperties = { fontSize: 12.5, color: 'rgba(255,255,255,0.65)', margin: '7px 16px 0', lineHeight: 1.45 }
+const IOS_STATIC_ROW: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', gap: 12, padding: '13px 16px', fontSize: 15, color: 'var(--fg)' }
+const IOS_HEADER: React.CSSProperties = { fontSize: 12.5, fontWeight: 500, color: 'rgba(var(--ink),0.65)', textTransform: 'uppercase', letterSpacing: '0.04em', margin: '22px 16px 7px' }
+const IOS_FOOTNOTE: React.CSSProperties = { fontSize: 12.5, color: 'rgba(var(--ink),0.65)', margin: '7px 16px 0', lineHeight: 1.45 }
 
 // a tappable row: coloured icon square, label, value and a chevron that turns when open
 // plain icon tile for the rows: one colour, thin outline (no coloured gradients)
-const ICON_TILE: React.CSSProperties = { width: 32, height: 32, borderRadius: 9, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(255,255,255,0.9)' }
+const ICON_TILE: React.CSSProperties = { width: 32, height: 32, borderRadius: 9, background: 'rgba(var(--ink),0.08)', border: '1px solid rgba(var(--ink),0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(var(--ink),0.9)' }
 
 function IosRow({ icon: Icon, label, value, open, disabled, onClick }: { icon: LucideIcon; label: string; value: string; open: boolean; disabled?: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', background: open ? 'rgba(255,255,255,0.08)' : 'transparent', border: 'none', color: '#fff', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', textAlign: 'left', opacity: disabled ? 0.6 : 1 }}>
+      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', background: open ? 'rgba(var(--ink),0.08)' : 'transparent', border: 'none', color: 'var(--fg)', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', textAlign: 'left', opacity: disabled ? 0.6 : 1 }}>
       <span style={ICON_TILE}><Icon size={17} strokeWidth={1.75} /></span>
       <span style={{ fontSize: 15.5 }}>{label}</span>
-      <span style={{ marginLeft: 'auto', fontSize: 15, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '55%' }}>{value}</span>
-      <span className="ios-chev" style={{ display: 'flex', color: 'rgba(255,255,255,0.45)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}><ChevronRight size={18} strokeWidth={2.4} /></span>
+      <span style={{ marginLeft: 'auto', fontSize: 15, color: 'rgba(var(--ink),0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '55%' }}>{value}</span>
+      <span className="ios-chev" style={{ display: 'flex', color: 'rgba(var(--ink),0.45)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}><ChevronRight size={18} strokeWidth={2.4} /></span>
     </button>
   )
 }
@@ -702,17 +766,17 @@ function IosRow({ icon: Icon, label, value, open, disabled, onClick }: { icon: L
 // an iOS form row: icon, label on the left, input on the right
 function IosField({ icon: Icon, label, value, onChange, placeholder, type = 'text' }: { icon: LucideIcon; label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string }) {
   return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 14px', color: '#fff', cursor: 'text' }}>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 14px', color: 'var(--fg)', cursor: 'text' }}>
       <span style={ICON_TILE}><Icon size={17} strokeWidth={1.75} /></span>
       <span style={{ fontSize: 15.5, width: 64, flexShrink: 0 }}>{label}</span>
       <input className="glass-input" type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 15.5, textAlign: 'right', padding: '6px 0', fontFamily: 'inherit' }} />
+        style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: 'var(--fg)', fontSize: 15.5, textAlign: 'right', padding: '6px 0', fontFamily: 'inherit' }} />
     </label>
   )
 }
 
 const SECTION_TITLE: React.CSSProperties = {
-  fontSize: 15.5, fontWeight: 600, margin: '24px 4px 14px', paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.22)', color: '#fff',
+  fontSize: 15.5, fontWeight: 600, margin: '24px 4px 14px', paddingBottom: 12, borderBottom: '1px solid rgba(var(--ink),0.22)', color: 'var(--fg)',
 }
 
 /* Clean monochrome social icons (Linktree style) */
@@ -748,7 +812,7 @@ function WaitlistJoin({ t, locale, barberId, date, serviceId, full }: { t: BWord
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [done, setDone] = useState(false)
-  const input: React.CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.28)', background: 'rgba(255,255,255,0.14)', color: '#fff', fontSize: 15, outline: 'none', fontFamily: 'inherit' }
+  const input: React.CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 12, border: '1px solid rgba(var(--ink),0.28)', background: 'rgba(var(--ink),0.14)', color: 'var(--fg)', fontSize: 15, outline: 'none', fontFamily: 'inherit' }
   const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
   const join = async () => {
@@ -766,20 +830,20 @@ function WaitlistJoin({ t, locale, barberId, date, serviceId, full }: { t: BWord
   }
 
   if (done) return (
-    <p style={{ margin: '12px 0 0', textAlign: 'center', fontSize: 14, color: '#fff', fontWeight: 600 }}>
+    <p style={{ margin: '12px 0 0', textAlign: 'center', fontSize: 14, color: 'var(--fg)', fontWeight: 600 }}>
       {t.wlDone}
     </p>
   )
 
   if (!open) return (
-    <button onClick={() => setOpen(true)} style={{ display: 'block', margin: '12px auto 0', background: full ? 'rgba(255,255,255,0.92)' : 'transparent', color: full ? '#111' : '#fff', border: full ? 'none' : '1px solid rgba(255,255,255,0.35)', borderRadius: 999, padding: '9px 16px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+    <button onClick={() => setOpen(true)} style={{ display: 'block', margin: '12px auto 0', background: full ? 'var(--sel-bg)' : 'transparent', color: full ? 'var(--sel-fg)' : 'var(--fg)', border: full ? 'none' : '1px solid rgba(var(--ink),0.35)', borderRadius: 999, padding: '9px 16px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
       {full ? t.wlFull : t.wlAsk}
     </button>
   )
 
   return (
     <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <p style={{ margin: '0 0 2px', fontSize: 13.5, color: 'rgba(255,255,255,0.85)' }}>
+      <p style={{ margin: '0 0 2px', fontSize: 13.5, color: 'rgba(var(--ink),0.85)' }}>
         {t.wlFor(date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' }))}
       </p>
       <input value={name} onChange={e => setName(e.target.value)} placeholder={t.wlName} maxLength={100} style={input} />
@@ -787,11 +851,11 @@ function WaitlistJoin({ t, locale, barberId, date, serviceId, full }: { t: BWord
       <input value={email} onChange={e => setEmail(e.target.value)} placeholder={t.wlEmail} type="email" maxLength={254} style={input} />
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {(['any', 'morning', 'afternoon', 'evening'] as const).map((k, i) => [k, t.wlPrefs[i]] as const).map(([k, l]) => (
-          <button key={k} onClick={() => setPref(k)} style={{ borderRadius: 999, padding: '7px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: 'none', background: pref === k ? '#fff' : 'rgba(255,255,255,0.16)', color: pref === k ? '#111' : '#fff' }}>{l}</button>
+          <button key={k} onClick={() => setPref(k)} style={{ borderRadius: 999, padding: '7px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: 'none', background: pref === k ? 'var(--sel-bg)' : 'rgba(var(--ink),0.16)', color: pref === k ? 'var(--sel-fg)' : 'var(--fg)' }}>{l}</button>
         ))}
       </div>
       {msg && <p style={{ margin: 0, fontSize: 13, color: '#ffd1d1' }}>{msg}</p>}
-      <button onClick={join} disabled={busy} style={{ marginTop: 4, borderRadius: 999, padding: '11px 0', fontSize: 14.5, fontWeight: 700, border: 'none', cursor: 'pointer', background: '#fff', color: '#111', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}>
+      <button onClick={join} disabled={busy} style={{ marginTop: 4, borderRadius: 999, padding: '11px 0', fontSize: 14.5, fontWeight: 700, border: 'none', cursor: 'pointer', background: 'var(--sel-bg)', color: 'var(--sel-fg)', opacity: busy ? 0.6 : 1, fontFamily: 'inherit' }}>
         {busy ? t.wlJoining : t.wlJoin}
       </button>
     </div>

@@ -74,7 +74,7 @@ export default function BookingLinkPage() {
   const [cover, setCover] = useState<string | null>(null)
   const [bio, setBio] = useState('')
   const [address, setAddress] = useState('')
-  const [accent, setAccent] = useState('#111827')
+  const [accent, setAccent] = useState('#ffffff') // White (plain page) until the barber picks a theme
   const [links, setLinks] = useState<SocialLink[]>([])
   const [blocks, setBlocks] = useState<PageBlock[]>([])
 
@@ -267,10 +267,10 @@ export default function BookingLinkPage() {
                           style={{ position: 'relative', padding: 0, border: on ? `2px solid ${INK}` : '2px solid transparent', borderRadius: 16, cursor: 'pointer', background: 'none', boxShadow: on ? '0 6px 16px rgba(30,30,60,0.18)' : '0 2px 6px rgba(30,30,60,0.06)' }}>
                           {/* mini page */}
                           <div style={{ position: 'relative', height: 84, borderRadius: 14, overflow: 'hidden', background: wallpaper(t.accent) }}>
-                            <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '58%', height: '64%', borderRadius: 10, background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.45)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                              <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.9)' }} />
-                              <span style={{ width: '70%', height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.9)' }} />
-                              <span style={{ width: '70%', height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.7)' }} />
+                            <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '58%', height: '64%', borderRadius: 10, background: t.accent === '#ffffff' ? '#ffffff' : 'rgba(255,255,255,0.22)', border: t.accent === '#ffffff' ? '1px solid #e4e4e7' : '1px solid rgba(255,255,255,0.45)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                              <span style={{ width: 10, height: 10, borderRadius: '50%', background: t.accent === '#ffffff' ? '#1d1d1f' : 'rgba(255,255,255,0.9)' }} />
+                              <span style={{ width: '70%', height: 5, borderRadius: 3, background: t.accent === '#ffffff' ? '#1d1d1f' : 'rgba(255,255,255,0.9)' }} />
+                              <span style={{ width: '70%', height: 5, borderRadius: 3, background: t.accent === '#ffffff' ? '#a1a1aa' : 'rgba(255,255,255,0.7)' }} />
                             </div>
                           </div>
                           <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: INK, marginTop: 5 }}>{t.name}</span>
