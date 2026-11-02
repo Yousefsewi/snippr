@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Plus } from 'lucide-react'
+import { ArrowRight, CalendarDays, ChevronRight, Clock3, MapPin, Plus, Scissors, Share } from 'lucide-react'
 
 // "Feature explorer" on the homepage: tabs on top, a big heading, a short text and a plain
 // spec list (label left, value right, thin lines — no boxes). On the left a small product
@@ -21,7 +21,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
         key: 'booking', tab: 'Booking page', title: 'Booked while\nyou cut',
         body: 'Your own booking page with your services, prices and free times. Customers open your link from Instagram, WhatsApp or the QR code in your window, pick a time and get a confirmation right away — no app, no account, no phone calls.',
         specs: [['Price', 'Free'], ['Customer account', 'Not needed'], ['App download', 'Not needed'], ['Languages', 'EN · TR · NL · AR'], ['Share it as', 'Link + QR code'], ['Setup time', '± 2 min']],
-        points: [['Your shop', 'Photo, name and address at the top'], ['Free times', 'Taken times disappear for everyone else'], ['One tap', 'Booked — confirmation goes out by email']],
+        points: [['Your shop', 'Photo, name and address at the top'], ['Date & time', 'Taken times disappear for everyone else'], ['One tap', 'Booked — confirmation goes out by email']],
       },
       {
         key: 'calendar', tab: 'Calendar', title: 'Every booking,\none calendar',
@@ -50,7 +50,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
         key: 'booking', tab: 'Randevu sayfası', title: 'Sen keserken\nrandevu gelir',
         body: 'Hizmetlerin, fiyatların ve boş saatlerinle kendi randevu sayfan. Müşteri linkini Instagram’dan, WhatsApp’tan ya da camındaki QR koddan açar, saati seçer ve hemen onay alır — uygulama yok, hesap yok, telefon yok.',
         specs: [['Fiyat', 'Ücretsiz'], ['Müşteri hesabı', 'Gerekmez'], ['Uygulama', 'Gerekmez'], ['Diller', 'EN · TR · NL · AR'], ['Paylaşım', 'Link + QR kod'], ['Kurulum', '± 2 dk']],
-        points: [['Dükkânın', 'Fotoğraf, ad ve adres en üstte'], ['Boş saatler', 'Dolan saat herkes için kapanır'], ['Tek dokunuş', 'Randevu alındı, onay maili gider']],
+        points: [['Dükkânın', 'Fotoğraf, ad ve adres en üstte'], ['Tarih ve saat', 'Dolan saat herkes için kapanır'], ['Tek dokunuş', 'Randevu alındı, onay maili gider']],
       },
       {
         key: 'calendar', tab: 'Takvim', title: 'Tüm randevular\ntek takvimde',
@@ -79,7 +79,7 @@ const serif = { fontFamily: 'var(--font-noto-serif), Georgia, serif' } as const
 
 // where the "+" points sit on each picture (percent of the picture box)
 const POINTS: Record<string, [number, number][]> = {
-  booking: [[0, 16], [100, 46], [0, 84]],
+  booking: [[0, 22], [100, 66], [0, 93]],
   calendar: [[100, 10], [0, 62], [100, 82]],
   reminders: [[100, 12], [0, 50], [100, 86]],
   sales: [[0, 26], [100, 52], [0, 88]],
@@ -88,21 +88,47 @@ const POINTS: Record<string, [number, number][]> = {
 function Picture({ k, lng }: { k: string; lng: Lng }) {
   const tr = lng === 'tr'
   const card = 'rounded-[26px] bg-white/85 shadow-[0_40px_80px_-40px_rgba(30,50,40,0.45)] ring-1 ring-black/[0.04] backdrop-blur'
-  if (k === 'booking') return (
-    <div className={`${card} mx-auto w-[300px] p-5`}>
-      <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#7c5a3a] text-[15px] font-semibold text-[#f6ead9]" style={serif}>GS</span>
-        <div><p className="text-[15px] font-semibold text-[#1d1d1f]">Golden Scissors</p><p className="text-[12px] text-[#6b7280]">Assen</p></div>
+  // the real Snippr booking page (app/b/[slug]): dark glass sheet, cover with "open today",
+  // iOS-style rows with coloured icon tiles and the white Book pill — with sample shop data
+  if (k === 'booking') {
+    const ios = { fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }
+    const row = (tile: string, Icon: typeof CalendarDays, label: string, value: string, last?: boolean) => (
+      <div className="flex items-center gap-3 px-3 py-2.5" style={last ? undefined : { borderBottom: '1px solid rgba(255,255,255,0.12)', marginLeft: 0 }}>
+        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[8px] text-white" style={{ background: tile }}><Icon size={15} strokeWidth={2.2} /></span>
+        <span className="text-[14px] text-white">{label}</span>
+        <span className="ml-auto flex items-center gap-1 text-[13.5px] text-white/60">{value}<ChevronRight size={14} className="text-white/40" /></span>
       </div>
-      <p className="mt-5 text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>{tr ? 'Cumartesi 1 Kasım' : 'Saturday 1 Nov'}</p>
-      <div className="mt-2 grid grid-cols-3 gap-2">
-        {['09:30', '10:00', '11:30', '13:00', '14:30', '16:00'].map((t, i) => (
-          <span key={t} className={`rounded-[10px] py-2 text-center text-[12.5px] font-medium ${t === '14:30' ? 'bg-[#1d1d1f] text-white' : i === 1 || i === 3 ? 'bg-[#f2f2f0] text-[#b0b0b0] line-through' : 'border border-[#e5e7eb] text-[#1d1d1f]'}`}>{t}</span>
-        ))}
+    )
+    return (
+      <div className="mx-auto w-[300px]" style={ios}>
+        <div className="rounded-[34px] p-3 shadow-[0_40px_80px_-30px_rgba(20,14,10,0.6)]"
+          style={{ background: 'linear-gradient(180deg, #5b4038 0%, #3a3234 45%, #2a2a2e 100%)', border: '1px solid rgba(255,255,255,0.16)' }}>
+          <div className="mx-auto mb-2.5 h-1 w-9 rounded-full bg-white/25" />
+          {/* cover */}
+          <div className="relative flex h-[132px] items-center justify-center overflow-hidden rounded-[22px]" style={{ background: 'radial-gradient(circle at 50% 40%, #fbefdc 0%, #ecd3b2 45%, #c99a6e 100%)' }}>
+            <span className="flex h-16 w-16 items-center justify-center rounded-full text-[24px] font-semibold text-[#f6ead9] shadow-[0_8px_20px_rgba(60,35,20,0.35)]" style={{ ...serif, background: '#7c5a3a' }}>GS</span>
+            <span className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[10px] text-[#5b4038]" style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)' }}><Share size={14} /></span>
+            <span className="absolute bottom-2.5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[11.5px] font-semibold text-white"
+              style={{ background: 'rgba(60,45,40,0.55)', border: '1px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(8px)' }}>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#34c759]" />{tr ? 'Bugün açık 09:00–19:00' : 'Open today 09:00–19:00'}
+            </span>
+          </div>
+          <div className="mt-3 text-center text-[19px] font-bold text-white">Golden Scissors</div>
+          <div className="mt-0.5 flex items-center justify-center gap-1 text-[12px] text-white/70"><MapPin size={12} /><span className="underline">Assen</span></div>
+          <div className="mt-3 px-1 text-[13px] font-semibold text-white">{tr ? 'Randevu bilgileri' : 'Appointment details'}</div>
+          <div className="mt-2 overflow-hidden rounded-[16px]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}>
+            {row('linear-gradient(160deg,#ff6b81,#e8344e)', CalendarDays, tr ? 'Tarih' : 'Date', tr ? 'Cmt 1 Kas' : 'Sat 1 Nov')}
+            {row('linear-gradient(160deg,#5aa9ff,#2b6fd6)', Clock3, tr ? 'Saat' : 'Time', '14:30')}
+            {row('linear-gradient(160deg,#6fe58f,#1fa44a)', Scissors, tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi' : 'Haircut', true)}
+          </div>
+          <div className="mt-2 px-1 text-[10.5px] leading-snug text-white/55">{tr ? 'Ödemeyi dükkânda yaparsın — online para çekilmez.' : 'You pay in the shop — nothing is charged online.'}</div>
+        </div>
+        <div className="mt-3.5 flex justify-center">
+          <span className="rounded-full bg-white px-7 py-3 text-[14px] font-bold text-[#111] shadow-[0_12px_30px_rgba(0,0,0,0.22)]">{tr ? 'Randevu al · €25' : 'Book · €25'}</span>
+        </div>
       </div>
-      <div className="mt-5 rounded-full bg-[#1d1d1f] py-3 text-center text-[13.5px] font-semibold text-white">{tr ? 'Randevu al · €25' : 'Book · €25'}</div>
-    </div>
-  )
+    )
+  }
   if (k === 'calendar') return (
     <div className={`${card} mx-auto w-[340px] p-5`}>
       <div className="flex items-baseline justify-between"><p className="text-[15px] font-semibold text-[#1d1d1f]">{tr ? 'Bugün' : 'Today'}</p><p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>4 {tr ? 'randevu' : 'bookings'}</p></div>
