@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useLang, LANGS, Lang } from '@/lib/i18n'
 import { TIMEZONES, TZ_REGIONS, gmtOffset, tzCity, detectTimezone, TZ_KEY } from '@/lib/timezones'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
@@ -315,6 +316,17 @@ export default function SettingsPage() {
             <Toggle on={servicesOn} onClick={toggleServices} />
           </div>
         </div>
+      </section>
+
+      {/* Appearance (app/dashboard/appearance) */}
+      <section>
+        <Link href="/dashboard/appearance" className={`flex items-center justify-between gap-3 rounded-2xl border ${border} bg-white p-4 transition hover:bg-[#fbfbfa]`}>
+          <div>
+            <p className="text-sm font-medium text-[#37352f]">{lang === 'tr' ? 'Görünüm' : 'Appearance'}</p>
+            <p className="text-xs text-[#9b9a97]">{lang === 'tr' ? 'Vurgu rengi, yazı boyutu, hareketler ve menü simgeleri.' : 'Accent colour, text size, motion and menu icons.'}</p>
+          </div>
+          <span className="text-[#9b9a97]">›</span>
+        </Link>
       </section>
 
       {/* Your data: GDPR export */}

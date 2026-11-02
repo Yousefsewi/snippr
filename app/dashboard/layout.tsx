@@ -9,6 +9,8 @@ import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
 import { CurrencyProvider } from '@/lib/currency'
 import { ThemeProvider, useTheme } from '@/lib/theme'
+import { useAppearance, ACCENTS } from '@/lib/appearance'
+import { MotionConfig } from 'framer-motion'
 import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, PanelLeftClose, PanelLeftOpen, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
 import NotificationOptIn from '@/components/notification-opt-in'
 import MobileTabBar from '@/components/mobile-tab-bar'
@@ -91,6 +93,9 @@ function Chrome({ children }: { children: ReactNode }) {
   const servicesOn = useStored('snippr:services') !== 'off'
   // Salon style (Settings → Salon style): pastel hair salon or black/grey barbershop
   const salonStyle = getSalonStyle(useStored(SALON_STYLE_KEY))
+  // Settings → Appearance (saved on this device)
+  const appearance = useAppearance()
+  const uiAccent = ACCENTS[appearance.accent].color
 
   // Full-bleed dashboard views render their own background — no narrow centered box
   const fullBleed = pathname === '/dashboard/calendar' || pathname === '/dashboard/appointments' || pathname === '/dashboard/plans' || pathname === '/dashboard' || pathname === '/dashboard/profile' || pathname === '/dashboard/link'
@@ -153,13 +158,14 @@ function Chrome({ children }: { children: ReactNode }) {
     ...glass(active),
     display: 'flex', alignItems: 'center', gap: 9,
     padding: '8px 10px', borderRadius: 14, textDecoration: 'none',
-    color: active ? '#1d1d1f' : '#5f5e5b',
+    color: active ? uiAccent : '#5f5e5b',
     fontSize: 15, fontWeight: active ? 600 : 500,
     transition: 'background 0.18s, box-shadow 0.18s, transform 0.18s', whiteSpace: 'nowrap',
   })
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ display: 'flex', minHeight: '100vh', background: '#f7f7f5', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 500, ['--accent' as string]: salonStyle.key === 'barber' ? salonStyle.accent : theme.accent, ['--accent-2' as string]: salonStyle.accent2, ['--glass-wash' as string]: salonStyle.wash, ['--glass-page-wash' as string]: salonStyle.pageWash } as React.CSSProperties}>
+    <MotionConfig reducedMotion={appearance.reduceMotion ? 'always' : 'user'}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} className={appearance.reduceMotion ? 'reduce-motion' : undefined} style={{ ['--ui-accent' as string]: uiAccent, display: 'flex', minHeight: '100vh', background: '#f7f7f5', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 500, ['--accent' as string]: salonStyle.key === 'barber' ? salonStyle.accent : theme.accent, ['--accent-2' as string]: salonStyle.accent2, ['--glass-wash' as string]: salonStyle.wash, ['--glass-page-wash' as string]: salonStyle.pageWash } as React.CSSProperties}>
 
       {/* ── Sidebar (Notion light) — on phones the bottom tab bar replaces it ── */}
       <aside className="max-md:!hidden" style={{
@@ -240,7 +246,7 @@ function Chrome({ children }: { children: ReactNode }) {
                 >
                   {collapsed
                     ? <Icon size={17} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                    : <><Icon size={17} strokeWidth={1.75} style={{ flexShrink: 0, color: isActive ? '#37352f' : '#9b9a97' }} /><span>{t[item.key]}</span></>}
+                    : <>{appearance.sidebarIcons && <Icon size={17} strokeWidth={1.75} style={{ flexShrink: 0, color: isActive ? uiAccent : '#9b9a97' }} />}<span>{t[item.key]}</span></>}
                 </Link>
               )
             })}
@@ -373,7 +379,7 @@ function Chrome({ children }: { children: ReactNode }) {
               >
                 {collapsed
                   ? <Icon size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                  : <><Icon size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} /><span>{t[item.key]}</span></>}
+                  : <>{appearance.sidebarIcons && <Icon size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} />}<span>{t[item.key]}</span></>}
               </Link>
             )
           })}
@@ -494,6 +500,8 @@ function Chrome({ children }: { children: ReactNode }) {
         boxShadow: '-3px 0 16px rgba(0,0,0,0.04)',
         overflow: 'hidden',
       }}>
+        {/* Appearance → text size scales the page content (not the sidebar or the main offset) */}
+        <div style={appearance.textSize !== 100 ? { zoom: appearance.textSize / 100 } : undefined}>
         {fullBleed ? (
           children
         ) : (
@@ -501,6 +509,7 @@ function Chrome({ children }: { children: ReactNode }) {
             {children}
           </div>
         )}
+        </div>
       </main>
 
       {/* ── Phone navigation ── */}
@@ -527,5 +536,6 @@ function Chrome({ children }: { children: ReactNode }) {
         ]}
       />
     </div>
+    </MotionConfig>
   )
 }
