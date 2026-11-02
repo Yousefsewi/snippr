@@ -186,7 +186,7 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
 }
 
 // left-hand pictures and the phone; off until the new visuals arrive
-const SHOW_PICTURES = false
+const SHOW_PICTURES = true
 
 export default function FeatureExplorer({ lng }: { lng: Lng }) {
   const c = COPY[lng] ?? COPY.en
@@ -203,14 +203,14 @@ export default function FeatureExplorer({ lng }: { lng: Lng }) {
 
         {/* picture with "+" points (phone on the booking tab) — switched off for now */}
         {SHOW_PICTURES && (
-        <div className="relative order-2 min-h-[620px] lg:order-1 lg:min-h-[660px]">
+        <div className="relative order-2 min-h-[780px] lg:order-1 lg:min-h-[800px]">
           <AnimatePresence mode="wait">
             <motion.div key={tab.key} className="absolute inset-0 flex items-center justify-center"
               initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
               {/* booking tab: the interactive iPhone demo visitors can tap through */}
               {tab.key === 'booking' ? (
-                <div className="w-full max-w-[330px]"><PhoneDemo lng={lng} maxHeight={600} /></div>
+                <div className="w-full max-w-[400px]"><PhoneDemo lng={lng} maxHeight={760} /></div>
               ) : (
               <div className="relative lg:scale-[1.22] xl:scale-[1.3]">
                 <Picture k={tab.key} lng={lng} />
