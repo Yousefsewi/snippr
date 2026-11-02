@@ -21,7 +21,7 @@ const COPY = {
 }
 
 const host = SITE_URL.replace(/^https?:\/\//, '').replace(/^www\./, '')
-const clean = (v: string) => v.toLowerCase().replace(/s+/g, '-').replace(/[^a-z0-9-]+/g, '').replace(/-{2,}/g, '-').slice(0, 40)
+const clean = (v: string) => v.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]+/g, '').replace(/-{2,}/g, '-').slice(0, 40)
 
 export default function ClaimLink({ lng }: { lng: Lng }) {
   const c = COPY[lng] ?? COPY.en
