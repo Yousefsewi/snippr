@@ -36,7 +36,7 @@ const COPY = {
     today: 'Today', views: { day: 'Day view', three: '3-day view', week: 'Week view', month: 'Month view' }, short: { day: 'Day', three: '3 days', week: 'Week', month: 'Month' },
     actions: 'Actions', addAppt: 'Add appointment', addBlock: 'Add blocked time', editHours: 'Edit working hours', addOff: 'Add time off',
     inWeeks: (n: number) => `In ${n} week${n > 1 ? 's' : ''}`, inMonths: (n: number) => `In ${n} months`, more: 'More', less: 'Less',
-    add: 'Add', refresh: 'Refresh', addWait: 'Waitlist entry', addApptShort: 'Appointment', addBlockShort: 'Blocked time', addOffShort: 'Time off', cancel: 'Cancel', save: 'Save', saving: 'Saving…', delete: 'Delete',
+    dragHint: 'Drag to move · drag the bottom edge to change the length', add: 'Add', refresh: 'Refresh', addWait: 'Waitlist entry', addApptShort: 'Appointment', addBlockShort: 'Blocked time', addOffShort: 'Time off', cancel: 'Cancel', save: 'Save', saving: 'Saving…', delete: 'Delete',
     client: 'Client name', phone: 'Phone (optional)', service: 'Service', noService: 'No service', date: 'Date', time: 'Time', from: 'From', to: 'To', startDate: 'First day', endDate: 'Last day',
     reason: 'Reason (optional)', blockDefault: 'Closed', offDefault: 'Time off', reasonPh: 'e.g. Lunch break',
     blockHelp: 'Clients can’t book during this time.', offHelp: 'Your booking page is closed on these days.',
@@ -50,7 +50,7 @@ const COPY = {
     today: 'Bugün', views: { day: 'Günlük görünüm', three: '3 günlük görünüm', week: 'Haftalık görünüm', month: 'Aylık görünüm' }, short: { day: 'Gün', three: '3 gün', week: 'Hafta', month: 'Ay' },
     actions: 'İşlemler', addAppt: 'Randevu ekle', addBlock: 'Rezervasyona kapalı zaman ekle', editHours: 'Çalışma saatlerini düzenle', addOff: 'İzin ekle',
     inWeeks: (n: number) => `${n} hafta içinde`, inMonths: (n: number) => `${n} ay içinde`, more: 'Daha fazla', less: 'Daha az',
-    add: 'Ekle', refresh: 'Yenile', addWait: 'Bekleme listesi', addApptShort: 'Randevu', addBlockShort: 'Rezervasyona kapalı zaman', addOffShort: 'İzin', cancel: 'Vazgeç', save: 'Kaydet', saving: 'Kaydediliyor…', delete: 'Sil',
+    dragHint: 'Taşımak için sürükle · süreyi değiştirmek için alt kenarı çek', add: 'Ekle', refresh: 'Yenile', addWait: 'Bekleme listesi', addApptShort: 'Randevu', addBlockShort: 'Rezervasyona kapalı zaman', addOffShort: 'İzin', cancel: 'Vazgeç', save: 'Kaydet', saving: 'Kaydediliyor…', delete: 'Sil',
     client: 'Müşteri adı', phone: 'Telefon (isteğe bağlı)', service: 'Hizmet', noService: 'Hizmet yok', date: 'Tarih', time: 'Saat', from: 'Başlangıç', to: 'Bitiş', startDate: 'İlk gün', endDate: 'Son gün',
     reason: 'Sebep (isteğe bağlı)', blockDefault: 'Kapalı', offDefault: 'İzin', reasonPh: 'örn. Öğle arası',
     blockHelp: 'Müşteriler bu saatlerde randevu alamaz.', offHelp: 'Bu günlerde randevu sayfan kapalı olur.',
@@ -378,12 +378,66 @@ export default function CalendarPage() {
     reload(barberId)
   }
 
+  /* ── drag to move / drag the bottom edge to resize (mouse and pen; 15-minute steps) ── */
+  type Drag = { id: string; mode: 'move' | 'resize'; x0: number; y0: number; s0: number; e0: number; day0: string }
+  const [drag, setDrag] = useState<Drag | null>(null)
+  const [ghost, setGhost] = useState<{ day: string; start: number; end: number } | null>(null)
+  const ghostRef = useRef<{ day: string; start: number; end: number } | null>(null)
+
+  const startDrag = (e: React.PointerEvent, a: Appointment, mode: Drag['mode']) => {
+    if (e.button !== 0 || e.pointerType === 'touch') return
+    if ((e.target as HTMLElement).closest('button')) return
+    if (a.status === 'cancelled' || a.status === 'completed') return
+    e.preventDefault(); e.stopPropagation()
+    const s0 = new Date(a.start_time).getTime(), e0 = new Date(a.end_time).getTime()
+    ghostRef.current = null; setGhost(null)
+    setDrag({ id: a.id, mode, x0: e.clientX, y0: e.clientY, s0, e0, day0: toKey(new Date(s0)) })
+  }
+
+  useEffect(() => {
+    if (!drag) return
+    const STEP = 15 * 60000
+    const onMove = (e: PointerEvent) => {
+      if (!ghostRef.current && Math.abs(e.clientY - drag.y0) < 4 && Math.abs(e.clientX - drag.x0) < 4) return
+      const dMin = Math.round(((e.clientY - drag.y0) / HOUR_H) * 60 / 15) * 15
+      const col = document.elementsFromPoint(e.clientX, e.clientY).find(el => (el as HTMLElement).dataset?.day) as HTMLElement | undefined
+      const day = drag.mode === 'move' ? (col?.dataset.day ?? ghostRef.current?.day ?? drag.day0) : drag.day0
+      const dayStart = at(day, '00:00').getTime()
+      const dayShift = dayStart - at(drag.day0, '00:00').getTime()
+      let start = drag.s0, end = drag.e0
+      if (drag.mode === 'move') { start = drag.s0 + dayShift + dMin * 60000; end = start + (drag.e0 - drag.s0) }
+      else end = Math.max(drag.s0 + STEP, drag.e0 + dMin * 60000)
+      // keep it inside the visible hours of that day
+      const min = dayStart + RANGE_START * 3600000, max = dayStart + RANGE_END * 3600000
+      if (drag.mode === 'move') {
+        if (start < min) { end += min - start; start = min }
+        if (end > max) { start -= end - max; end = max }
+      } else end = Math.min(end, max)
+      const g = { day, start, end }
+      ghostRef.current = g; setGhost(g)
+    }
+    const onUp = async () => {
+      const g = ghostRef.current, d = drag
+      setDrag(null); setGhost(null); ghostRef.current = null
+      if (!g || !barberId || (g.start === d.s0 && g.end === d.e0)) return
+      if (g.start < Date.now() - 5 * 60000) { window.alert(t.errPast); return }
+      const start = new Date(g.start).toISOString(), end = new Date(g.end).toISOString()
+      setAppointments(list => list.map(x => (x.id === d.id ? { ...x, start_time: start, end_time: end } : x)))
+      const { error } = await supabase.from('appointments').update({ start_time: start, end_time: end }).eq('id', d.id)
+      if (error) { window.alert(explain(error)); reload(barberId) }
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp, { once: true })
+    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drag])
+
   /* ── time grid column ── */
   const renderTimeColumn = (date: Date) => {
     const dayAppts = (apptsByDay[toKey(date)] ?? []).filter(a => a.status !== 'cancelled' || !isBlock(a))
     const h = hours[DAY_KEYS[date.getDay()]]
     return (
-      <div key={toKey(date)} className="relative min-w-0 flex-1 border-l border-[#ededec]"
+      <div key={toKey(date)} data-day={toKey(date)} className="relative min-w-0 flex-1 border-l border-[#ededec]"
         style={!h?.open ? { background: 'repeating-linear-gradient(135deg, transparent 0 8px, rgba(0,0,0,0.025) 8px 16px)' } : undefined}>
         {HOURS.map(hr => <div key={hr} className="border-b border-[#f1f1ef]" style={{ height: HOUR_H }} />)}
         {toKey(date) === todayKey && now.getHours() >= RANGE_START && now.getHours() < RANGE_END && (
@@ -391,24 +445,43 @@ export default function CalendarPage() {
             <span className="-ml-1 h-2 w-2 rounded-full bg-[#e5484d]" /><span className="h-px flex-1 bg-[#e5484d]" />
           </div>
         )}
+        {ghost && drag && ghost.day === toKey(date) && (() => {
+          const a = appointments.find(x => x.id === drag.id)
+          if (!a) return null
+          const g = { ...a, start_time: new Date(ghost.start).toISOString(), end_time: new Date(ghost.end).toISOString() }
+          const { top, height } = blockStyle(g)
+          return (
+            <div className="pointer-events-none absolute right-1 left-1 z-20 overflow-hidden rounded-lg border-2 border-dashed border-[#37352f]/50 bg-white/85 px-2 py-1 text-[11px] text-[#37352f] shadow-lg" style={{ top, height }}>
+              <p className="truncate font-semibold">{isBlock(a) ? (blockReason(a) || t.closed) : a.customer_name}</p>
+              <p className="truncate">{hhmm(g.start_time)}–{hhmm(g.end_time)}</p>
+            </div>
+          )
+        })()}
         {dayAppts.map(a => {
           const { top, height } = blockStyle(a)
           if (isBlock(a)) {
             return (
-              <div key={a.id} className="group absolute right-1 left-1 overflow-hidden rounded-lg px-2 py-1 text-[11px] text-[#5b5a57]" style={{ top, height, background: BLOCK_BG }}>
+              <div key={a.id} onPointerDown={e => startDrag(e, a, 'move')} title={t.dragHint}
+                className="group absolute right-1 left-1 cursor-grab select-none overflow-hidden rounded-lg px-2 py-1 text-[11px] text-[#5b5a57]"
+                style={{ top, height, background: BLOCK_BG, opacity: drag?.id === a.id && ghost ? 0.35 : 1 }}>
                 <p className="flex items-center gap-1 truncate font-semibold"><Ban size={11} /> {blockReason(a) || t.closed}</p>
                 <p className="truncate opacity-80">{hhmm(a.start_time)}–{hhmm(a.end_time)}</p>
                 <button onClick={() => removeBlock(a)} aria-label={t.delete}
                   className="absolute top-1 right-1 hidden rounded-md bg-white/90 p-1 text-[#a8302a] shadow-sm group-hover:block"><Trash2 size={12} /></button>
+                <span onPointerDown={e => startDrag(e, a, 'resize')} className="absolute inset-x-0 bottom-0 h-2 cursor-ns-resize" />
               </div>
             )
           }
           const c = evColor(a.status)
           return (
-            <div key={a.id} className="absolute right-1 left-1 overflow-hidden rounded-lg px-2 py-1 text-[11px]"
-              style={{ top, height, background: c.bg, color: c.text, borderLeft: `3px solid ${c.bar}` }}>
+            <div key={a.id} onPointerDown={e => startDrag(e, a, 'move')} title={t.dragHint}
+              className="group absolute right-1 left-1 cursor-grab select-none overflow-hidden rounded-lg px-2 py-1 text-[11px]"
+              style={{ top, height, background: c.bg, color: c.text, borderLeft: `3px solid ${c.bar}`, opacity: drag?.id === a.id && ghost ? 0.35 : 1 }}>
               <p className="truncate font-semibold">{a.customer_name}</p>
               <p className="truncate opacity-80">{hhmm(a.start_time)}–{hhmm(a.end_time)}{a.services?.name ? ` · ${a.services.name}` : ''}</p>
+              <span onPointerDown={e => startDrag(e, a, 'resize')} className="absolute inset-x-0 bottom-0 flex h-2 cursor-ns-resize justify-center">
+                <span className="mt-0.5 hidden h-1 w-6 rounded-full bg-current opacity-30 group-hover:block" />
+              </span>
             </div>
           )
         })}
