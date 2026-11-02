@@ -53,43 +53,36 @@ export default function ClaimLink({ lng }: { lng: Lng }) {
   }
 
   return (
-    <section className="claim-link px-5 py-20 md:px-10 lg:py-24" style={{ background: 'transparent' }}>
-      <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[40px] px-6 py-20 text-center md:py-28">
-        {/* background: the shop photo, darkened */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/demo/barbershop-cover.webp" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ transform: 'scale(1.05)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(20,14,10,0.55) 0%, rgba(16,12,10,0.72) 60%, rgba(12,10,9,0.85) 100%)' }} />
-
-        <div className="relative">
-          <div role="heading" aria-level={2} className="font-semibold tracking-[-0.035em] text-[#f6f1ea]" style={{ fontSize: 'clamp(40px, 7vw, 92px)', lineHeight: 1 }}>
-            {c.big}
-          </div>
-          <div className="mt-2 text-[#e2c39a]" style={{ fontFamily: 'var(--font-noto-serif), Georgia, serif', fontStyle: 'italic', fontSize: 'clamp(36px, 6.2vw, 84px)', lineHeight: 1.05, letterSpacing: '-0.02em' }}>
-            {c.italic}
-          </div>
-          <div className="mx-auto mt-7 max-w-[520px] text-[16px] font-medium text-white/85 md:text-[18px]">{c.sub}</div>
-
-          <form onSubmit={start} className="mx-auto mt-9 flex max-w-[560px] items-center gap-2 rounded-full p-1.5 pl-6 text-left"
-            style={{ background: 'rgba(30,22,18,0.6)', border: '1px solid rgba(255,255,255,0.28)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
-            <label className="flex min-w-0 flex-1 items-baseline text-[16px] md:text-[17px]">
-              <span className="flex-shrink-0 font-semibold text-white">{host}/b/</span>
-              <input value={slug} onChange={e => onType(e.target.value)} placeholder={c.ph} aria-label={c.ph}
-                autoCapitalize="none" autoCorrect="off" spellCheck={false}
-                className="min-w-0 flex-1 bg-transparent font-medium text-white outline-none placeholder:text-white/45" />
-            </label>
-            <button type="submit" className="pd-btn flex flex-shrink-0 items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold"
-              style={{ background: '#f6f1ea', color: '#1d1d1f' }}>
-              {c.start} <ArrowRight size={16} />
-            </button>
-          </form>
-
-          <div className="mt-3 h-5 text-[13.5px] font-medium" aria-live="polite">
-            {status === 'checking' && <span className="text-white/60">{c.checking}</span>}
-            {status === 'free' && <span className="inline-flex items-center gap-1.5 text-[#8fe0a6]"><Check size={14} />{c.free}</span>}
-            {status === 'taken' && <span className="inline-flex items-center gap-1.5 text-[#ffb4a8]"><X size={14} />{c.taken}</span>}
-          </div>
-          <Link href="/login" className="mt-2 inline-block text-[15px] font-semibold text-white/90 hover:text-white">{c.login}</Link>
+    <section className="claim-link px-5 py-20 md:px-10 lg:py-28" style={{ background: 'transparent' }}>
+      <div className="mx-auto max-w-[760px] text-center">
+        <div role="heading" aria-level={2} className="font-semibold tracking-[-0.035em] text-[#1d1d1f]" style={{ fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 1.02 }}>
+          {c.big}
         </div>
+        <div className="mt-1 text-[#1d1d1f]/55" style={{ fontFamily: 'var(--font-noto-serif), Georgia, serif', fontStyle: 'italic', fontSize: 'clamp(32px, 5.2vw, 64px)', lineHeight: 1.08, letterSpacing: '-0.02em' }}>
+          {c.italic}
+        </div>
+        <div className="mx-auto mt-6 max-w-[480px] text-[16px] text-[#1d1d1f]/65 md:text-[17px]">{c.sub}</div>
+
+        <form onSubmit={start} className="mx-auto mt-9 flex max-w-[540px] items-center gap-2 rounded-full bg-white p-1.5 pl-6 text-left"
+          style={{ border: '1px solid rgba(29,29,31,0.12)', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <label className="flex min-w-0 flex-1 items-baseline text-[16px]">
+            <span className="flex-shrink-0 font-medium text-[#1d1d1f]">{host}/b/</span>
+            <input value={slug} onChange={e => onType(e.target.value)} placeholder={c.ph} aria-label={c.ph}
+              autoCapitalize="none" autoCorrect="off" spellCheck={false}
+              className="min-w-0 flex-1 bg-transparent text-[#1d1d1f] outline-none placeholder:text-[#1d1d1f]/35" />
+          </label>
+          <button type="submit" className="pd-btn flex flex-shrink-0 items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold"
+            style={{ background: '#1d1d1f', color: '#ffffff' }}>
+            {c.start} <ArrowRight size={16} />
+          </button>
+        </form>
+
+        <div className="mt-3 h-5 text-[13.5px] font-medium" aria-live="polite">
+          {status === 'checking' && <span className="text-[#1d1d1f]/45">{c.checking}</span>}
+          {status === 'free' && <span className="inline-flex items-center gap-1.5 text-[#1f9d55]"><Check size={14} />{c.free}</span>}
+          {status === 'taken' && <span className="inline-flex items-center gap-1.5 text-[#c62828]"><X size={14} />{c.taken}</span>}
+        </div>
+        <Link href="/login" className="mt-1 inline-block text-[14.5px] font-medium text-[#1d1d1f]/60 underline-offset-4 hover:text-[#1d1d1f] hover:underline">{c.login}</Link>
       </div>
     </section>
   )
