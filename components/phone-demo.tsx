@@ -1,6 +1,8 @@
 'use client'
 
-// Interactive iPhone demo of booking with Snippr (from snippr-demo/index.html), used in the
+// iPhone on the homepage feature section. It shows the real Snippr booking page
+// (components/booking-screen.tsx); the older cartoon walkthrough (from snippr-demo/index.html)
+// is kept behind SHOW_BOOKING_PAGE. Original note: interactive demo, used in the
 // homepage feature section. A visitor can tap through it: welcome → service → date & time →
 // name → booked. Sample shop "Golden Scissors"; nothing is sent anywhere.
 // Buttons carry the class "pd-btn" so the homepage's glass button styles leave them alone,
@@ -10,11 +12,14 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalS
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Nunito } from 'next/font/google'
+import BookingScreen from '@/components/booking-screen'
 
 const nunito = Nunito({ subsets: ['latin', 'latin-ext'], weight: ['600', '700', '800', '900'], display: 'swap' })
 
 type Lng = 'en' | 'tr'
 const BRAND = '#7D8F4E', BRAND2 = '#56663A'
+// true: the phone shows the real Snippr booking page · false: the cartoon booking walkthrough
+const SHOW_BOOKING_PAGE = true
 
 const T = {
   tr: {
@@ -287,8 +292,8 @@ export default function PhoneDemo({ lng, maxHeight = 640 }: { lng: Lng; maxHeigh
           {/* black bezel */}
           <div className="absolute rounded-[62px] bg-black" style={{ inset: 8, boxShadow: 'inset 0 0 0 1.5px #1c1c1e' }} />
           {/* screen */}
-          <div className="absolute overflow-hidden rounded-[54px]" style={{ inset: F, background: `linear-gradient(170deg, ${BRAND} 0%, ${BRAND2} 100%)` }}>
-            <Bubbles /><Floaties />
+          <div className="absolute overflow-hidden rounded-[54px]" style={{ inset: F, background: SHOW_BOOKING_PAGE ? '#1a1412' : `linear-gradient(170deg, ${BRAND} 0%, ${BRAND2} 100%)` }}>
+            {SHOW_BOOKING_PAGE ? <BookingScreen lng={lng} days={days} /> : <><Bubbles /><Floaties /></>}
             {/* status bar */}
             <div className="relative z-20 flex items-center justify-between px-10 pt-[18px] text-[16px] font-black text-white">
               <span>{clock}</span>
@@ -298,6 +303,7 @@ export default function PhoneDemo({ lng, maxHeight = 640 }: { lng: Lng; maxHeigh
                 <svg width="26" height="13" viewBox="0 0 26 13"><rect x=".5" y=".5" width="22" height="12" rx="3.5" fill="none" stroke="#fff" opacity=".6" /><rect x="2" y="2" width="19" height="9" rx="2" fill="#fff" /><rect x="23.5" y="4.5" width="2" height="4" rx="1" fill="#fff" opacity=".6" /></svg>
               </span>
             </div>
+            {!SHOW_BOOKING_PAGE && <>
             {/* back / progress / skip */}
             <div className="relative z-20 mt-5 flex h-6 items-center justify-between px-7 text-white">
               {step > 0 && step < 4
@@ -313,6 +319,7 @@ export default function PhoneDemo({ lng, maxHeight = 640 }: { lng: Lng; maxHeigh
                 <Screen key={step} t={t} step={step} setStep={setStep} st={st} set={set} reset={reset} days={days} />
               </AnimatePresence>
             </div>
+            </>}
             <span className="absolute bottom-2.5 left-1/2 z-30 h-[5px] w-[140px] -translate-x-1/2 rounded-full bg-white/90" />
             {/* faint glass reflection */}
             <div className="pointer-events-none absolute inset-0 z-40" style={{ background: 'linear-gradient(115deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 35%)' }} />
