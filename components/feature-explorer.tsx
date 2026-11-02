@@ -185,6 +185,9 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
   )
 }
 
+// left-hand pictures and the phone; off until the new visuals arrive
+const SHOW_PICTURES = false
+
 export default function FeatureExplorer({ lng }: { lng: Lng }) {
   const c = COPY[lng] ?? COPY.en
   const [active, setActive] = useState(0)
@@ -196,9 +199,10 @@ export default function FeatureExplorer({ lng }: { lng: Lng }) {
       {/* colour wash, faded at the top and bottom so it melts into the page */}
       <div aria-hidden className="pointer-events-none absolute inset-0"
         style={{ background: 'linear-gradient(180deg, #eef3ee 0%, #f3f1e9 40%, #fbeedd 70%, #eef6dc 100%)', maskImage: 'linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent)' }} />
-      <div className="relative mx-auto grid max-w-[1280px] items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      <div className={SHOW_PICTURES ? "relative mx-auto grid max-w-[1280px] items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16" : "relative mx-auto max-w-[760px]"}>
 
-        {/* picture with "+" points */}
+        {/* picture with "+" points (phone on the booking tab) — switched off for now */}
+        {SHOW_PICTURES && (
         <div className="relative order-2 min-h-[620px] lg:order-1 lg:min-h-[660px]">
           <AnimatePresence mode="wait">
             <motion.div key={tab.key} className="absolute inset-0 flex items-center justify-center"
@@ -237,6 +241,7 @@ export default function FeatureExplorer({ lng }: { lng: Lng }) {
             </motion.div>
           </AnimatePresence>
         </div>
+        )}
 
         {/* tabs, heading, text, spec list */}
         <div className="order-1 min-w-0 lg:order-2">
