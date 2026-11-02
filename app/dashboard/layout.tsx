@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
 import { CurrencyProvider } from '@/lib/currency'
 import { ThemeProvider, useTheme } from '@/lib/theme'
-import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, PanelLeftClose, PanelLeftOpen, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
+import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, PanelLeftClose, PanelLeftOpen, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, Clock, type LucideIcon } from 'lucide-react'
 import NotificationOptIn from '@/components/notification-opt-in'
 import MobileTabBar from '@/components/mobile-tab-bar'
 import { useStored } from '@/lib/use-stored'
@@ -279,39 +279,44 @@ function Chrome({ children }: { children: ReactNode }) {
             <>
             {/* click-away overlay */}
             <div onClick={() => setShowNotif(false)} style={{ position: 'fixed', inset: 0, zIndex: 39 }} />
-            <div style={{ position: 'fixed', right: collapsed ? 'calc(100vw - 56px - 300px - 8px)' : 'calc(100vw - 250px - 300px - 8px)', top: '130px', width: '300px', background: '#ffffff', border: '1px solid #e9e9e7', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: '400px', overflowY: 'auto', zIndex: 41 }}>
+            <div style={{ position: 'fixed', right: collapsed ? 'calc(100vw - 56px - 320px - 8px)' : 'calc(100vw - 250px - 320px - 8px)', top: '130px', width: '320px', background: '#ffffff', border: '1px solid #e9e9e7', borderRadius: 16, overflow: 'hidden', boxShadow: '0 12px 32px -12px rgba(0,0,0,0.18)', zIndex: 41 }}>
+              {/* header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px 10px', borderBottom: '1px solid #f1f1ef' }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#37352f' }}>{t.notifications}</span>
+                {notifs.some(n => !n.read) && (
+                  <button onClick={markAllRead} style={{ background: 'none', border: 'none', padding: 0, color: '#787774', fontSize: 12.5, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    {t.markAllRead}
+                  </button>
+                )}
+              </div>
+              <div style={{ maxHeight: 360, overflowY: 'auto' }}>
               {notifs.length === 0 ? (
-                <p style={{ fontSize: 13, color: '#9b9a97', textAlign: 'center', padding: '16px 10px', margin: 0 }}>{t.noNotifications}</p>
+                <p style={{ fontSize: 13, color: '#9b9a97', textAlign: 'center', padding: '20px 10px', margin: 0 }}>{t.noNotifications}</p>
               ) : notifs.map(n => {
-                const colors: Record<string, { bg: string; dot: string }> = {
-                  discount: { bg: '#fdf2f8', dot: '#db2777' },
-                  feature:  { bg: '#eff6ff', dot: '#3b82f6' },
-                  promo:    { bg: '#f0fdf4', dot: '#22c55e' },
-                }
-                const c = colors[n.type ?? 'feature'] ?? colors.feature
+                // plain rows: a grey icon for the topic, a small dot while unread, no emoji or colours
+                const NIcon = n.href?.includes('services') ? Scissors : n.href?.includes('link') ? Link2 : n.href?.includes('calendar') ? Calendar : n.href?.includes('profile') ? Clock : Calendar
+                const text = (tr && n.textTr ? n.textTr : n.text).replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, '')
                 return (
                   <Link
                     key={n.id}
                     href={n.href ?? '#'}
                     onClick={() => { setShowNotif(false); setNotifs(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x)) }}
-                    style={{ display: 'flex', gap: 8, padding: '11px 11px', borderBottom: '1px solid #f7f7f5', background: n.read ? '#ffffff' : c.bg, transition: 'background 0.2s', textDecoration: 'none', cursor: 'pointer' }}
-                    onMouseEnter={e => { glassHover(e, true) }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = n.read ? '#ffffff' : c.bg }}
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: 11, padding: '11px 14px', borderBottom: '1px solid #f7f7f5', background: '#ffffff', textDecoration: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f7f7f5' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#ffffff' }}
                   >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', marginTop: 5, flexShrink: 0, background: !n.read ? c.dot : '#d3d3d1' }} />
+                    <span style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7f7f5', border: '1px solid #ededec', color: '#787774' }}>
+                      <NIcon size={15} strokeWidth={1.75} />
+                    </span>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ fontSize: 13.5, color: '#37352f', margin: 0, lineHeight: 1.35, fontWeight: n.read ? 500 : 600 }}>{tr && n.textTr ? n.textTr : n.text}</p>
-                      <p style={{ fontSize: 10.5, color: '#9b9a97', margin: '2px 0 0' }}>{relTime(n.created_at, tr)}</p>
+                      <p style={{ fontSize: 13.5, color: n.read ? '#787774' : '#37352f', margin: 0, lineHeight: 1.4, fontWeight: n.read ? 400 : 500 }}>{text}</p>
+                      <p style={{ fontSize: 11.5, color: '#9b9a97', margin: '3px 0 0' }}>{relTime(n.created_at, tr)}</p>
                     </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c0c0c0" strokeWidth="2" style={{ flexShrink: 0, marginTop: 3 }}><path d="M9 18l6-6-6-6"/></svg>
+                    {!n.read && <span style={{ width: 7, height: 7, borderRadius: '50%', marginTop: 6, flexShrink: 0, background: '#37352f' }} />}
                   </Link>
                 )
               })}
-              {notifs.length > 0 && (
-                <button onClick={markAllRead} style={{ width: '100%', padding: '8px', background: 'none', border: 'none', color: '#787774', fontSize: 13, cursor: 'pointer' }}>
-                  {t.markAllRead}
-                </button>
-              )}
+              </div>
             </div>
             </>
           )}
