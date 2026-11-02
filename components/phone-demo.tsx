@@ -292,7 +292,7 @@ export default function PhoneDemo({ lng, maxHeight = 640 }: { lng: Lng; maxHeigh
           {/* black bezel */}
           <div className="absolute rounded-[62px] bg-black" style={{ inset: 8, boxShadow: 'inset 0 0 0 1.5px #1c1c1e' }} />
           {/* screen */}
-          <div className="absolute overflow-hidden rounded-[54px]" style={{ inset: F, background: SHOW_BOOKING_PAGE ? '#1a1412' : `linear-gradient(170deg, ${BRAND} 0%, ${BRAND2} 100%)` }}>
+          <div className="absolute overflow-hidden rounded-[54px]" style={{ inset: F, background: SHOW_BOOKING_PAGE ? '#161616' : `linear-gradient(170deg, ${BRAND} 0%, ${BRAND2} 100%)` }}>
             {SHOW_BOOKING_PAGE ? <BookingScreen lng={lng} days={days} /> : <><Bubbles /><Floaties /></>}
             {/* status bar */}
             <div className="relative z-20 flex items-center justify-between px-10 pt-[18px] text-[16px] font-black text-white">

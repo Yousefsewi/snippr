@@ -49,20 +49,20 @@ export default function BookingScreen({ lng, days }: { lng: Lng; days: Date[] })
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={ios}>
-      {/* page background: warm espresso with a soft caramel glow at the top */}
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 60% at 50% 0%, rgba(217,182,140,0.28) 0%, rgba(217,182,140,0) 60%), linear-gradient(180deg, #3a2b23 0%, #241c18 50%, #161210 100%)' }} />
+      {/* page background: plain dark grey */}
+      <div className="absolute inset-0" style={{ background: '#161616' }} />
 
       <div className="absolute inset-x-0 bottom-0 overflow-y-auto px-3.5 pb-8" style={{ top: 58, scrollbarWidth: 'none' }}>
         {/* glass sheet */}
-        <div className="rounded-[34px] p-3" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.16)' }}>
+        <div className="rounded-[34px] p-3" style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }}>
           <div className="mx-auto mb-3 h-[5px] w-10 rounded-full bg-white/30" />
-          {/* cover: soft caramel, blush and cream wash (the site's own colours) */}
+          {/* cover: plain grey */}
           <div className="relative h-[170px] overflow-hidden rounded-[26px]"
-            style={{ background: 'radial-gradient(70% 90% at 15% 100%, #d9b68c 0%, rgba(217,182,140,0) 70%), radial-gradient(60% 80% at 90% 20%, #e8b4a8 0%, rgba(232,180,168,0) 70%), radial-gradient(50% 60% at 55% 45%, #fbf3e8 0%, rgba(251,243,232,0) 70%), linear-gradient(160deg, #f1e3d0 0%, #c99a74 100%)' }}>
-            <span className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-[13px] text-white" style={{ background: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.55)', color: '#4a3428' }}>
+            style={{ background: '#2a2a2a' }}>
+            <span className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-[13px] text-white" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)', color: '#fff' }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" /></svg>
             </span>
-            <span className="absolute bottom-3 left-3 flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-semibold text-white" style={{ background: 'rgba(58,40,30,0.55)', border: '1px solid rgba(255,255,255,0.35)' }}>
+            <span className="absolute bottom-3 left-3 flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-semibold text-white" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)' }}>
               <span className="h-2 w-2 rounded-full bg-[#34c759]" />{t.open}
             </span>
           </div>
