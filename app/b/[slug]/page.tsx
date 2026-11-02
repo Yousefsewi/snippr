@@ -453,7 +453,7 @@ export default function BookingPage() {
                 <div style={IOS_GROUP}>
                   {services.length > 0 && (
                     <>
-                      <IosRow icon={Scissors} tint="linear-gradient(160deg,#ffc24d,#ff7a00)" label={t.service} value={service ? service.name : t.optional} open={openRow === 'service'}
+                      <IosRow icon={Scissors} label={t.service} value={service ? service.name : t.optional} open={openRow === 'service'}
                         onClick={() => setOpenRow(openRow === 'service' ? null : 'service')} />
                       {openRow === 'service' && (
                         <div style={IOS_PANEL}>
@@ -479,7 +479,7 @@ export default function BookingPage() {
                     </>
                   )}
 
-                  <IosRow icon={CalendarDays} tint="linear-gradient(160deg,#ff7a7a,#ff2d55)" label={t.date} open={openRow === 'date'}
+                  <IosRow icon={CalendarDays} label={t.date} open={openRow === 'date'}
                     value={date ? date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' }) : t.choose}
                     onClick={() => setOpenRow(openRow === 'date' ? null : 'date')} />
                   {openRow === 'date' && (
@@ -500,7 +500,7 @@ export default function BookingPage() {
                   )}
 
                   <div style={IOS_SEPARATOR_LINE} />
-                  <IosRow icon={Clock3} tint="linear-gradient(160deg,#5ac8fa,#0a63e8)" label={t.time} open={openRow === 'time'} disabled={!date}
+                  <IosRow icon={Clock3} label={t.time} open={openRow === 'time'} disabled={!date}
                     value={time || (date ? t.choose : t.pickDate)}
                     onClick={() => { if (date) setOpenRow(openRow === 'time' ? null : 'time') }} />
                   {openRow === 'time' && date && (
@@ -535,11 +535,11 @@ export default function BookingPage() {
                   <>
                     <p style={IOS_HEADER}>{t.yourDetails}</p>
                     <div style={IOS_GROUP}>
-                      <IosField icon={UserRound} tint="linear-gradient(160deg,#6fe58f,#1fa44a)" label={t.name} value={name} onChange={setName} placeholder={t.required} />
+                      <IosField icon={UserRound} label={t.name} value={name} onChange={setName} placeholder={t.required} />
                       <div style={IOS_SEPARATOR_LINE} />
-                      <IosField icon={Mail} tint="linear-gradient(160deg,#9a8cff,#5e5ce6)" label={t.email} value={email} onChange={setEmail} placeholder={t.forConfirm} type="email" />
+                      <IosField icon={Mail} label={t.email} value={email} onChange={setEmail} placeholder={t.forConfirm} type="email" />
                       <div style={IOS_SEPARATOR_LINE} />
-                      <IosField icon={Phone} tint="linear-gradient(160deg,#7fe0ff,#1aa3d9)" label={t.phone} value={phone} onChange={setPhone} placeholder={t.optional} type="tel" />
+                      <IosField icon={Phone} label={t.phone} value={phone} onChange={setPhone} placeholder={t.optional} type="tel" />
                     </div>
                     {firstVisit > 0 && (
                       <p style={IOS_FOOTNOTE}>🎁 First time here? Add your phone or email and {firstVisit}% is taken off automatically.</p>
@@ -684,11 +684,14 @@ const IOS_HEADER: React.CSSProperties = { fontSize: 12.5, fontWeight: 500, color
 const IOS_FOOTNOTE: React.CSSProperties = { fontSize: 12.5, color: 'rgba(255,255,255,0.65)', margin: '7px 16px 0', lineHeight: 1.45 }
 
 // a tappable row: coloured icon square, label, value and a chevron that turns when open
-function IosRow({ icon: Icon, tint, label, value, open, disabled, onClick }: { icon: LucideIcon; tint: string; label: string; value: string; open: boolean; disabled?: boolean; onClick: () => void }) {
+// plain icon tile for the rows: one colour, thin outline (no coloured gradients)
+const ICON_TILE: React.CSSProperties = { width: 32, height: 32, borderRadius: 9, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'rgba(255,255,255,0.9)' }
+
+function IosRow({ icon: Icon, label, value, open, disabled, onClick }: { icon: LucideIcon; label: string; value: string; open: boolean; disabled?: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} disabled={disabled}
       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', background: open ? 'rgba(255,255,255,0.08)' : 'transparent', border: 'none', color: '#fff', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', textAlign: 'left', opacity: disabled ? 0.6 : 1 }}>
-      <span style={{ width: 32, height: 32, borderRadius: 9, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 10px -4px rgba(0,0,0,0.45)' }}><Icon size={17} strokeWidth={2.2} /></span>
+      <span style={ICON_TILE}><Icon size={17} strokeWidth={1.75} /></span>
       <span style={{ fontSize: 15.5 }}>{label}</span>
       <span style={{ marginLeft: 'auto', fontSize: 15, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '55%' }}>{value}</span>
       <span className="ios-chev" style={{ display: 'flex', color: 'rgba(255,255,255,0.45)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}><ChevronRight size={18} strokeWidth={2.4} /></span>
@@ -697,10 +700,10 @@ function IosRow({ icon: Icon, tint, label, value, open, disabled, onClick }: { i
 }
 
 // an iOS form row: icon, label on the left, input on the right
-function IosField({ icon: Icon, tint, label, value, onChange, placeholder, type = 'text' }: { icon: LucideIcon; tint: string; label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string }) {
+function IosField({ icon: Icon, label, value, onChange, placeholder, type = 'text' }: { icon: LucideIcon; label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string }) {
   return (
     <label style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 14px', color: '#fff', cursor: 'text' }}>
-      <span style={{ width: 32, height: 32, borderRadius: 9, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 10px -4px rgba(0,0,0,0.45)' }}><Icon size={17} strokeWidth={2.2} /></span>
+      <span style={ICON_TILE}><Icon size={17} strokeWidth={1.75} /></span>
       <span style={{ fontSize: 15.5, width: 64, flexShrink: 0 }}>{label}</span>
       <input className="glass-input" type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
         style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 15.5, textAlign: 'right', padding: '6px 0', fontFamily: 'inherit' }} />
