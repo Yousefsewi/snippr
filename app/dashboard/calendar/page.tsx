@@ -452,8 +452,14 @@ export default function CalendarPage() {
           const { top, height } = blockStyle(g)
           return (
             <div className="pointer-events-none absolute right-1 left-1 z-20 overflow-hidden rounded-lg border-2 border-dashed border-[#37352f]/50 bg-white/85 px-2 py-1 text-[11px] text-[#37352f] shadow-lg" style={{ top, height }}>
-              <p className="truncate font-semibold">{isBlock(a) ? (blockReason(a) || t.closed) : a.customer_name}</p>
-              <p className="truncate">{hhmm(g.start_time)}–{hhmm(g.end_time)}</p>
+              {height < 40 ? (
+                <p className="truncate"><span className="font-semibold">{isBlock(a) ? (blockReason(a) || t.closed) : a.customer_name}</span> {hhmm(g.start_time)}</p>
+              ) : (
+                <>
+                  <p className="truncate font-semibold">{isBlock(a) ? (blockReason(a) || t.closed) : a.customer_name}</p>
+                  <p className="truncate">{hhmm(g.start_time)} – {hhmm(g.end_time)}</p>
+                </>
+              )}
             </div>
           )
         })()}
@@ -464,8 +470,14 @@ export default function CalendarPage() {
               <div key={a.id} onPointerDown={e => startDrag(e, a, 'move')} title={t.dragHint}
                 className="group absolute right-1 left-1 cursor-grab select-none overflow-hidden rounded-lg px-2 py-1 text-[11px] text-[#5b5a57]"
                 style={{ top, height, background: BLOCK_BG, opacity: drag?.id === a.id && ghost ? 0.35 : 1 }}>
-                <p className="flex items-center gap-1 truncate font-semibold"><Ban size={11} /> {blockReason(a) || t.closed}</p>
-                <p className="truncate opacity-80">{hhmm(a.start_time)}–{hhmm(a.end_time)}</p>
+                {height < 40 ? (
+                  <p className="flex items-center gap-1 truncate"><Ban size={11} className="flex-shrink-0" /><span className="truncate font-semibold">{blockReason(a) || t.closed}</span> <span className="opacity-80">{hhmm(a.start_time)}</span></p>
+                ) : (
+                  <>
+                    <p className="flex items-center gap-1 truncate font-semibold"><Ban size={11} /> {blockReason(a) || t.closed}</p>
+                    <p className="truncate opacity-80">{hhmm(a.start_time)} – {hhmm(a.end_time)}</p>
+                  </>
+                )}
                 <button onClick={() => removeBlock(a)} aria-label={t.delete}
                   className="absolute top-1 right-1 hidden rounded-md bg-white/90 p-1 text-[#a8302a] shadow-sm group-hover:block"><Trash2 size={12} /></button>
                 <span onPointerDown={e => startDrag(e, a, 'resize')} className="absolute inset-x-0 bottom-0 h-2 cursor-ns-resize" />
@@ -477,8 +489,15 @@ export default function CalendarPage() {
             <div key={a.id} onPointerDown={e => startDrag(e, a, 'move')} title={t.dragHint}
               className="group absolute right-1 left-1 cursor-grab select-none overflow-hidden rounded-lg px-2 py-1 text-[11px]"
               style={{ top, height, background: c.bg, color: c.text, borderLeft: `3px solid ${c.bar}`, opacity: drag?.id === a.id && ghost ? 0.35 : 1 }}>
-              <p className="truncate font-semibold">{a.customer_name}</p>
-              <p className="truncate opacity-80">{hhmm(a.start_time)}–{hhmm(a.end_time)}{a.services?.name ? ` · ${a.services.name}` : ''}</p>
+              {height < 40 ? (
+                <p className="truncate"><span className="font-semibold">{a.customer_name}</span> <span className="opacity-80">{hhmm(a.start_time)}</span></p>
+              ) : (
+                <>
+                  <p className="truncate font-semibold">{a.customer_name}</p>
+                  <p className="truncate opacity-80">{hhmm(a.start_time)} – {hhmm(a.end_time)}</p>
+                  {a.services?.name && height >= 58 && <p className="truncate opacity-70">{a.services.name}</p>}
+                </>
+              )}
               <span onPointerDown={e => startDrag(e, a, 'resize')} className="absolute inset-x-0 bottom-0 flex h-2 cursor-ns-resize justify-center">
                 <span className="mt-0.5 hidden h-1 w-6 rounded-full bg-current opacity-30 group-hover:block" />
               </span>
