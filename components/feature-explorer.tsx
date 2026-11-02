@@ -21,7 +21,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
         key: 'booking', tab: 'Booking page', title: 'Booked while\nyou cut',
         body: 'Your own booking page with your services, prices and free times. Customers open your link from Instagram, WhatsApp or the QR code in your window, pick a time and get a confirmation right away — no app, no account, no phone calls.',
         specs: [['Price', 'Free'], ['Customer account', 'Not needed'], ['App download', 'Not needed'], ['Languages', 'EN · TR · NL · AR'], ['Share it as', 'Link + QR code'], ['Setup time', '± 2 min']],
-        points: [['Your shop', 'Photo, name and address at the top'], ['Date & time', 'Taken times disappear for everyone else'], ['One tap', 'Booked — confirmation goes out by email']],
+        points: [['Your shop', 'Photo, name and address at the top'], ['Date & time', 'Taken times disappear for everyone else'], ['Pay in the shop', 'Nothing is charged online']],
       },
       {
         key: 'calendar', tab: 'Calendar', title: 'Every booking,\none calendar',
@@ -50,7 +50,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
         key: 'booking', tab: 'Randevu sayfası', title: 'Sen keserken\nrandevu gelir',
         body: 'Hizmetlerin, fiyatların ve boş saatlerinle kendi randevu sayfan. Müşteri linkini Instagram’dan, WhatsApp’tan ya da camındaki QR koddan açar, saati seçer ve hemen onay alır — uygulama yok, hesap yok, telefon yok.',
         specs: [['Fiyat', 'Ücretsiz'], ['Müşteri hesabı', 'Gerekmez'], ['Uygulama', 'Gerekmez'], ['Diller', 'EN · TR · NL · AR'], ['Paylaşım', 'Link + QR kod'], ['Kurulum', '± 2 dk']],
-        points: [['Dükkânın', 'Fotoğraf, ad ve adres en üstte'], ['Tarih ve saat', 'Dolan saat herkes için kapanır'], ['Tek dokunuş', 'Randevu alındı, onay maili gider']],
+        points: [['Dükkânın', 'Fotoğraf, ad ve adres en üstte'], ['Tarih ve saat', 'Dolan saat herkes için kapanır'], ['Dükkânda ödeme', 'Online hiçbir ücret alınmaz']],
       },
       {
         key: 'calendar', tab: 'Takvim', title: 'Tüm randevular\ntek takvimde',
@@ -79,7 +79,7 @@ const serif = { fontFamily: 'var(--font-noto-serif), Georgia, serif' } as const
 
 // where the "+" points sit on each picture (percent of the picture box)
 const POINTS: Record<string, [number, number][]> = {
-  booking: [[0, 22], [100, 66], [0, 93]],
+  booking: [[0, 24], [100, 70], [0, 94]],
   calendar: [[100, 10], [0, 62], [100, 82]],
   reminders: [[100, 12], [0, 50], [100, 86]],
   sales: [[0, 26], [100, 52], [0, 88]],
@@ -89,7 +89,7 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
   const tr = lng === 'tr'
   const card = 'rounded-[26px] bg-white/85 shadow-[0_40px_80px_-40px_rgba(30,50,40,0.45)] ring-1 ring-black/[0.04] backdrop-blur'
   // the real Snippr booking page (app/b/[slug]): dark glass sheet, cover with "open today",
-  // iOS-style rows with coloured icon tiles and the white Book pill — with sample shop data
+  // iOS-style rows with coloured icon tiles — with sample shop data
   if (k === 'booking') {
     const ios = { fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }
     const row = (tile: string, Icon: typeof CalendarDays, label: string, value: string, last?: boolean) => (
@@ -122,9 +122,6 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
             {row('linear-gradient(160deg,#6fe58f,#1fa44a)', Scissors, tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi' : 'Haircut', true)}
           </div>
           <div className="mt-2 px-1 text-[10.5px] leading-snug text-white/55">{tr ? 'Ödemeyi dükkânda yaparsın — online para çekilmez.' : 'You pay in the shop — nothing is charged online.'}</div>
-        </div>
-        <div className="mt-3.5 flex justify-center">
-          <span className="rounded-full bg-white px-7 py-3 text-[14px] font-bold text-[#111] shadow-[0_12px_30px_rgba(0,0,0,0.22)]">{tr ? 'Randevu al · €25' : 'Book · €25'}</span>
         </div>
       </div>
     )
