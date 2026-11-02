@@ -138,8 +138,8 @@ body {
   box-shadow: var(--glass-shadow) !important;
 }
 
-.editorial-site > section:not(:first-child) button:not(.bg-black),
-.editorial-site > #faq button:not(.bg-black) {
+.editorial-site > section:not(:first-child) button:not(.bg-black):not(.pd-btn),
+.editorial-site > #faq button:not(.bg-black):not(.pd-btn) {
   background: var(--glass-bg) !important;
   -webkit-backdrop-filter: blur(14px) saturate(180%);
   backdrop-filter: blur(14px) saturate(180%);
@@ -148,8 +148,8 @@ body {
   color: var(--ink) !important;
 }
 
-.editorial-site > section:not(:first-child) button:not(.bg-black):hover,
-.editorial-site > #faq button:not(.bg-black):hover {
+.editorial-site > section:not(:first-child) button:not(.bg-black):not(.pd-btn):hover,
+.editorial-site > #faq button:not(.bg-black):not(.pd-btn):hover {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55)) !important;
 }
 
@@ -227,7 +227,7 @@ body {
   border-color: rgba(0, 0, 0, 0.25) !important;
 }
 
-.editorial-site.editorial-light > section:not(:first-child) button:not(.bg-black) {
+.editorial-site.editorial-light > section:not(:first-child) button:not(.bg-black):not(.pd-btn) {
   color: #171717 !important;
 }
 
@@ -291,7 +291,7 @@ body {
 @media (max-width: 767px) { :root { --tabbar-h: calc(58px + env(safe-area-inset-bottom)); } }
 
 /* Feature explorer (components/feature-explorer.tsx): opt out of the glass button style above */
-.editorial-site > section.feature-explorer:not(:first-child) button:not(.bg-black) {
+.editorial-site > section.feature-explorer:not(:first-child) button:not(.bg-black):not(.pd-btn) {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
+import PhoneDemo from '@/components/phone-demo'
 import { ArrowRight, CalendarDays, ChevronRight, Clock3, MapPin, Plus, Scissors, Share } from 'lucide-react'
 
 // "Feature explorer" on the homepage: tabs on top, a big heading, a short text and a plain
@@ -198,11 +199,15 @@ export default function FeatureExplorer({ lng }: { lng: Lng }) {
       <div className="relative mx-auto grid max-w-[1280px] items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
 
         {/* picture with "+" points */}
-        <div className="relative order-2 min-h-[420px] lg:order-1 lg:min-h-[560px]">
+        <div className="relative order-2 min-h-[620px] lg:order-1 lg:min-h-[660px]">
           <AnimatePresence mode="wait">
             <motion.div key={tab.key} className="absolute inset-0 flex items-center justify-center"
               initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+              {/* booking tab: the interactive iPhone demo visitors can tap through */}
+              {tab.key === 'booking' ? (
+                <div className="w-full max-w-[330px]"><PhoneDemo lng={lng} maxHeight={600} /></div>
+              ) : (
               <div className="relative lg:scale-[1.22] xl:scale-[1.3]">
                 <Picture k={tab.key} lng={lng} />
                 {POINTS[tab.key].map(([x, y], i) => {
@@ -228,6 +233,7 @@ export default function FeatureExplorer({ lng }: { lng: Lng }) {
                   )
                 })}
               </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
