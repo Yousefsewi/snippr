@@ -5,8 +5,10 @@
 
 export type PageTheme = { name: string; accent: string; colors: [string, string, string]; base: string }
 
-export const PAGE_THEMES: { group: string; items: PageTheme[] }[] = [
-  { group: 'Vivid', items: [
+// hidden: not offered in the theme picker any more, but kept so pages that already use one
+// keep looking the same.
+export const PAGE_THEMES: { group: string; hidden?: boolean; items: PageTheme[] }[] = [
+  { group: 'Vivid', hidden: true, items: [
     { name: 'Sunset',   accent: '#ff6b4a', colors: ['#ff9f0a', '#ff375f', '#bf5af2'], base: '#2a0f2e' },
     { name: 'Ocean',    accent: '#0a84ff', colors: ['#64d2ff', '#0a84ff', '#5e5ce6'], base: '#071a3a' },
     { name: 'Aurora',   accent: '#30d158', colors: ['#64d2ff', '#30d158', '#0a84ff'], base: '#04221c' },

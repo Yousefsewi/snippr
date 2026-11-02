@@ -256,7 +256,7 @@ export default function BookingLinkPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <section style={panel}>
               <p style={panelTitle}><Palette size={17} /> Customize</p>
-              {PAGE_THEMES.map(group => (
+              {PAGE_THEMES.filter(g => !g.hidden).map(group => (
                 <div key={group.group} style={{ marginBottom: 14 }}>
                   <p style={{ fontSize: 12.5, fontWeight: 700, margin: '0 0 8px', color: INK }}>{group.group}</p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 9 }}>
