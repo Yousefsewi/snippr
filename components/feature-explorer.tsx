@@ -101,20 +101,32 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
     )
     return (
       <div className="mx-auto w-[300px]" style={ios}>
-        <div className="rounded-[34px] p-3 shadow-[0_40px_80px_-30px_rgba(20,14,10,0.6)]"
-          style={{ background: 'linear-gradient(180deg, #5b4038 0%, #3a3234 45%, #2a2a2e 100%)', border: '1px solid rgba(255,255,255,0.16)' }}>
-          <div className="mx-auto mb-2.5 h-1 w-9 rounded-full bg-white/25" />
-          {/* cover */}
-          <div className="relative flex h-[132px] items-center justify-center overflow-hidden rounded-[22px]" style={{ background: 'radial-gradient(circle at 50% 40%, #fbefdc 0%, #ecd3b2 45%, #c99a6e 100%)' }}>
-            <span className="flex h-16 w-16 items-center justify-center rounded-full text-[24px] font-semibold text-[#f6ead9] shadow-[0_8px_20px_rgba(60,35,20,0.35)]" style={{ ...serif, background: '#7c5a3a' }}>GS</span>
-            <span className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[10px] text-[#5b4038]" style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)' }}><Share size={14} /></span>
-            <span className="absolute bottom-2.5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[11.5px] font-semibold text-white"
-              style={{ background: 'rgba(60,45,40,0.55)', border: '1px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(8px)' }}>
-              <span className="h-1.5 w-1.5 rounded-full bg-[#34c759]" />{tr ? 'Bugün açık 09:00–19:00' : 'Open today 09:00–19:00'}
-            </span>
-          </div>
-          <div className="mt-3 text-center text-[19px] font-bold text-white">Golden Scissors</div>
-          <div className="mt-0.5 flex items-center justify-center gap-1 text-[12px] text-white/70"><MapPin size={12} /><span className="underline">Assen</span></div>
+        <div className="relative overflow-hidden rounded-[34px] p-3 shadow-[0_40px_80px_-30px_rgba(20,14,10,0.6)]" style={{ border: '1px solid rgba(255,255,255,0.18)' }}>
+          {/* background: the shop photo, blurred and darkened (like the real booking page) */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/demo/barbershop-cover.webp" alt="" className="absolute inset-0 h-full w-full object-cover" style={{ filter: 'blur(26px) saturate(1.15)', transform: 'scale(1.35)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(30,20,14,0.45) 0%, rgba(22,18,18,0.72) 55%, rgba(16,15,17,0.86) 100%)' }} />
+
+          <div className="relative">
+            <div className="mx-auto mb-2.5 h-1 w-9 rounded-full bg-white/30" />
+            {/* cover photo */}
+            <div className="relative h-[148px] overflow-hidden rounded-[22px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/demo/barbershop-cover.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.45) 100%)' }} />
+              <span className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[10px] text-white" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(8px)' }}><Share size={14} /></span>
+              <span className="absolute top-2.5 left-2.5 flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold text-white"
+                style={{ background: 'rgba(20,16,14,0.45)', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(8px)' }}>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#34c759]" />{tr ? 'Bugün açık 09:00–19:00' : 'Open today 09:00–19:00'}
+              </span>
+            </div>
+            {/* barber photo, overlapping the cover */}
+            <div className="relative -mt-9 flex justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/demo/barber-avatar.webp" alt="" width={72} height={72} className="h-[72px] w-[72px] rounded-full object-cover" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.92), 0 10px 24px rgba(0,0,0,0.35)' }} />
+            </div>
+            <div className="mt-2 text-center text-[19px] font-bold text-white">Golden Scissors</div>
+            <div className="mt-0.5 flex items-center justify-center gap-1 text-[12px] text-white/70"><MapPin size={12} /><span className="underline">Assen</span></div>
           <div className="mt-3 px-1 text-[13px] font-semibold text-white">{tr ? 'Randevu bilgileri' : 'Appointment details'}</div>
           <div className="mt-2 overflow-hidden rounded-[16px]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}>
             {row('linear-gradient(160deg,#ff6b81,#e8344e)', CalendarDays, tr ? 'Tarih' : 'Date', tr ? 'Cmt 1 Kas' : 'Sat 1 Nov')}
@@ -122,6 +134,7 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
             {row('linear-gradient(160deg,#6fe58f,#1fa44a)', Scissors, tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi' : 'Haircut', true)}
           </div>
           <div className="mt-2 px-1 text-[10.5px] leading-snug text-white/55">{tr ? 'Ödemeyi dükkânda yaparsın — online para çekilmez.' : 'You pay in the shop — nothing is charged online.'}</div>
+          </div>
         </div>
       </div>
     )

@@ -11,6 +11,8 @@ Status: ✅ OK for commercial use · ❓ source unknown — confirm or replace b
 |---|---|---|---|---|
 | `public/logo.svg`, `public/logo-white.svg` | Site logo, footer wordmark | Made for Snippr | Own work | ✅ |
 | `app/icon.svg`, `app/icon.png`, `app/apple-icon.png`, `public/icon-192.png`, `public/icon-512.png` | Browser tab / app icons | Generated from the Snippr logo | Own work | ✅ |
+| `public/demo/barber-avatar.webp` | Homepage feature section, sample barber photo | Unsplash, photo `1553521041-d168abd31de3` | Unsplash License (free commercial use, no attribution required) | ✅ |
+| `public/demo/barbershop-cover.webp` | Homepage feature section, sample shop cover | Unsplash, photo `1585747860715-2ba37e788b70` | Unsplash License (free commercial use, no attribution required) | ✅ |
 | `public/themes/forest.jpg` | Dashboard "Forest" theme | Unsplash, photo `1470071459604-3b5ec3a7fe05` | Unsplash License (free commercial use, no attribution required) | ✅ |
 | `public/hero-clouds.webp` | Homepage hero picture | Supplied by the owner (halftone cloud artwork) | — | ❓ confirm origin (own / AI-generated / licensed) |
 | `public/auth-fog.jpg` | Login & sign-up background | Unknown | — | ❓ confirm or replace |
