@@ -8,6 +8,7 @@ import { detectCurrency, setSavedCurrency } from '@/lib/currency'
 import { Auth5 } from '@/components/watermelon-ui/auth-5'
 import { suggestEmail } from '@/lib/email-typo'
 import { ageFrom, AGE_ERRORS, MIN_AGE } from '@/lib/age'
+import { TERMS_ERROR } from '@/lib/legal'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -26,6 +27,9 @@ export default function RegisterPage() {
     const email = (form.querySelector('#Auth5-email') as HTMLInputElement)?.value ?? ''
     const password = (form.querySelector('#Auth5-password') as HTMLInputElement)?.value ?? ''
     const birthDate = (form.querySelector('#Auth5-birthdate') as HTMLInputElement)?.value ?? ''
+    // Terms + DPA accepted, and the privacy notice shown (components/signup-privacy-notice.tsx)
+    const acceptedTerms = !!(form.querySelector('#Auth5-terms') as HTMLInputElement)?.checked
+    if (!acceptedTerms) { setError(TERMS_ERROR); return }
 
     // Legal age check before anything is created (checked again on the server)
     const age = ageFrom(birthDate)
@@ -61,7 +65,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, slug, birthDate }),
+        body: JSON.stringify({ email, password, fullName, slug, birthDate, acceptedTerms }),
       })
       const result = await res.json()
       if (!res.ok) {

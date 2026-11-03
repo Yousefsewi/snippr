@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { Outfit } from "next/font/google";
 import { AuthArt } from "@/components/auth-art";
+import SignupPrivacyNotice from '@/components/signup-privacy-notice'
 
 // Left panel: the misty field photo (public/auth-fog.jpg). Set to true for the 3D artwork instead.
 const SHOW_3D_ART = false;
@@ -161,6 +162,9 @@ export function Auth5({
                   <a href={forgotPasswordHref} className="text-[#8e8e93] transition-colors hover:text-[#111]">Forgot password?</a>
                 </div>
               )}
+
+              {/* sign-up: privacy notice and Terms acceptance (GDPR art. 13) */}
+              {showName && <SignupPrivacyNotice />}
 
               {error && (
                 <p role="alert" className="rounded-2xl bg-[#fff1f0] px-4 py-3 text-[13px] leading-snug text-[#d70015]">{error}</p>
