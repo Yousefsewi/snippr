@@ -48,3 +48,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# private notes (data breach register etc.) — never published
+/private/
