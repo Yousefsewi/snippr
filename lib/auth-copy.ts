@@ -19,6 +19,7 @@ export function useAuthLng(): AuthLng {
 
 export const AUTH_COPY = {
   en: {
+    google: 'Continue with Google', or: 'or', completeHeading: 'Finish your account', completeSub: 'One last step before you start: we need your date of birth and your OK on our terms.', completeBtn: 'Continue', saving: 'Saving…', signOut: 'Sign out',
     firstName: 'First name', lastName: 'Last name', birthDate: 'Date of birth', email: 'Email', password: 'Password',
     showPw: 'Show password', hidePw: 'Hide password', remember: 'Remember me', forgot: 'Forgot password?',
     regHeading: 'Create your account', regSub: 'Create your barber profile in seconds.', create: 'Create account', creating: 'Creating account…',
@@ -45,6 +46,7 @@ export const AUTH_COPY = {
     },
   },
   tr: {
+    google: 'Google ile devam et', or: 'veya', completeHeading: 'Hesabını tamamla', completeSub: 'Başlamadan önce son bir adım: doğum tarihin ve şartlarımızı onaylaman gerekiyor.', completeBtn: 'Devam et', saving: 'Kaydediliyor…', signOut: 'Çıkış yap',
     firstName: 'Ad', lastName: 'Soyad', birthDate: 'Doğum tarihi', email: 'E-posta', password: 'Şifre',
     showPw: 'Şifreyi göster', hidePw: 'Şifreyi gizle', remember: 'Beni hatırla', forgot: 'Şifremi unuttum',
     regHeading: 'Hesabını oluştur', regSub: 'Berber profilini saniyeler içinde oluştur.', create: 'Hesap oluştur', creating: 'Hesap oluşturuluyor…',
@@ -71,6 +73,7 @@ export const AUTH_COPY = {
     },
   },
   nl: {
+    google: 'Doorgaan met Google', or: 'of', completeHeading: 'Maak je account af', completeSub: 'Nog één stap: we hebben je geboortedatum en je akkoord met onze voorwaarden nodig.', completeBtn: 'Doorgaan', saving: 'Opslaan…', signOut: 'Uitloggen',
     firstName: 'Voornaam', lastName: 'Achternaam', birthDate: 'Geboortedatum', email: 'E-mail', password: 'Wachtwoord',
     showPw: 'Wachtwoord tonen', hidePw: 'Wachtwoord verbergen', remember: 'Onthoud mij', forgot: 'Wachtwoord vergeten?',
     regHeading: 'Maak je account aan', regSub: 'Maak in een paar seconden je kappersprofiel.', create: 'Account aanmaken', creating: 'Account wordt aangemaakt…',

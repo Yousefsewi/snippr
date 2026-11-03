@@ -105,6 +105,8 @@ function Chrome({ children }: { children: ReactNode }) {
       if (await enforceRememberMe()) { router.replace('/login'); return }
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      // no date of birth / Terms acceptance yet (Google sign-in, or an account from before): finish that first
+      if (!user.user_metadata?.terms_accepted_at) { router.replace('/complete-signup'); return }
       let { data: barber } = await supabase.from('barbers').select('id, name, photo_url, working_hours').eq('user_id', user.id).single()
 
       if (!barber) {

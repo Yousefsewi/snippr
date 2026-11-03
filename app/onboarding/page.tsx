@@ -169,6 +169,7 @@ export default function OnboardingPage() {
     ;(async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.replace('/login'); return }
+      if (!user.user_metadata?.terms_accepted_at) { router.replace('/complete-signup'); return }
       const { data: b } = await supabase.from('barbers').select('id, name, slug, address, photo_url').eq('user_id', user.id).single()
       if (!b) { router.replace('/dashboard'); return } // the dashboard creates the profile, then sends them back
       const { count } = await supabase.from('services').select('id', { count: 'exact', head: true }).eq('barber_id', b.id)

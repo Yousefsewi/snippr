@@ -9,6 +9,7 @@ import { Outfit } from "next/font/google";
 import { AuthArt } from "@/components/auth-art";
 import SignupPrivacyNotice from '@/components/signup-privacy-notice'
 import { AUTH_COPY, useAuthLng } from '@/lib/auth-copy'
+import GoogleButton from '@/components/google-button'
 
 // Left panel: the misty field photo (public/auth-fog.jpg). Set to true for the 3D artwork instead.
 const SHOW_3D_ART = false;
@@ -111,6 +112,9 @@ export function Auth5({
 
             <h1 className="text-center text-[32px] xl:text-[36px] 2xl:text-[44px] leading-tight font-bold tracking-[-0.02em] text-[#111]">{heading}</h1>
             <p className="mt-1.5 mb-9 text-center text-[13px] 2xl:mb-11 2xl:text-[15px] text-[#8e8e93]">{subtext}</p>
+
+            {/* "Continue with Google" (shown only when switched on in Supabase) */}
+            <GoogleButton label={L.google} or={L.or} />
 
             <form
               onSubmit={(e) => { e.preventDefault(); onSubmit?.(e); }}
