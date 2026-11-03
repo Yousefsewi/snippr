@@ -30,6 +30,7 @@ const COPY = {
       r1h: ['1 hour before', 'A last nudge one hour before. Needs an hourly job — coming soon.'],
       newBooking: ['New appointment', 'Clients get a booking confirmation, and you get a notification.'],
       confirmed: ['Appointment confirmed', 'Sent when you confirm a booking.'],
+      rescheduled: ['Appointment moved', 'Sent when you move a booking to another time in your calendar.'],
       cancelled: ['Appointment cancelled', 'Sent when you cancel a booking, with a link to pick a new time.'],
       thanks: ['Thanks for your visit', 'Sent when an appointment is completed, with your Google review link if you added one.'],
       tip: ['Thanks for the tip', 'Sent when you record a tip at the till.'],
@@ -40,7 +41,7 @@ const COPY = {
       referral: ['Referral reward', 'Tells clients when a friend they referred books.'],
     },
     reviewHint: 'Add your Google review link', reviewSet: 'Google review link added',
-    history: 'Message history', historySub: 'Emails Snippr sent to your clients.', historyEmpty: 'No messages sent yet', historyEmptySub: 'When an automatic email goes out, it shows up here.', kinds: { remind1d: 'Reminder (1 day before)', remind3d: 'Reminder (3 days before)', new: 'New appointment', confirmed: 'Appointment confirmed', cancelled: 'Appointment cancelled', thanks: 'Thanks for your visit', tip: 'Thanks for the tip' } as Record<string, string>, settingsTitle: 'Message settings', apptOn: 'Appointment',
+    history: 'Message history', historySub: 'Emails Snippr sent to your clients.', historyEmpty: 'No messages sent yet', historyEmptySub: 'When an automatic email goes out, it shows up here.', kinds: { remind1d: 'Reminder (1 day before)', remind3d: 'Reminder (3 days before)', new: 'New appointment', confirmed: 'Appointment confirmed', rescheduled: 'Appointment moved', cancelled: 'Appointment cancelled', thanks: 'Thanks for your visit', tip: 'Thanks for the tip' } as Record<string, string>, settingsTitle: 'Message settings', apptOn: 'Appointment',
   },
   tr: {
     back: 'Eklentiler', title: 'Otomatik mesajlar', sub: 'Müşterilerine kendiliğinden giden e-postalar. Herkese tek tek yazmana gerek kalmaz.',
@@ -54,6 +55,7 @@ const COPY = {
       r1h: ['1 saat öncesinde hatırlatma', 'Randevudan bir saat önce son hatırlatma. Saatlik çalışan bir sistem gerektirir — yakında.'],
       newBooking: ['Yeni randevu', 'Müşteriye randevu onayı gider, sana da bildirim gelir.'],
       confirmed: ['Randevu onaylandı', 'Bir randevuyu onayladığında gönderilir.'],
+      rescheduled: ['Randevu taşındı', 'Takvimde bir randevuyu başka bir saate taşıdığında gönderilir.'],
       cancelled: ['İptal edilen randevu', 'Randevuyu iptal ettiğinde, yeni saat seçme linkiyle gönderilir.'],
       thanks: ['Ziyaret için teşekkürler', 'Randevu tamamlanınca gönderilir. Google yorum linkin varsa içinde olur.'],
       tip: ['Bahşiş için teşekkürler', 'Kasada bahşiş girdiğinde gönderilir.'],
@@ -64,7 +66,7 @@ const COPY = {
       referral: ['Kazanılan tavsiye ödülleri', 'Tavsiye ettikleri arkadaşları randevu alınca bildirir.'],
     },
     reviewHint: 'Google yorum linkini ekle', reviewSet: 'Google yorum linki eklendi',
-    history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { remind1d: 'Hatırlatma (1 gün önce)', remind3d: 'Hatırlatma (3 gün önce)', new: 'Yeni randevu', confirmed: 'Randevu onaylandı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
+    history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { remind1d: 'Hatırlatma (1 gün önce)', remind3d: 'Hatırlatma (3 gün önce)', new: 'Yeni randevu', confirmed: 'Randevu onaylandı', rescheduled: 'Randevu taşındı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
   },
 }
 
@@ -136,6 +138,7 @@ export default function MessagesPage() {
     { title: t.sections.updates, cards: [
       { id: 'newBooking', icon: CalendarPlus, title: C.newBooking[0], desc: C.newBooking[1], channels: ['email', 'push'], always: true },
       { id: 'confirmed', icon: CalendarCheck, title: C.confirmed[0], desc: C.confirmed[1], channels: ['email'], kind: 'confirmed' },
+      { id: 'rescheduled', icon: CalendarClock, title: C.rescheduled[0], desc: C.rescheduled[1], channels: ['email'], kind: 'rescheduled' },
       { id: 'cancelled', icon: CalendarX, title: C.cancelled[0], desc: C.cancelled[1], channels: ['email'], kind: 'cancelled' },
       { id: 'thanks', icon: ThumbsUp, title: C.thanks[0], desc: C.thanks[1], channels: ['email'], kind: 'thanks' },
       { id: 'tip', icon: Heart, title: C.tip[0], desc: C.tip[1], channels: ['email'], kind: 'tip' },

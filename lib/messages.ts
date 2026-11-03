@@ -2,12 +2,12 @@
 // Used by the server (app/api/notify-booking, notify-status, cron/reminders) and by the
 // dashboard preview, so what the barber previews is exactly what clients get.
 
-export type MsgKind = 'confirmed' | 'cancelled' | 'thanks' | 'tip' | 'remind1d' | 'remind3d'
+export type MsgKind = 'confirmed' | 'cancelled' | 'thanks' | 'tip' | 'remind1d' | 'remind3d' | 'rescheduled'
 // sent right after the barber changes an appointment (app/api/notify-status)
-export const STATUS_KINDS: MsgKind[] = ['confirmed', 'cancelled', 'thanks', 'tip']
+export const STATUS_KINDS: MsgKind[] = ['confirmed', 'cancelled', 'thanks', 'tip', 'rescheduled']
 // sent by the daily reminder job (app/api/cron/reminders)
 export const REMINDER_KINDS: MsgKind[] = ['remind1d', 'remind3d']
-export const MSG_DEFAULTS: Record<MsgKind, boolean> = { confirmed: true, cancelled: true, thanks: true, tip: false, remind1d: true, remind3d: false }
+export const MSG_DEFAULTS: Record<MsgKind, boolean> = { confirmed: true, cancelled: true, thanks: true, tip: false, remind1d: true, remind3d: false, rescheduled: true }
 
 export type MsgSettings = Partial<Record<MsgKind, boolean>>
 export const isOn = (s: MsgSettings | null | undefined, k: MsgKind) => s?.[k] ?? MSG_DEFAULTS[k]
@@ -21,6 +21,8 @@ export const LOCALE: Record<ClientLang, string> = { tr: 'tr-TR', nl: 'nl-NL', en
 export interface MsgData {
   client: string; barber: string; service?: string | null; date: string; time: string
   bookUrl: string; reviewUrl?: string | null; tip?: string | null
+  /** rescheduled: the old date · time */
+  previous?: string | null
 }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -86,6 +88,20 @@ export function buildMessage(kind: MsgKind, lang: ClientLang, d: MsgData): Built
           nl: `Je hebt een afspraak (${svc}${when}). Kun je niet komen? Laat het ${b} dan even weten, zodat iemand anders die tijd kan krijgen.`,
           en: `You have an appointment (${svc}${when}). If you can’t make it, please let ${b} know so someone else can take the slot.`,
           ar: `لديك موعد (${svc}${when}). إذا لم تتمكن من الحضور، يرجى إبلاغ ${b} ليتمكن شخص آخر من أخذ هذا الموعد.`,
+        }[lang],
+        button: { label: page, url: d.bookUrl },
+      }
+    }
+    case 'rescheduled': {
+      const was = d.previous ? { tr: ` (önceki: ${d.previous})`, nl: ` (was: ${d.previous})`, en: ` (was ${d.previous})`, ar: ` (كان: ${d.previous})` }[lang] : ''
+      return {
+        subject: { tr: `Randevunun saati değişti: ${b}`, nl: `Je afspraak bij ${b} is verplaatst`, en: `Your appointment with ${b} has moved`, ar: `تم تغيير موعدك مع ${b}` }[lang],
+        heading: { tr: `Yeni saatin, ${c}`, nl: `Je nieuwe tijd, ${c}`, en: `Your new time, ${c}`, ar: `موعدك الجديد يا ${c}` }[lang],
+        text: {
+          tr: `${b} randevunu taşıdı. Yeni randevun: ${svc}${when}${was}. Bu saat uymuyorsa lütfen ${b}’e haber ver.`,
+          nl: `${b} heeft je afspraak verplaatst. Nieuwe afspraak: ${svc}${when}${was}. Past dit niet? Laat het ${b} even weten.`,
+          en: `${b} moved your appointment. New time: ${svc}${when}${was}. If this doesn’t work for you, please let ${b} know.`,
+          ar: `قام ${b} بتغيير موعدك. الموعد الجديد: ${svc}${when}${was}. إذا لم يناسبك هذا الوقت، يرجى إبلاغ ${b}.`,
         }[lang],
         button: { label: page, url: d.bookUrl },
       }

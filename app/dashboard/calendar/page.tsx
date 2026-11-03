@@ -15,6 +15,7 @@ import { useIsMobile } from '@/lib/use-mobile'
 import { DEFAULT_HOURS, type Day as HDay, type Hours } from '@/lib/hours'
 import { blockName, blockReason, isBlock } from '@/lib/blocks'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
+import { notifyStatus } from '@/lib/notify-status'
 
 interface Appointment {
   id: string
@@ -424,7 +425,10 @@ export default function CalendarPage() {
       const start = new Date(g.start).toISOString(), end = new Date(g.end).toISOString()
       setAppointments(list => list.map(x => (x.id === d.id ? { ...x, start_time: start, end_time: end } : x)))
       const { error } = await supabase.from('appointments').update({ start_time: start, end_time: end }).eq('id', d.id)
-      if (error) { window.alert(explain(error)); reload(barberId) }
+      if (error) { window.alert(explain(error)); reload(barberId); return }
+      // tell the client their booking moved (only real bookings, only when the time changed)
+      const moved = appointments.find(x => x.id === d.id)
+      if (moved && !isBlock(moved) && g.start !== d.s0) notifyStatus(d.id, 'rescheduled', new Date(d.s0).toISOString())
     }
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp, { once: true })
