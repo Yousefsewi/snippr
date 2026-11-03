@@ -1,158 +1,139 @@
 'use client'
 
-// The three plan cards (Free / Pro / Business) with the monthly–yearly switch.
-// Shared by the public pricing page (app/pricing) and the dashboard (app/dashboard/plans),
-// so both always show the same plans. Only Free exists today; the rest are "coming soon".
+// Plans: Solo / Salon / Pro, with the monthly–yearly switch, the founder offer, add-ons and
+// a comparison table. Shared by the public pricing page (app/pricing) and the dashboard
+// (app/dashboard/plans). Prices are fixed in euros excl. VAT (lib/legal.ts).
+// Honest on purpose: features that don't exist yet are marked "coming soon"; payments are
+// not live yet, so everyone uses Snippr for free during early access.
 
 import { useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Link2, QrCode, CalendarDays, Bell, LifeBuoy, Sparkles, BellRing, Wallet, BarChart3, Palette, Zap, Hourglass,
-  Users, CalendarRange, FileBarChart, Check, Info, Crown, MessageSquareText, type LucideIcon,
-} from 'lucide-react'
-import { convertFromUSD, formatMoney } from '@/lib/currency'
+import { Check, Clock, Minus, MessageSquareText, Mail, Sparkles } from 'lucide-react'
 import SubscriptionTerms from '@/components/subscription-terms'
+import { PLAN_PRICES_EUR, FOUNDER_DISCOUNT, FOUNDER_SPOTS, TRIAL_DAYS, SMS_PACK } from '@/lib/legal'
 
 export type Lng = 'en' | 'tr'
-type Feature = [LucideIcon, string, string] // icon, label, explanation
-type Plan = {
-  id: 'free' | 'pro' | 'business'; name: string; tagline: string
-  monthly: number; yearly: number; available: boolean
-  features: Feature[]; foot: [string, string]; badge: string
-  orb: string; ring: string
-}
+type PlanId = 'solo' | 'salon' | 'pro'
+type Item = [string, boolean?] // label, coming soon?
+
+const eur = (n: number) => `€${n.toFixed(2).replace('.', ',')}`
+const eur0 = (n: number) => (Number.isInteger(n) ? `€${n}` : eur(n))
 
 const T = {
   en: {
     monthly: 'Monthly', yearly: 'Yearly', save: '2 months free',
-    perMonth: '/mo', billedYearly: (n: string) => `Billed yearly as ${n}`, billedMonthly: 'Billed monthly', freeNote: 'Free while you grow',
-    included: "What's included:", get: 'Get', access: 'access', soon: 'Coming soon', current: 'Your plan', vatNote: 'Prices exclude VAT (BTW). Amounts in your local currency are approximate; plans are billed in euros (see below).',
-    plans: [
-      { id: 'free', name: 'Free', tagline: 'Everything Snippr does today.', monthly: 0, yearly: 0, available: true, badge: 'FREE',
-        orb: 'conic-gradient(from 200deg, #34c759, #30d5c8, #0a84ff, #34c759)', ring: '#111',
-        foot: ['No credit card needed.', 'No surprise charges.'],
-        features: [
-          [Link2, 'Your own booking page & link', 'A page with your name where clients book in seconds, in Turkish or English.'],
-          [CalendarDays, 'Live calendar', 'New bookings appear instantly. Taken times close for everyone else.'],
-          [BellRing, 'Automatic reminders', 'Clients get an email the day before their appointment, so fewer no-shows.'],
-          [MessageSquareText, 'Automatic client emails', 'Confirmations, cancellations and thank-you emails go out on their own.'],
-          [Hourglass, 'Waitlist', 'When you’re full, clients join the waitlist; book them when a spot opens.'],
-          [BarChart3, 'Sales reports', 'Daily, weekly and monthly sales, payments and tips; export to Excel or PDF.'],
-          [QrCode, 'QR code for your shop', 'Print it for the mirror or the door; clients scan and book.'],
-          [LifeBuoy, 'Email support', 'Write to us and we answer by email.'],
-        ] },
-      { id: 'pro', name: 'Pro', tagline: 'For barbers who want to grow.', monthly: 6, yearly: 60, available: false, badge: 'PRO',
-        orb: 'conic-gradient(from 30deg, #ff9f0a, #ff375f, #bf5af2, #ff9f0a)', ring: '#111',
-        foot: ['Coming soon.', 'You keep all your data.'],
-        features: [
-          [Sparkles, 'Everything in Free', 'All free features stay included.'],
-          [Wallet, 'Online deposits', 'Ask for a small deposit when booking.'],
-          [Crown, 'Memberships & loyalty', 'Monthly plans and rewards for your regulars.'],
-          [Bell, 'SMS & WhatsApp reminders', 'Reminders by text message as well as email.'],
-          [Palette, 'Custom branding', 'Your colours and photos on your booking page.'],
-          [Zap, 'Priority support', 'Your questions go to the front of the line.'],
-        ] },
-      { id: 'business', name: 'Business', tagline: 'For shops with a team.', monthly: 15, yearly: 150, available: false, badge: 'BUSINESS',
-        orb: 'conic-gradient(from 120deg, #5e5ce6, #0a84ff, #64d2ff, #5e5ce6)', ring: '#1c1c5e',
-        foot: ['Coming soon.', 'You keep all your data.'],
-        features: [
-          [Sparkles, 'Everything in Pro', 'All Pro features stay included.'],
-          [Users, 'Multiple staff members', 'Every barber in your shop gets their own calendar.'],
-          [CalendarRange, 'Team calendar', 'See the whole shop’s day in one view.'],
-          [FileBarChart, 'Advanced reports', 'Revenue per barber and per service.'],
-        ] },
-    ] as Plan[],
+    perMonth: '/mo', exVat: 'excl. VAT', billedYearly: (n: string) => `${n} per year`, billedMonthly: 'billed monthly',
+    soonTag: 'soon', popular: 'Most chosen',
+    founderTitle: `Founder offer: ${FOUNDER_DISCOUNT}% off for life`,
+    founderBody: `For the first ${FOUNDER_SPOTS} shops that join. Solo for ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/mo, for as long as you stay.`,
+    early: `Early access: Snippr is free while we open payments. After that, every plan starts with ${TRIAL_DAYS} days free, no card needed.`,
+    plans: {
+      solo: { name: 'Solo', who: 'For one barber or stylist', cta: `Try ${TRIAL_DAYS} days free`, ctaDash: 'You use this for free now' },
+      salon: { name: 'Salon', who: 'For a shop with 2–5 people', cta: 'Coming soon', ctaDash: 'Coming soon' },
+      pro: { name: 'Pro', who: 'For bigger shops and chains', cta: 'Contact us', ctaDash: 'Contact us' },
+    } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
+    lists: {
+      solo: [['Your own booking page, link and QR code'], ['Live calendar: day, week, month, drag to move'], ['Unlimited appointments and clients'], ['Email confirmations and reminders'], ['Waitlist'], ['Sales and tips reports, PDF/Excel export'], ['Booking page in 4 languages'], ['No commission on bookings']],
+      salon: [['Everything in Solo'], ['Up to 5 staff, one fixed price', true], ['A calendar per staff member', true], ['Team view of the whole day', true], ['Reports per staff member', true]],
+      pro: [['Everything in Salon'], ['Unlimited staff and locations', true], ['Help moving from your old system'], ['Priority support']],
+    } as Record<PlanId, Item[]>,
+    foot: { solo: 'No card needed', salon: 'No price per extra staff', pro: 'Price on request' } as Record<PlanId, string>,
+    addonsTitle: 'Extras',
+    addons: [
+      [Mail, 'Email reminders', 'Unlimited, included in every plan', 'Included'],
+      [MessageSquareText, 'SMS reminders', `Pack of ${SMS_PACK.count} SMS`, `${eur0(SMS_PACK.price)} · soon`],
+    ] as [typeof Mail, string, string, string][],
+    compareTitle: 'Compare plans',
+    rows: [
+      ['People in the shop', '1', '2–5', 'Unlimited'],
+      ['Booking page, link and QR code', true, true, true],
+      ['Live calendar and drag to move', true, true, true],
+      ['Email confirmations and reminders', true, true, true],
+      ['Waitlist', true, true, true],
+      ['Sales reports and export', true, true, true],
+      ['Calendar per staff member', false, 'soon', 'soon'],
+      ['Reports per staff member', false, 'soon', 'soon'],
+      ['Multiple locations', false, false, 'soon'],
+      ['SMS reminders', 'add-on', 'add-on', 'add-on'],
+      ['Commission on bookings', '0%', '0%', '0%'],
+    ] as (string | boolean)[][],
+    vatNote: 'All prices in euros, excluding 21% VAT (BTW).',
   },
   tr: {
     monthly: 'Aylık', yearly: 'Yıllık', save: '2 ay bedava',
-    perMonth: '/ay', billedYearly: (n: string) => `Yıllık ${n} olarak ödenir`, billedMonthly: 'Aylık ödenir', freeNote: 'Büyürken ücretsiz',
-    included: 'Neler dahil:', get: '', access: 'erişimi al', soon: 'Yakında', current: 'Mevcut planın', vatNote: 'Fiyatlara KDV (BTW) dahil değildir. Yerel para birimindeki tutarlar yaklaşıktır; ödeme euro ile alınır (aşağıya bak).',
-    plans: [
-      { id: 'free', name: 'Free', tagline: 'Snippr’ın bugün yaptığı her şey.', monthly: 0, yearly: 0, available: true, badge: 'FREE',
-        orb: 'conic-gradient(from 200deg, #34c759, #30d5c8, #0a84ff, #34c759)', ring: '#111',
-        foot: ['Kredi kartı gerekmez.', 'Sürpriz ücret yok.'],
-        features: [
-          [Link2, 'Kendi randevu sayfan ve linkin', 'Müşterilerin saniyeler içinde randevu aldığı, adını taşıyan sayfa; Türkçe ya da İngilizce.'],
-          [CalendarDays, 'Canlı takvim', 'Yeni randevular anında düşer. Dolu saatler herkese kapanır.'],
-          [BellRing, 'Otomatik hatırlatma', 'Müşteriye randevudan bir gün önce e-posta gider, gelmeyen azalır.'],
-          [MessageSquareText, 'Otomatik müşteri e-postaları', 'Onay, iptal ve teşekkür e-postaları kendiliğinden gider.'],
-          [Hourglass, 'Bekleme listesi', 'Dolu olduğunda müşteriler listeye katılır; yer açılınca randevu verirsin.'],
-          [BarChart3, 'Satış raporları', 'Günlük, haftalık ve aylık satış, ödeme ve bahşiş; Excel ya da PDF olarak indir.'],
-          [QrCode, 'Dükkânın için QR kod', 'Aynaya ya da kapıya yapıştır; müşteri okutup randevu alır.'],
-          [LifeBuoy, 'E-posta desteği', 'Bize yaz, e-postayla cevap verelim.'],
-        ] },
-      { id: 'pro', name: 'Pro', tagline: 'Büyümek isteyen berberler için.', monthly: 6, yearly: 60, available: false, badge: 'PRO',
-        orb: 'conic-gradient(from 30deg, #ff9f0a, #ff375f, #bf5af2, #ff9f0a)', ring: '#111',
-        foot: ['Yakında.', 'Tüm verilerin seninle kalır.'],
-        features: [
-          [Sparkles, 'Free’deki her şey', 'Ücretsiz özelliklerin hepsi dahil.'],
-          [Wallet, 'Online kapora', 'Randevu alırken küçük bir kapora iste.'],
-          [Crown, 'Üyelik ve sadakat', 'Düzenli müşterilerin için aylık planlar ve ödüller.'],
-          [Bell, 'SMS ve WhatsApp hatırlatma', 'Hatırlatmalar e-postanın yanında SMS ile de gider.'],
-          [Palette, 'Kendi markan', 'Randevu sayfanda kendi renklerin ve fotoğrafların.'],
-          [Zap, 'Öncelikli destek', 'Soruların sıranın en önüne geçer.'],
-        ] },
-      { id: 'business', name: 'Business', tagline: 'Ekibi olan dükkânlar için.', monthly: 15, yearly: 150, available: false, badge: 'BUSINESS',
-        orb: 'conic-gradient(from 120deg, #5e5ce6, #0a84ff, #64d2ff, #5e5ce6)', ring: '#1c1c5e',
-        foot: ['Yakında.', 'Tüm verilerin seninle kalır.'],
-        features: [
-          [Sparkles, 'Pro’daki her şey', 'Pro özelliklerinin hepsi dahil.'],
-          [Users, 'Birden fazla berber', 'Dükkândaki her berberin kendi takvimi olur.'],
-          [CalendarRange, 'Ekip takvimi', 'Tüm dükkânın gününü tek ekranda gör.'],
-          [FileBarChart, 'Gelişmiş raporlar', 'Berber ve hizmet bazında kazanç.'],
-        ] },
-    ] as Plan[],
+    perMonth: '/ay', exVat: 'KDV hariç', billedYearly: (n: string) => `yıllık ${n}`, billedMonthly: 'aylık ödenir',
+    soonTag: 'yakında', popular: 'En çok seçilen',
+    founderTitle: `Kurucu teklifi: ömür boyu %${FOUNDER_DISCOUNT} indirim`,
+    founderBody: `Katılan ilk ${FOUNDER_SPOTS} işletmeye. Solo aylık ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}, Snippr’da kaldığın sürece.`,
+    early: `Erken erişim: Ödemeler açılana kadar Snippr ücretsiz. Sonrasında her plan ${TRIAL_DAYS} gün ücretsiz başlar, kart gerekmez.`,
+    plans: {
+      solo: { name: 'Solo', who: 'Tek berber ya da kuaför için', cta: `${TRIAL_DAYS} gün ücretsiz dene`, ctaDash: 'Şu an ücretsiz kullanıyorsun' },
+      salon: { name: 'Salon', who: '2–5 kişilik dükkân için', cta: 'Yakında', ctaDash: 'Yakında' },
+      pro: { name: 'Pro', who: 'Büyük dükkânlar ve zincirler için', cta: 'Bize ulaş', ctaDash: 'Bize ulaş' },
+    } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
+    lists: {
+      solo: [['Kendi randevu sayfan, linkin ve QR kodun'], ['Canlı takvim: gün, hafta, ay, sürükleyerek taşı'], ['Sınırsız randevu ve müşteri'], ['E-posta onay ve hatırlatmaları'], ['Bekleme listesi'], ['Satış ve bahşiş raporları, PDF/Excel'], ['4 dilde randevu sayfası'], ['Randevulardan komisyon yok']],
+      salon: [['Solo’daki her şey'], ['5 kişiye kadar, tek sabit fiyat', true], ['Her çalışana ayrı takvim', true], ['Bütün günü tek ekranda ekip görünümü', true], ['Çalışan bazında raporlar', true]],
+      pro: [['Salon’daki her şey'], ['Sınırsız çalışan ve şube', true], ['Eski sisteminden taşınmada yardım'], ['Öncelikli destek']],
+    } as Record<PlanId, Item[]>,
+    foot: { solo: 'Kart gerekmez', salon: 'Ek çalışan başına ücret yok', pro: 'Fiyat görüşmeyle' } as Record<PlanId, string>,
+    addonsTitle: 'Ekstralar',
+    addons: [
+      [Mail, 'E-posta hatırlatmaları', 'Sınırsız, her plana dahil', 'Dahil'],
+      [MessageSquareText, 'SMS hatırlatmaları', `${SMS_PACK.count} SMS’lik paket`, `${eur0(SMS_PACK.price)} · yakında`],
+    ] as [typeof Mail, string, string, string][],
+    compareTitle: 'Planları karşılaştır',
+    rows: [
+      ['Dükkândaki kişi sayısı', '1', '2–5', 'Sınırsız'],
+      ['Randevu sayfası, link ve QR kod', true, true, true],
+      ['Canlı takvim ve sürükleyerek taşıma', true, true, true],
+      ['E-posta onay ve hatırlatmaları', true, true, true],
+      ['Bekleme listesi', true, true, true],
+      ['Satış raporları ve dışa aktarma', true, true, true],
+      ['Her çalışana ayrı takvim', false, 'soon', 'soon'],
+      ['Çalışan bazında raporlar', false, 'soon', 'soon'],
+      ['Birden fazla şube', false, false, 'soon'],
+      ['SMS hatırlatmaları', 'add-on', 'add-on', 'add-on'],
+      ['Randevulardan komisyon', '%0', '%0', '%0'],
+    ] as (string | boolean)[][],
+    vatNote: 'Tüm fiyatlar euro, %21 KDV (BTW) hariç.',
   },
 }
 
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type="button" aria-label={text} onClick={() => setOpen(o => !o)} onBlur={() => setOpen(false)}
-        className="ml-1 inline-flex text-[#aeaeb2] hover:text-[#6e6e73] focus-visible:text-[#6e6e73]">
-        <Info size={14} />
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.span role="tooltip" initial={{ opacity: 0, y: 4, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: 0.15 }}
-            className="absolute bottom-[calc(100%+8px)] left-1/2 z-20 w-[220px] -translate-x-1/2 rounded-[12px] bg-[#1c1c1e]/95 px-3 py-2 text-[12.5px] leading-snug font-normal text-white shadow-lg backdrop-blur">
-            {text}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </span>
-  )
-}
+const ORDER: PlanId[] = ['solo', 'salon', 'pro']
 
-// big price: currency symbol and number shown separately
-function moneyParts(n: number, cur: string) {
-  const full = formatMoney(n, cur)
-  try {
-    const parts = new Intl.NumberFormat('en-US', { style: 'currency', currency: cur, currencyDisplay: 'narrowSymbol', minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).formatToParts(n)
-    return {
-      symbol: parts.filter(x => x.type === 'currency').map(x => x.value).join(''),
-      number: parts.filter(x => x.type !== 'currency').map(x => x.value).join('').trim(),
-      full,
-    }
-  } catch {
-    return { symbol: '', number: String(n), full }
+/** mode 'public': buttons lead to sign-up / contact. mode 'dashboard': Solo shows that it's free for them now. */
+export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?: string; mode?: 'public' | 'dashboard' }) {
+  const t = T[lng] ?? T.en
+  const [yearly, setYearly] = useState(false)
+
+  const cell = (v: string | boolean) => {
+    if (v === true) return <Check size={17} strokeWidth={2.6} className="mx-auto text-[#1d1d1f]" />
+    if (v === false) return <Minus size={16} className="mx-auto text-[#c7c7cc]" />
+    if (v === 'soon') return <span className="text-[12px] font-medium text-[#8e8e93]">{t.soonTag}</span>
+    if (v === 'add-on') return <span className="text-[12px] font-medium text-[#3a3a3c]">+ SMS</span>
+    return <span className="text-[14px] font-semibold text-[#1d1d1f]">{v}</span>
   }
-}
-
-/** mode 'public': Free's button leads to sign-up. mode 'dashboard': Free is marked as the barber's current plan. */
-export default function PricingPlans({ lng, cur, mode = 'public' }: { lng: Lng; cur: string; mode?: 'public' | 'dashboard' }) {
-  const t = T[lng]
-  const [yearly, setYearly] = useState(true)
-  // plan prices are set in USD and shown in the visitor's currency (rounded)
-  const priceOf = (p: Plan): [number, number] => [convertFromUSD(p.monthly, cur), convertFromUSD(p.yearly, cur)]
-  const money = (n: number) => moneyParts(n, cur)
 
   return (
     <>
-      {/* monthly / yearly, iOS segmented control */}
+      {/* early access + founder offer */}
+      <div className="mx-auto mb-8 flex max-w-[860px] flex-col gap-3 sm:flex-row">
+        <div className="flex flex-1 items-start gap-3 rounded-[20px] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+          <Clock size={18} className="mt-0.5 flex-shrink-0 text-[#6e6e73]" />
+          <p className="text-[14px] leading-snug text-[#3a3a3c]">{t.early}</p>
+        </div>
+        <div className="flex flex-1 items-start gap-3 rounded-[20px] bg-[#1d1d1f] px-5 py-4 text-white">
+          <Sparkles size={18} className="mt-0.5 flex-shrink-0 text-[#ffd60a]" />
+          <div>
+            <p className="text-[14px] font-semibold">{t.founderTitle}</p>
+            <p className="mt-0.5 text-[13px] leading-snug text-white/70">{t.founderBody}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* monthly / yearly */}
       <div className="flex justify-center">
         <div className="inline-flex items-center gap-3">
           <div className="relative flex rounded-[12px] bg-[#e3e3e8] p-[3px]">
@@ -168,86 +149,98 @@ export default function PricingPlans({ lng, cur, mode = 'public' }: { lng: Lng; 
         </div>
       </div>
 
-      <section className={`${mode === 'public' ? 'mt-12' : 'mt-6'} rounded-[36px] bg-white p-3 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.25)] sm:p-4`}>
-        <div className={`grid gap-3 ${mode === 'public' ? 'lg:grid-cols-3' : 'xl:grid-cols-3'}`}>
-          {t.plans.map((p, i) => {
-            const [mo, yr] = priceOf(p)
-            const perMonth = yearly ? Math.round((yr / 12) * 100) / 100 : mo
-            const featured = p.available
-            return (
-              <motion.article key={p.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.08 * i, ease: [0.22, 1, 0.36, 1] }}
-                className="flex flex-col rounded-[28px] p-6 sm:p-8" style={{ background: featured ? '#f2f2f7' : '#ffffff' }}>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-[32px] leading-none font-semibold tracking-[-0.02em] text-[#1d1d1f]">{p.name}</h2>
-                    <p className="mt-3 text-[17px] text-[#3a3a3c]">{p.tagline}</p>
-                  </div>
-                  {/* glossy orb, slowly turning */}
-                  <motion.span aria-hidden className="h-12 w-12 flex-shrink-0 rounded-full" style={{ background: p.orb, boxShadow: 'inset -6px -8px 14px rgba(0,0,0,0.18), inset 6px 6px 12px rgba(255,255,255,0.55)' }}
-                    animate={{ rotate: 360 }} transition={{ duration: 14, repeat: Infinity, ease: 'linear' }} />
-                </div>
+      {/* plan cards */}
+      <section className={`${mode === 'public' ? 'mt-10' : 'mt-6'} grid gap-4 ${mode === 'public' ? 'lg:grid-cols-3' : 'xl:grid-cols-3'}`}>
+        {ORDER.map((id, i) => {
+          const p = t.plans[id]
+          const price = PLAN_PRICES_EUR[id]
+          const shown = yearly ? Math.round((price.yearly / 12) * 100) / 100 : price.monthly
+          const featured = id === 'solo'
+          const dark = featured
+          const href = id === 'pro' ? '/contact' : '/register'
+          const live = id !== 'salon'
+          return (
+            <motion.article key={id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.07 * i, ease: [0.22, 1, 0.36, 1] }}
+              className={`relative flex flex-col rounded-[28px] p-7 ${dark ? 'bg-[#1d1d1f] text-white shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)]' : 'bg-white text-[#1d1d1f] shadow-[0_1px_2px_rgba(0,0,0,0.04)]'}`}>
+              {featured && <span className="absolute top-6 right-6 rounded-full bg-[#ffd60a] px-2.5 py-1 text-[11.5px] font-bold text-[#1d1d1f]">{t.popular}</span>}
+              <h2 className="text-[26px] font-semibold tracking-[-0.02em]">{p.name}</h2>
+              <p className={`mt-1 text-[15px] ${dark ? 'text-white/65' : 'text-[#6e6e73]'}`}>{p.who}</p>
 
-                <div className="mt-8 flex items-end gap-1 text-[#1d1d1f]">
-                  <span className="bg-gradient-to-br from-[#ff6b9a] via-[#c28bff] to-[#6ea8ff] bg-clip-text text-[52px] leading-none font-semibold text-transparent">{money(perMonth).symbol}</span>
-                  <AnimatePresence mode="popLayout" initial={false}>
-                    <motion.span key={`${p.id}-${yearly}-${cur}`} initial={{ y: 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -14, opacity: 0 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                      className="text-[52px] leading-none font-semibold tracking-[-0.03em] tabular-nums">
-                      {money(perMonth).number}
-                    </motion.span>
-                  </AnimatePresence>
-                  {p.monthly > 0 && <span className="mb-1 text-[18px] text-[#6e6e73]">{t.perMonth}</span>}
-                </div>
-                <p className="mt-2 text-[15px] text-[#6e6e73]">
-                  {p.monthly === 0 ? t.freeNote : yearly ? t.billedYearly(money(yr).full) : t.billedMonthly}
-                </p>
+              <div className="mt-7 flex items-end gap-1.5">
+                {id === 'pro' && <span className={`mb-1.5 text-[14px] ${dark ? 'text-white/60' : 'text-[#6e6e73]'}`}>{lng === 'tr' ? '' : 'from'}</span>}
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span key={`${id}-${yearly}`} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    className="text-[46px] leading-none font-semibold tracking-[-0.03em] tabular-nums">{eur(shown)}</motion.span>
+                </AnimatePresence>
+                <span className={`mb-1.5 text-[16px] ${dark ? 'text-white/60' : 'text-[#6e6e73]'}`}>{t.perMonth}{id === 'pro' && lng === 'tr' ? '’dan' : ''}</span>
+              </div>
+              <p className={`mt-2 text-[13.5px] ${dark ? 'text-white/55' : 'text-[#8e8e93]'}`}>
+                {t.exVat} · {yearly ? t.billedYearly(eur0(price.yearly)) : t.billedMonthly}
+              </p>
 
-                <div className="my-7 h-px bg-[#e5e5ea]" />
-                <p className="text-[15px] text-[#6e6e73]">{t.included}</p>
-                <ul className="mt-4 flex flex-1 flex-col gap-4 text-[#1d1d1f]">
-                  {p.features.map(([Icon, label, tip]) => (
-                    <li key={label} className="flex items-center gap-3 text-[16px]">
-                      <Icon size={19} strokeWidth={1.8} className="flex-shrink-0" />
-                      <span className="flex flex-1 items-center">{label}<Tip text={tip} /></span>
-                      <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#e5e5ea]">
-                        <Check size={13} strokeWidth={3} />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-9 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-                  <p className="min-w-[150px] flex-1 text-[14px] leading-snug text-[#1d1d1f]">
-                    <span className="block text-[#6e6e73]">{p.foot[0]}</span>
-                    <span className="block">{p.foot[1]}</span>
-                  </p>
-                  {p.available ? (
-                    mode === 'dashboard' ? (
-                      <span className="inline-flex cursor-default items-center gap-2 whitespace-nowrap rounded-full bg-white px-5 py-3.5 text-[15px] font-semibold text-[#1d1d1f] ring-1 ring-black/10">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#34c759]"><Check size={12} strokeWidth={3} className="text-white" /></span>
-                        {t.current}
-                      </span>
-                    ) : (
-                      <motion.div whileTap={{ scale: 0.96 }}>
-                        <Link href="/register" className="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_24px_-10px_rgba(0,0,0,0.6)]" style={{ background: p.ring }}>
-                          {t.get && <span>{t.get}</span>}
-                          <span className="rounded-full bg-white px-2 py-0.5 font-mono text-[11px] font-bold tracking-[0.06em] text-[#111]">{p.badge}</span>
-                          <span>{t.access}</span>
-                        </Link>
-                      </motion.div>
-                    )
-                  ) : (
-                    <span className="inline-flex cursor-default items-center gap-2 whitespace-nowrap rounded-full px-5 py-3.5 text-[15px] font-semibold text-white/90" style={{ background: p.ring, opacity: 0.55 }} aria-disabled="true">
-                      <span className="rounded-full bg-white/90 px-2 py-0.5 font-mono text-[11px] font-bold tracking-[0.06em] text-[#111]">{p.badge}</span>
-                      {t.soon}
+              <ul className="mt-7 flex flex-1 flex-col gap-3">
+                {t.lists[id].map(([label, soon]) => (
+                  <li key={label} className="flex items-start gap-2.5 text-[15px] leading-snug">
+                    <Check size={17} strokeWidth={2.6} className={`mt-0.5 flex-shrink-0 ${soon ? (dark ? 'text-white/35' : 'text-[#c7c7cc]') : ''}`} />
+                    <span className={soon ? (dark ? 'text-white/55' : 'text-[#8e8e93]') : ''}>
+                      {label}{soon && <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold ${dark ? 'bg-white/10' : 'bg-[#f2f2f7]'}`}>{t.soonTag}</span>}
                     </span>
-                  )}
-                </div>
-              </motion.article>
-            )
-          })}
+                  </li>
+                ))}
+              </ul>
+
+              <p className={`mt-7 text-[13px] ${dark ? 'text-white/55' : 'text-[#8e8e93]'}`}>{t.foot[id]}</p>
+              {mode === 'dashboard' && id === 'solo' ? (
+                <span className="mt-3 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white/10 text-[15px] font-semibold">
+                  <Check size={16} strokeWidth={3} className="text-[#34c759]" /> {p.ctaDash}
+                </span>
+              ) : live ? (
+                <Link href={href} className={`mt-3 inline-flex h-12 items-center justify-center rounded-full text-[15px] font-semibold transition ${dark ? 'bg-white text-[#1d1d1f] hover:bg-[#f2f2f7]' : 'bg-[#1d1d1f] text-white hover:bg-black'}`}>
+                  {mode === 'dashboard' ? p.ctaDash : p.cta}
+                </Link>
+              ) : (
+                <span aria-disabled="true" className="mt-3 inline-flex h-12 cursor-default items-center justify-center rounded-full bg-[#f2f2f7] text-[15px] font-semibold text-[#8e8e93]">{p.cta}</span>
+              )}
+            </motion.article>
+          )
+        })}
+      </section>
+
+      {/* extras */}
+      <section className="mx-auto mt-6 max-w-[860px] rounded-[24px] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <h3 className="text-[16px] font-semibold text-[#1d1d1f]">{t.addonsTitle}</h3>
+        <div className="mt-3 divide-y divide-[#f0f0f0]">
+          {t.addons.map(([Icon, name, desc, price]) => (
+            <div key={name} className="flex items-center gap-3 py-3">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-[#ececec] bg-[#f7f7f8] text-[#6e6e73]"><Icon size={17} strokeWidth={1.75} /></span>
+              <div className="min-w-0 flex-1"><p className="text-[15px] font-medium text-[#1d1d1f]">{name}</p><p className="text-[13px] text-[#8e8e93]">{desc}</p></div>
+              <span className="text-[14px] font-semibold text-[#1d1d1f]">{price}</span>
+            </div>
+          ))}
         </div>
-        <p className="mx-auto mt-8 max-w-xl text-center text-[13px] text-[#86868b]">{t.vatNote}</p>
+      </section>
+
+      {/* comparison table */}
+      <section className="mx-auto mt-6 max-w-[860px] overflow-x-auto rounded-[24px] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <h3 className="text-[16px] font-semibold text-[#1d1d1f]">{t.compareTitle}</h3>
+        <table className="mt-3 w-full min-w-[520px] text-left">
+          <thead>
+            <tr className="border-b border-[#ececec] text-[13px] text-[#6e6e73]">
+              <th className="py-2.5 font-medium" />
+              {ORDER.map(id => <th key={id} className="w-[110px] py-2.5 text-center font-semibold text-[#1d1d1f]">{t.plans[id].name}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {t.rows.map(([label, ...vals]) => (
+              <tr key={String(label)} className="border-b border-[#f4f4f5] last:border-0">
+                <td className="py-3 pr-3 text-[14px] text-[#3a3a3c]">{label}</td>
+                {vals.map((v, k) => <td key={k} className="py-3 text-center">{cell(v)}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="mt-4 text-[12.5px] text-[#8e8e93]">{t.vatNote}</p>
       </section>
 
       {/* pre-contract information for paid plans */}

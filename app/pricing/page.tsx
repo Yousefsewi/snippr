@@ -1,7 +1,7 @@
 'use client'
 
 // Plans & pricing, iOS style. The plan cards are shared with the dashboard's Plans page
-// (components/pricing-plans.tsx): only Free exists today; Pro and Business are "coming soon".
+// (components/pricing-plans.tsx): Solo, Salon and Pro; free during early access.
 import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -11,13 +11,13 @@ import { useCurrencyChoice } from '@/lib/currency'
 
 const T = {
   en: {
-    eyebrow: 'PLANS & PRICING', h1a: 'Fill every chair.', h1b: 'Pay only when you grow.',
-    sub: 'Everything Snippr does today is free. Pro and Business are on the way, and you keep all your data when they launch.',
+    eyebrow: 'PLANS & PRICING', h1a: 'Fill every chair.', h1b: 'One fixed price. No commission.',
+    sub: 'Pay the same every month, however many bookings you get. Snippr never takes a cut of your bookings.',
     faqTitle: 'Questions about plans?', faqBody: 'Payments, switching plans, what happens to your data.', faqLink: 'Read the FAQ', back: 'Home',
   },
   tr: {
-    eyebrow: 'PLANLAR VE FİYATLAR', h1a: 'Her koltuğu doldur.', h1b: 'Büyüdükçe öde.',
-    sub: 'Snippr’ın bugün yaptığı her şey ücretsiz. Pro ve Business yolda; geldiklerinde tüm verilerin seninle kalır.',
+    eyebrow: 'PLANLAR VE FİYATLAR', h1a: 'Her koltuğu doldur.', h1b: 'Sabit fiyat. Komisyon yok.',
+    sub: 'Kaç randevu alırsan al, her ay aynı fiyatı ödersin. Snippr randevularından asla pay almaz.',
     faqTitle: 'Planlarla ilgili sorun mu var?', faqBody: 'Ödeme, plan değiştirme, verilerine ne olacağı.', faqLink: 'SSS’yi oku', back: 'Ana sayfa',
   },
 }

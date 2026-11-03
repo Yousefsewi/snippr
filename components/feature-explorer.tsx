@@ -21,7 +21,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'booking', tab: 'Booking page', title: 'Booked while\nyou cut',
         body: 'Your own booking page with your services, prices and free times. Customers open your link from Instagram, WhatsApp or the QR code in your window, pick a time and get a confirmation right away — no app, no account, no phone calls.',
-        specs: [['Price', 'Free'], ['Customer account', 'Not needed'], ['App download', 'Not needed'], ['Languages', 'EN · TR · NL · AR'], ['Share it as', 'Link + QR code'], ['Setup time', '± 2 min']],
+        specs: [['Price', 'From €14.95/mo'], ['Customer account', 'Not needed'], ['App download', 'Not needed'], ['Languages', 'EN · TR · NL · AR'], ['Share it as', 'Link + QR code'], ['Setup time', '± 2 min']],
         points: [['Your shop', 'Photo, name and address at the top'], ['Date & time', 'Taken times disappear for everyone else'], ['Pay in the shop', 'Nothing is charged online']],
       },
       {
@@ -50,7 +50,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'booking', tab: 'Randevu sayfası', title: 'Sen keserken\nrandevu gelir',
         body: 'Hizmetlerin, fiyatların ve boş saatlerinle kendi randevu sayfan. Müşteri linkini Instagram’dan, WhatsApp’tan ya da camındaki QR koddan açar, saati seçer ve hemen onay alır — uygulama yok, hesap yok, telefon yok.',
-        specs: [['Fiyat', 'Ücretsiz'], ['Müşteri hesabı', 'Gerekmez'], ['Uygulama', 'Gerekmez'], ['Diller', 'EN · TR · NL · AR'], ['Paylaşım', 'Link + QR kod'], ['Kurulum', '± 2 dk']],
+        specs: [['Fiyat', 'Aylık €14,95’ten'], ['Müşteri hesabı', 'Gerekmez'], ['Uygulama', 'Gerekmez'], ['Diller', 'EN · TR · NL · AR'], ['Paylaşım', 'Link + QR kod'], ['Kurulum', '± 2 dk']],
         points: [['Dükkânın', 'Fotoğraf, ad ve adres en üstte'], ['Tarih ve saat', 'Dolan saat herkes için kapanır'], ['Dükkânda ödeme', 'Online hiçbir ücret alınmaz']],
       },
       {

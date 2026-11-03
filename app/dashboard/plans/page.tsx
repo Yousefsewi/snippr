@@ -9,11 +9,11 @@ import { useLang } from '@/lib/i18n'
 const T = {
   en: {
     title: 'Plans & billing', sub: 'Choose the plan that fits your business.',
-    noteStrong: 'Everything is free right now.', note: 'Pro and Business are coming soon, and you keep all your data when they launch. Nothing is ever charged without you choosing a paid plan.',
+    noteStrong: 'Everything is free right now.', note: 'Payments open soon; we’ll email you first and you keep all your data. Nothing is ever charged without you choosing a paid plan.',
   },
   tr: {
     title: 'Planlar ve fatura', sub: 'İşletmene uyan planı seç.',
-    noteStrong: 'Şu an her şey ücretsiz.', note: 'Pro ve Business yakında geliyor; geldiklerinde tüm verilerin seninle kalır. Ücretli bir plan seçmeden asla ödeme alınmaz.',
+    noteStrong: 'Şu an her şey ücretsiz.', note: 'Ödemeler yakında açılacak; önce sana e-postayla haber veririz ve tüm verilerin seninle kalır. Ücretli bir plan seçmeden asla ödeme alınmaz.',
   },
 }
 
