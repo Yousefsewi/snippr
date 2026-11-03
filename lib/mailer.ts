@@ -29,7 +29,7 @@ export const esc = (s: string) =>
 export const isPlainEmail = (to: unknown): to is string =>
   typeof to === 'string' && to.length <= 254 && /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/.test(to)
 
-export async function sendMail(to: string, subject: string, html: string, opts: { replyTo?: string } = {}) {
+export async function sendMail(to: string, subject: string, html: string, opts: { replyTo?: string; unsubscribeUrl?: string } = {}) {
   if (!transport) throw new Error('Email is not configured (GMAIL_USER / GMAIL_APP_PASSWORD missing).')
   if (!isPlainEmail(to)) throw new Error('Invalid email address.')
   if (opts.replyTo !== undefined && !isPlainEmail(opts.replyTo)) throw new Error('Invalid reply-to address.')
@@ -37,6 +37,8 @@ export async function sendMail(to: string, subject: string, html: string, opts: 
   await transport.sendMail({
     from: `"Snippr" <${user}>`, to: { name: '', address: to }, subject, html,
     ...(opts.replyTo ? { replyTo: { name: '', address: opts.replyTo } } : {}),
+    // one-click unsubscribe (RFC 8058) for thank-you / tip / reminder emails
+    ...(opts.unsubscribeUrl ? { headers: { 'List-Unsubscribe': `<${opts.unsubscribeUrl}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}),
   })
 }
 

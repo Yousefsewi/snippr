@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, isPlainEmail, rateLimited, clientIp } from '@/lib/mailer'
 import { isOn, messageHtml, normLang, LOCALE, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { hasOptedOut, optoutLinks } from '@/lib/optout'
 
 // Daily reminder job (vercel.json → crons). Emails clients whose appointment is
 // tomorrow (remind1d) or in 3 days (remind3d), if the barber has that reminder on.
@@ -69,6 +70,8 @@ export async function GET(req: NextRequest) {
     for (const a of (data ?? []) as unknown as Row[]) {
       if (!a.barbers || !isOn(a.barbers.message_settings, w.kind)) continue
       if (a.customer_name.startsWith('⛔') || !isPlainEmail(a.customer_email)) continue
+      if (await hasOptedOut(supabase, a.customer_email)) continue
+      const links = optoutLinks(a.customer_email)
 
       // claim first so a parallel run can't send it again
       const { data: claimed } = await supabase.from('appointments')
@@ -86,9 +89,10 @@ export async function GET(req: NextRequest) {
         date: start.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz }),
         time: start.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: tz }),
         bookUrl: `${SITE_URL}/b/${a.barbers.slug}`,
+        unsubscribeUrl: links.page,
       })
       try {
-        if (mailerReady) await sendMail(a.customer_email, msg.subject, msg.html)
+        if (mailerReady) await sendMail(a.customer_email, msg.subject, msg.html, { unsubscribeUrl: links.oneClick })
         else await new Resend(apiKey).emails.send({ from: process.env.EMAIL_FROM || 'Snippr <onboarding@resend.dev>', to: a.customer_email, subject: msg.subject, html: msg.html })
         sent++
       } catch (err) {

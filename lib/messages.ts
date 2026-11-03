@@ -23,6 +23,8 @@ export interface MsgData {
   bookUrl: string; reviewUrl?: string | null; tip?: string | null
   /** rescheduled: the old date · time */
   previous?: string | null
+  /** link to stop these emails (thank-you, tip, reminders) */
+  unsubscribeUrl?: string | null
 }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -127,13 +129,15 @@ const FOOT: Record<ClientLang, (b: string) => string> = {
   ar: b => `أُرسلت بواسطة Snippr نيابةً عن ${b}.`,
 }
 
-function layout(lang: ClientLang, barber: string, inner: string) {
+const STOP: Record<ClientLang, string> = { tr: 'Bu e-postaları almak istemiyorum', nl: 'Ik wil deze e-mails niet meer ontvangen', en: 'I don’t want these emails', ar: 'لا أريد تلقي هذه الرسائل' }
+
+function layout(lang: ClientLang, barber: string, inner: string, unsubscribeUrl?: string | null) {
   const dir = lang === 'ar' ? 'rtl' : 'ltr'
   return `
     <div dir="${dir}" lang="${lang}" style="font-family: -apple-system, 'Segoe UI', Roboto, Tahoma, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #1d1d1f; text-align: ${dir === 'rtl' ? 'right' : 'left'};">
       <p style="font-size: 16px; font-weight: 700; margin: 0 0 22px;">✂️ ${esc(barber)}</p>
       ${inner}
-      <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 28px 0 0;">${esc(FOOT[lang](barber))}</p>
+      <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 28px 0 0;">${esc(FOOT[lang](barber))} · Snippr · snipprcalendar.com${unsubscribeUrl ? ` · <a href="${esc(unsubscribeUrl)}" style="color: #999;">${esc(STOP[lang])}</a>` : ''}</p>
     </div>`
 }
 
@@ -144,7 +148,7 @@ export function messageHtml(kind: MsgKind, lang: ClientLang, d: MsgData) {
     html: layout(lang, d.barber, `
       <h2 style="font-size: 22px; margin: 0 0 8px;">${esc(m.heading)}</h2>
       <p style="color: #555; line-height: 1.55; margin: 0 0 24px;">${esc(m.text)}</p>
-      <a href="${esc(m.button.url)}" style="display: inline-block; background: #1d1d1f; color: #fff; text-decoration: none; font-weight: 600; padding: 12px 22px; border-radius: 12px;">${esc(m.button.label)}</a>`),
+      <a href="${esc(m.button.url)}" style="display: inline-block; background: #1d1d1f; color: #fff; text-decoration: none; font-weight: 600; padding: 12px 22px; border-radius: 12px;">${esc(m.button.label)}</a>`, d.unsubscribeUrl),
   }
 }
 

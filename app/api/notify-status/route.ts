@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, rateLimited, isPlainEmail } from '@/lib/mailer'
 import { isOn, messageHtml, normLang, LOCALE, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { OPTOUT_KINDS, hasOptedOut, optoutLinks } from '@/lib/optout'
 
 // Sends one automatic email to a client after the barber changes an appointment
 // (confirmed, cancelled, completed → thanks, tip). The caller proves who they are with
@@ -58,6 +59,9 @@ export async function POST(req: NextRequest) {
   if (!fits) return NextResponse.json({ skipped: 'status does not match' })
   if (!isOn(a.barbers.message_settings, k)) return NextResponse.json({ skipped: 'switched off' })
   if (!a.customer_email || !isPlainEmail(a.customer_email)) return NextResponse.json({ skipped: 'no valid client email' })
+  const optional = OPTOUT_KINDS.includes(k)
+  if (optional && await hasOptedOut(supabase, a.customer_email)) return NextResponse.json({ skipped: 'client unsubscribed' })
+  const links = optional ? optoutLinks(a.customer_email) : null
   // a booking can move more than once, so "rescheduled" is not limited to one email
   const once = k !== 'rescheduled'
   if (once && (a.messages_sent ?? []).includes(k)) return NextResponse.json({ skipped: 'already sent' })
@@ -86,11 +90,12 @@ export async function POST(req: NextRequest) {
     previous: typeof previousStart === 'string' && !Number.isNaN(Date.parse(previousStart))
       ? `${new Date(previousStart).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz })} · ${new Date(previousStart).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: tz })}`
       : null,
+    unsubscribeUrl: links?.page ?? null,
   })
 
   try {
     const apiKey = process.env.RESEND_API_KEY
-    if (mailerReady) await sendMail(a.customer_email, msg.subject, msg.html)
+    if (mailerReady) await sendMail(a.customer_email, msg.subject, msg.html, { unsubscribeUrl: links?.oneClick })
     else if (apiKey) await new Resend(apiKey).emails.send({ from: process.env.EMAIL_FROM || 'Snippr <onboarding@resend.dev>', to: a.customer_email, subject: msg.subject, html: msg.html })
     else throw new Error('email not configured')
     return NextResponse.json({ sent: k })
