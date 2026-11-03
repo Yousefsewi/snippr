@@ -36,7 +36,7 @@ export default function TermsPage() {
         },
         {
           heading: 'Plans, prices & billing',
-          body: <>Snippr is free at the moment. Paid plans are described on the <Link href="/pricing" style={a}>pricing page</Link>; prices shown there exclude VAT (BTW) unless stated otherwise. A paid plan renews each month or year until you cancel. You can cancel at any time from your dashboard; the plan then stays active until the end of the period you paid for. Paid periods are not refunded, except where the law requires it.</>,
+          body: <>Snippr is free at the moment. Paid plans are described on the <Link href="/pricing" style={a}>pricing page</Link>; prices are in euros and exclude 21% VAT (BTW) unless stated otherwise; the key terms are summed up under “Before you subscribe” on that page. A paid plan is billed in advance and renews automatically for the same period (month or year) until you cancel; we email you before a yearly plan renews. You can cancel at any time from your dashboard; the plan then stays active until the end of the period you paid for and nothing more is charged. Paid plans are for businesses, so the consumer withdrawal right does not apply; paid periods are not refunded, except where the law requires it. Card details are handled only by our payment provider.</>,
         },
         {
           heading: 'Availability',
