@@ -69,6 +69,7 @@ export default function PrivacyPage() {
                 <li><b>Supabase</b> — database and sign-in. Servers in the EU (Ireland).</li>
                 <li><b>Vercel</b> — hosts the website and runs the server code. Vercel Inc. is a US company; transfers are covered by the EU–US Data Privacy Framework and/or Standard Contractual Clauses.</li>
                 <li><b>Google (Gmail)</b> — sends our emails. Covered by the EU–US Data Privacy Framework / Standard Contractual Clauses.</li>
+                <li><b>Google sign-in</b> — only if you choose “Continue with Google”: Google confirms who you are and shares your name, email address and profile picture with us. We never see your Google password.</li>
                 <li><b>Browser push services</b> (e.g. Google, Apple, Mozilla) — deliver new-booking notifications to a barber’s device, only if the barber turns them on.</li>
                 <li><b>Expo</b> — delivers notifications to the Snippr mobile app, if a barber uses it.</li>
                 <li><b>OpenStreetMap (Nominatim)</b> — suggests addresses while a barber types their shop address in the dashboard. Only the typed text and your IP address are sent.</li>
