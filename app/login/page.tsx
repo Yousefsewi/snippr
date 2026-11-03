@@ -6,11 +6,16 @@ import { useRouter } from 'next/navigation'
 import { Auth5 } from '@/components/watermelon-ui/auth-5'
 import { suggestEmail } from '@/lib/email-typo'
 import { SESSION_ONLY_KEY, ALIVE_COOKIE } from '@/lib/remember-me'
+import { AUTH_COPY, useAuthLng } from '@/lib/auth-copy'
+import ResendConfirmation from '@/components/resend-confirmation'
 
 export default function LoginPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const c = AUTH_COPY[useAuthLng()]
+  // email that is not confirmed yet → show "send the confirmation email again"
+  const [unconfirmed, setUnconfirmed] = useState('')
   const busy = useRef(false) // one sign-in request at a time (Enter + click used to send two)
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,6 +27,7 @@ export default function LoginPage() {
     busy.current = true
     setLoading(true)
     setError('')
+    setUnconfirmed('')
 
     let { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -40,14 +46,11 @@ export default function LoginPage() {
     if (error) {
       // Echo the email that was actually sent: browser autofill often puts in an old or
       // misspelled address without the user noticing.
-      setError(
-        error.code === 'invalid_credentials' && fixed
-          ? `Wrong password for "${fixed}" (we also corrected "${email}"). Try again, or use "Forgot password?".`
-          : error.code === 'invalid_credentials'
-          ? `Wrong email or password for "${email}". Check the spelling, or use "Forgot password?". No account yet? Register first.`
-          : error.code === 'email_not_confirmed'
-            ? 'This email is not confirmed yet. Please check your inbox.'
-            : error.message,
+      if (error.code === 'email_not_confirmed') setUnconfirmed(email)
+      else setError(
+        error.code === 'invalid_credentials' && fixed ? c.err.wrongPwFixed(fixed, email)
+          : error.code === 'invalid_credentials' ? c.err.wrongPw(email)
+          : error.message,
       )
       busy.current = false
       setLoading(false)
@@ -68,13 +71,14 @@ export default function LoginPage() {
   return (
     <Auth5
       brandName="Snippr"
-      heading="Welcome Back!"
-      subtext="Enter your details below"
-      submitLabel={loading ? 'Logging in…' : 'Log in'}
+      heading={c.loginHeading}
+      subtext={c.loginSub}
+      submitLabel={loading ? c.loggingIn : c.logIn}
       loading={loading}
       error={error}
-      footerText="Don't have an account?"
-      footerLinkText="Sign up"
+      belowError={unconfirmed ? <ResendConfirmation email={unconfirmed} text={c.err.notConfirmed} c={c} tone="warn" /> : null}
+      footerText={c.noAccount}
+      footerLinkText={c.signUp}
       signUpHref="/register"
       forgotPasswordHref="/forgot-password"
       onSubmit={handleLogin}

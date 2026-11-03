@@ -7,16 +7,20 @@ import { detectTimezone, setSavedTimezone } from '@/lib/timezones'
 import { detectCurrency, setSavedCurrency } from '@/lib/currency'
 import { Auth5 } from '@/components/watermelon-ui/auth-5'
 import { suggestEmail } from '@/lib/email-typo'
-import { ageFrom, AGE_ERRORS, MIN_AGE } from '@/lib/age'
-import { TERMS_ERROR } from '@/lib/legal'
+import { ageFrom, MIN_AGE } from '@/lib/age'
+import { AUTH_COPY, errorText, useAuthLng } from '@/lib/auth-copy'
+import ResendConfirmation from '@/components/resend-confirmation'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const c = AUTH_COPY[useAuthLng()]
   // Captured silently from the browser; users adjust these later in Settings
   const [timezone] = useState(detectTimezone())
   const [currency] = useState(detectCurrency())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  // after a successful sign-up: the address the confirmation email went to (shown in green)
+  const [sentTo, setSentTo] = useState('')
   // email we already warned about; submitting it again means "yes, it's really my address"
   const [typoWarned, setTypoWarned] = useState('')
 
@@ -27,14 +31,15 @@ export default function RegisterPage() {
     const email = (form.querySelector('#Auth5-email') as HTMLInputElement)?.value ?? ''
     const password = (form.querySelector('#Auth5-password') as HTMLInputElement)?.value ?? ''
     const birthDate = (form.querySelector('#Auth5-birthdate') as HTMLInputElement)?.value ?? ''
+    setSentTo('')
     // Terms + DPA accepted, and the privacy notice shown (components/signup-privacy-notice.tsx)
     const acceptedTerms = !!(form.querySelector('#Auth5-terms') as HTMLInputElement)?.checked
-    if (!acceptedTerms) { setError(TERMS_ERROR); return }
+    if (!acceptedTerms) { setError(c.err.terms); return }
 
     // Legal age check before anything is created (checked again on the server)
     const age = ageFrom(birthDate)
-    if (age === null) { setError(AGE_ERRORS.invalid); return }
-    if (age < MIN_AGE) { setError(AGE_ERRORS.tooYoung); return }
+    if (age === null) { setError(c.err.dob_invalid); return }
+    if (age < MIN_AGE) { setError(c.err.too_young); return }
 
     const emailPrefix = email.split('@')[0]
     const fullName = `${first} ${last}`.trim() || emailPrefix
@@ -48,7 +53,7 @@ export default function RegisterPage() {
     const fixed = suggestEmail(email)
     if (fixed && typoWarned !== email.trim().toLowerCase()) {
       setTypoWarned(email.trim().toLowerCase())
-      setError(`Did you mean ${fixed}? Fix the email, or press "Create account" again if it's really correct.`)
+      setError(c.err.typo(fixed))
       return
     }
 
@@ -59,7 +64,7 @@ export default function RegisterPage() {
     setSavedTimezone(timezone)
     setSavedCurrency(currency)
 
-    // The account is created server-side, already confirmed (app/api/register/route.ts);
+    // The account is created server-side (app/api/register/route.ts);
     // the barber profile is created by a database trigger (supabase/schema.sql) from this metadata
     try {
       const res = await fetch('/api/register', {
@@ -69,18 +74,18 @@ export default function RegisterPage() {
       })
       const result = await res.json()
       if (!res.ok) {
-        setError(result.error || 'Registration failed. Please try again.')
+        setError(errorText(c, result))
         setLoading(false)
         return
       }
-      // A confirmation email was sent: they log in after clicking its link
+      // A confirmation email was sent: they log in after clicking its link (green box, not an error)
       if (result.confirmed === false) {
-        setError(`Almost done! We sent a confirmation link to ${email.trim()}. Open it to activate your account (check your spam folder too).`)
+        setSentTo(email.trim())
         setLoading(false)
         return
       }
     } catch {
-      setError('Could not reach the server. Please check your connection and try again.')
+      setError(c.err.network)
       setLoading(false)
       return
     }
@@ -99,13 +104,14 @@ export default function RegisterPage() {
     <Auth5
       brandName="Snippr"
       showName
-      heading="Create your account"
-      subtext="Create your barber profile in seconds."
-      submitLabel={loading ? 'Creating account…' : 'Create account'}
+      heading={c.regHeading}
+      subtext={c.regSub}
+      submitLabel={loading ? c.creating : c.create}
       loading={loading}
       error={error}
-      footerText="Already have an account?"
-      footerLinkText="Login"
+      belowError={sentTo ? <ResendConfirmation email={sentTo} text={c.err.confirmSent(sentTo)} c={c} /> : null}
+      footerText={c.haveAccount}
+      footerLinkText={c.logIn}
       signUpHref="/login"
       forgotPasswordHref="/forgot-password"
       onSubmit={handleRegister}

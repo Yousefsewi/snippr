@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Outfit } from "next/font/google";
 import { AuthArt } from "@/components/auth-art";
 import SignupPrivacyNotice from '@/components/signup-privacy-notice'
+import { AUTH_COPY, useAuthLng } from '@/lib/auth-copy'
 
 // Left panel: the misty field photo (public/auth-fog.jpg). Set to true for the 3D artwork instead.
 const SHOW_3D_ART = false;
@@ -53,6 +54,8 @@ export interface Auth5Props {
   loading?: boolean;
   /** Show first/last name fields (for sign-up) */
   showName?: boolean;
+  /** Extra content under the error message (e.g. "send the confirmation email again") */
+  belowError?: React.ReactNode;
 }
 
 // iOS-like underline field
@@ -82,8 +85,10 @@ export function Auth5({
   error,
   loading = false,
   showName = false,
+  belowError,
 }: Auth5Props) {
   const [showPw, setShowPw] = useState(false);
+  const L = AUTH_COPY[useAuthLng()];
 
   return (
     <div className={`${outfit.className} flex min-h-screen w-full items-center justify-center bg-[#ececef] p-3 sm:p-6`} style={{ colorScheme: "light" }}>
@@ -113,10 +118,10 @@ export function Auth5({
             >
               {showName && (
                 <div className="grid grid-cols-2 gap-4">
-                  <Field id="Auth5-firstname" label="First name">
+                  <Field id="Auth5-firstname" label={L.firstName}>
                     <input id="Auth5-firstname" type="text" autoComplete="given-name" placeholder="John" className={INPUT} required />
                   </Field>
-                  <Field id="Auth5-lastname" label="Last name">
+                  <Field id="Auth5-lastname" label={L.lastName}>
                     <input id="Auth5-lastname" type="text" autoComplete="family-name" placeholder="Doe" className={INPUT} />
                   </Field>
                 </div>
@@ -124,20 +129,20 @@ export function Auth5({
 
               {/* Age check at sign-up: account holders must be 18 or older (see /terms) */}
               {showName && (
-                <Field id="Auth5-birthdate" label="Date of birth">
+                <Field id="Auth5-birthdate" label={L.birthDate}>
                   <input id="Auth5-birthdate" type="date" autoComplete="bday" min="1900-01-01" className={INPUT} required />
                 </Field>
               )}
 
-              <Field id="Auth5-email" label="Email">
+              <Field id="Auth5-email" label={L.email}>
                 <input id="Auth5-email" name="email" type="email" autoComplete="username" placeholder="you@example.com" className={INPUT} required />
               </Field>
 
               <Field
                 id="Auth5-password"
-                label="Password"
+                label={L.password}
                 right={
-                  <button type="button" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? "Hide password" : "Show password"}
+                  <button type="button" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? L.hidePw : L.showPw}
                     className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[#8e8e93] transition-colors hover:bg-[#f2f2f7] hover:text-[#111]">
                     {showPw ? (
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -157,9 +162,9 @@ export function Auth5({
                     <span className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-[#c7c7cc] bg-white transition-colors peer-checked:border-[#111] peer-checked:bg-[#111] peer-focus-visible:ring-2 peer-focus-visible:ring-[#111]/30 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
                     </span>
-                    Remember me
+                    {L.remember}
                   </label>
-                  <a href={forgotPasswordHref} className="text-[#8e8e93] transition-colors hover:text-[#111]">Forgot password?</a>
+                  <a href={forgotPasswordHref} className="text-[#8e8e93] transition-colors hover:text-[#111]">{L.forgot}</a>
                 </div>
               )}
 
@@ -169,6 +174,7 @@ export function Auth5({
               {error && (
                 <p role="alert" className="rounded-2xl bg-[#fff1f0] px-4 py-3 text-[13px] leading-snug text-[#d70015]">{error}</p>
               )}
+              {belowError}
 
               <button
                 type="submit"

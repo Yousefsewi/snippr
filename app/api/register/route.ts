@@ -19,21 +19,21 @@ export async function POST(req: NextRequest) {
 
   // Brake against mass sign-ups: 5 accounts per network per hour
   if (rateLimited(`register:${clientIp(req.headers)}`, 5, 60 * 60 * 1000)) {
-    return NextResponse.json({ error: 'Too many sign-ups from this network. Please try again in an hour.' }, { status: 429 })
+    return NextResponse.json({ code: 'too_many', error: 'Too many sign-ups from this network. Please try again in an hour.' }, { status: 429 })
   }
 
   const { email, password, fullName, slug, birthDate, acceptedTerms } = await req.json().catch(() => ({}))
   const cleanEmail = String(email ?? '').trim().toLowerCase()
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return NextResponse.json({ code: 'invalid_email', error: 'Please enter a valid email address.' }, { status: 400 })
   // Terms + DPA must be accepted (the privacy notice is shown next to that box)
-  if (acceptedTerms !== true) return NextResponse.json({ error: TERMS_ERROR }, { status: 400 })
+  if (acceptedTerms !== true) return NextResponse.json({ code: 'terms', error: TERMS_ERROR }, { status: 400 })
   // Legal age check: 18+ only
   const age = ageFrom(String(birthDate ?? ''))
-  if (age === null) return NextResponse.json({ error: AGE_ERRORS.invalid }, { status: 400 })
-  if (age < MIN_AGE) return NextResponse.json({ error: AGE_ERRORS.tooYoung }, { status: 400 })
-  if (String(password ?? '').length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 })
+  if (age === null) return NextResponse.json({ code: 'dob_invalid', error: AGE_ERRORS.invalid }, { status: 400 })
+  if (age < MIN_AGE) return NextResponse.json({ code: 'too_young', error: AGE_ERRORS.tooYoung }, { status: 400 })
+  if (String(password ?? '').length < 6) return NextResponse.json({ code: 'pw_short', error: 'Password must be at least 6 characters.' }, { status: 400 })
   // leaked-password check (free alternative to Supabase's paid-plan setting)
-  if (await isPwnedPassword(String(password))) return NextResponse.json({ error: PWNED_MESSAGE.en }, { status: 400 })
+  if (await isPwnedPassword(String(password))) return NextResponse.json({ code: 'pw_leaked', error: PWNED_MESSAGE.en }, { status: 400 })
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
   const metadata = { full_name: String(fullName ?? '').slice(0, 100), slug: String(slug ?? '').slice(0, 60), birth_date: String(birthDate),
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.auth.admin.createUser({ email: cleanEmail, password, email_confirm: true, user_metadata: metadata })
     if (error) {
       return NextResponse.json(
-        { error: exists(error.message) ? 'An account with this email already exists. Please log in.' : error.message },
+        { code: exists(error.message) ? 'exists' : undefined, error: exists(error.message) ? 'An account with this email already exists. Please log in.' : error.message },
         { status: exists(error.message) ? 409 : 400 },
       )
     }
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   if (error || !data.properties?.hashed_token) {
     const msg = error?.message ?? 'Could not create the account.'
     return NextResponse.json(
-      { error: exists(msg) ? 'An account with this email already exists. Log in, or use "Forgot password?" if you never got the confirmation email.' : msg },
+      { code: exists(msg) ? 'exists' : undefined, error: exists(msg) ? 'An account with this email already exists. Log in, or use "Forgot password?" if you never got the confirmation email.' : msg },
       { status: exists(msg) ? 409 : 400 },
     )
   }
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     // Don't leave a half-made account behind: remove it so they can simply try again
     await supabase.auth.admin.deleteUser(data.user.id)
     console.error('register: confirmation email failed:', err)
-    return NextResponse.json({ error: 'We could not send the confirmation email. Please try again in a moment.' }, { status: 502 })
+    return NextResponse.json({ code: 'mail_failed', error: 'We could not send the confirmation email. Please try again in a moment.' }, { status: 502 })
   }
 
   return NextResponse.json({ ok: true, confirmed: false })

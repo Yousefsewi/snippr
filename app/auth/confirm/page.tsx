@@ -8,7 +8,8 @@ import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { AuthShell, authButtonClass } from '@/components/auth-shell'
 
-// Opened from the sign-up confirmation email (/auth/confirm?token_hash=…&type=signup).
+// Opened from the sign-up confirmation email (/auth/confirm?token_hash=…&type=signup), or from
+// "send the confirmation email again" (type=magiclink, app/api/resend-confirmation).
 // Verifies the one-time token, which also signs the barber in, then opens the dashboard.
 export default function ConfirmPage() {
   const router = useRouter()
@@ -18,7 +19,8 @@ export default function ConfirmPage() {
     const params = new URLSearchParams(window.location.search)
     const token_hash = params.get('token_hash') ?? ''
     ;(async () => {
-      const { error } = await supabase.auth.verifyOtp({ token_hash, type: 'signup' })
+      const type = params.get('type') === 'magiclink' ? 'magiclink' : 'signup'
+      const { error } = await supabase.auth.verifyOtp({ token_hash, type })
       if (error) { setFailed(error.message); return }
       router.replace('/dashboard')
     })()
