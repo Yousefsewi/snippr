@@ -131,12 +131,12 @@ const SHOW_MOCKS = false
 
 // Grainy colour-glow backgrounds for the four cards, drawn in CSS (no image files).
 // 01 dark teal with an orange glow · 02 dark teal with a red-orange glow from the corner
-// 03 dark teal with a glowing orange arc · 04 black, red-orange, teal and peach wave
+// 03 dark teal with a glowing orange arc · 04 dark teal with a warm orange rise
 const CARD_BG = [
   'radial-gradient(60% 45% at 50% 100%, #ff9a2e 0%, rgba(255,154,46,0.55) 35%, rgba(255,154,46,0) 75%), radial-gradient(70% 60% at 50% 55%, #2f6b6b 0%, rgba(47,107,107,0) 75%), linear-gradient(180deg, #0f1c20 0%, #13262a 100%)',
   'radial-gradient(70% 50% at 85% 100%, #ff6a2b 0%, rgba(240,80,30,0.6) 35%, rgba(240,80,30,0) 75%), radial-gradient(55% 40% at 20% 75%, rgba(255,170,90,0.55) 0%, rgba(255,170,90,0) 75%), radial-gradient(65% 50% at 30% 30%, rgba(47,107,107,0.9) 0%, rgba(47,107,107,0) 75%), linear-gradient(180deg, #0f1c20 0%, #14232a 100%)',
   'radial-gradient(120% 75% at 110% 110%, #ff8c3a 0%, #f2581f 18%, #7a1414 30%, rgba(20,16,20,0) 42%), radial-gradient(60% 40% at 30% 5%, rgba(32,92,96,0.8) 0%, rgba(32,92,96,0) 75%), linear-gradient(180deg, #102024 0%, #151a1f 100%)',
-  'radial-gradient(70% 45% at 20% 100%, #f6c889 0%, rgba(246,200,137,0) 75%), radial-gradient(55% 35% at 25% 70%, #22a3a3 0%, rgba(34,163,163,0) 75%), radial-gradient(60% 40% at 75% 45%, #ff4d2e 0%, rgba(255,77,46,0) 75%), radial-gradient(50% 30% at 90% 70%, #ff9a3c 0%, rgba(255,154,60,0) 75%), linear-gradient(180deg, #050608 0%, #0b0d12 35%, #1a1a1a 100%)',
+  'radial-gradient(80% 45% at 30% 105%, #ffb15c 0%, rgba(255,140,58,0.65) 30%, rgba(255,140,58,0) 70%), radial-gradient(45% 30% at 85% 80%, rgba(242,88,31,0.7) 0%, rgba(242,88,31,0) 75%), radial-gradient(70% 50% at 60% 25%, rgba(40,100,104,0.8) 0%, rgba(40,100,104,0) 75%), linear-gradient(180deg, #0d181c 0%, #131f24 100%)',
 ]
 // text colour on each card
 const CARD_INK = ['#ffffff', '#ffffff', '#ffffff', '#ffffff']
