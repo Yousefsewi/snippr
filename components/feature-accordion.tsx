@@ -129,6 +129,20 @@ function Mock({ i, lng }: { i: number; lng: Lng }) {
 // small example pictures inside the open card; off to keep the cards light and short
 const SHOW_MOCKS = false
 
+// Grainy colour-glow backgrounds for the four cards, drawn in CSS (no image files).
+// 01 dark teal with an orange glow · 02 cream, sea-green and burnt orange
+// 03 dark teal with a glowing orange arc · 04 black, red-orange, teal and peach wave
+const CARD_BG = [
+  'radial-gradient(60% 45% at 50% 100%, #ff9a2e 0%, rgba(255,154,46,0.55) 35%, rgba(255,154,46,0) 75%), radial-gradient(70% 60% at 50% 55%, #2f6b6b 0%, rgba(47,107,107,0) 75%), linear-gradient(180deg, #0f1c20 0%, #13262a 100%)',
+  'radial-gradient(55% 35% at 15% 25%, rgba(110,170,160,0.85) 0%, rgba(110,170,160,0) 75%), radial-gradient(80% 50% at 90% 100%, #e2461a 0%, rgba(226,70,26,0) 80%), linear-gradient(180deg, #efe7d6 0%, #d8b494 30%, #e2875a 60%, #e0662f 100%)',
+  'radial-gradient(120% 75% at 110% 110%, #ff8c3a 0%, #f2581f 18%, #7a1414 30%, rgba(20,16,20,0) 42%), radial-gradient(60% 40% at 30% 5%, rgba(32,92,96,0.8) 0%, rgba(32,92,96,0) 75%), linear-gradient(180deg, #102024 0%, #151a1f 100%)',
+  'radial-gradient(70% 45% at 20% 100%, #f6c889 0%, rgba(246,200,137,0) 75%), radial-gradient(55% 35% at 25% 70%, #22a3a3 0%, rgba(34,163,163,0) 75%), radial-gradient(60% 40% at 75% 45%, #ff4d2e 0%, rgba(255,77,46,0) 75%), radial-gradient(50% 30% at 90% 70%, #ff9a3c 0%, rgba(255,154,60,0) 75%), linear-gradient(180deg, #050608 0%, #0b0d12 35%, #1a1a1a 100%)',
+]
+// text colour on each card (card 2 is light at the top)
+const CARD_INK = ['#ffffff', '#1d1d1f', '#ffffff', '#ffffff']
+// fine film grain over the colours (SVG noise)
+const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")"
+
 export default function FeatureAccordion({ lng }: { lng: Lng }) {
   const c = COPY[lng]
   // the card under the mouse opens; when the mouse leaves, all cards close again
@@ -138,7 +152,7 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
     <section id="how" className="fa-section py-16 px-4" style={{ background: 'transparent' }}>
       <style>{`
         /* height follows the screen: shorter on laptops, never taller than before */
-        .fa-row { display: flex; gap: 16px; height: clamp(320px, 40vh, 360px); }
+        .fa-row { display: flex; gap: 16px; height: clamp(300px, 38vh, 340px); }
         .fa-card { flex: 1 1 0; min-width: 0; transition: flex-grow .55s cubic-bezier(.22,1,.36,1), box-shadow .3s; }
         .fa-card.is-open { flex-grow: 1.75; }
         .fa-detail { opacity: 0; transform: translateY(10px); transition: opacity .35s ease .12s, transform .45s cubic-bezier(.22,1,.36,1) .12s; pointer-events: none; }
@@ -146,9 +160,9 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
         /* closed cards: the three step icons at the bottom */
         .fa-peek { opacity: 1; transition: opacity .3s ease; }
         .fa-card.is-open .fa-peek { opacity: 0; pointer-events: none; }
-        .fa-card.is-open        @media (max-width: 900px) {
+        @media (max-width: 900px) {
           .fa-row { flex-direction: column; height: auto; }
-          .fa-card, .fa-card.is-open { flex: none; }
+          .fa-card, .fa-card.is-open { flex: none; min-height: 220px; }
           .fa-detail { opacity: 1; transform: none; pointer-events: auto; }
           .fa-peek { display: none; }
         }
@@ -176,29 +190,32 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
                 onBlur={() => setActive(null)}
                 onClick={() => setActive(i)}
                 tabIndex={0}
-                style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: '#ffffff', cursor: 'pointer', outline: 'none',
+                style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: CARD_BG[i], color: CARD_INK[i], cursor: 'pointer', outline: 'none',
                   boxShadow: open ? '0 24px 50px rgba(15,23,42,0.14)' : '0 4px 16px rgba(15,23,42,0.05)' }}
               >
+                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, mixBlendMode: 'overlay', opacity: 0.5, pointerEvents: 'none' }} />
+                {CARD_INK[i] === '#ffffff' && <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)', pointerEvents: 'none' }} />}
+
                 {/* peek for closed cards */}
                 <div className="fa-peek" aria-hidden style={{ position: 'absolute', left: 28, right: 20, bottom: 26, display: 'flex' }}>
                   <span style={{ display: 'flex', gap: 6 }}>
                     {ICONS[i].map((Icon, k) => (
-                      <span key={k} style={{ width: 34, height: 34, borderRadius: 11, background: '#f5f5f4', border: '1px solid #ececea', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280' }}><Icon size={15} strokeWidth={1.75} /></span>
+                      <span key={k} style={{ width: 34, height: 34, borderRadius: 11, background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: CARD_INK[i] }}><Icon size={15} strokeWidth={1.75} /></span>
                     ))}
                   </span>
                 </div>
 
                 <div style={{ position: 'relative', padding: '30px 28px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <h3 style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: '#0f172a', margin: 0 }}>{card.title}</h3>
-                  <p style={{ fontSize: 14, lineHeight: 1.55, margin: '10px 0 0', maxWidth: 340 }}>{card.desc}</p>
+                  <div role="heading" aria-level={3} style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: CARD_INK[i], margin: 0 }}>{card.title}</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.55, margin: '10px 0 0', maxWidth: 340, color: CARD_INK[i], opacity: 0.85 }}>{card.desc}</div>
 
                   <div className="fa-detail" style={{ marginTop: 18, display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {card.steps.map((s, k) => {
                         const Icon = ICONS[i][k]
                         return (
-                          <li key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#334155' }}>
-                            <span style={{ width: 22, height: 22, borderRadius: 7, background: '#f5f5f4', border: '1px solid #ececea', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#6b7280' }}><Icon size={13} strokeWidth={1.75} /></span>
+                          <li key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: CARD_INK[i] }}>
+                            <span style={{ width: 22, height: 22, borderRadius: 7, background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: CARD_INK[i] }}><Icon size={13} strokeWidth={1.75} /></span>
                             <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s}</span>
                           </li>
                         )
