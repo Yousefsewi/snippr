@@ -152,7 +152,7 @@ function Chrome({ children }: { children: ReactNode }) {
   }
   // iOS "liquid glass": every item is its own frosted tile; the active one is brighter
   const navLink = (active: boolean): React.CSSProperties => ({
-    ...glass(active),
+    ...glass(active, 'tile'),
     display: 'flex', alignItems: 'center', gap: 9,
     padding: '8px 10px', borderRadius: 14, textDecoration: 'none',
     color: active ? '#1d1d1f' : '#5f5e5b',
@@ -161,7 +161,7 @@ function Chrome({ children }: { children: ReactNode }) {
   })
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ display: 'flex', minHeight: '100vh', background: '#f7f7f5', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 500, ['--accent' as string]: salonStyle.key === 'barber' ? salonStyle.accent : theme.accent, ['--accent-2' as string]: salonStyle.accent2, ['--glass-wash' as string]: salonStyle.wash, ['--glass-page-wash' as string]: salonStyle.pageWash } as React.CSSProperties}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} style={{ display: 'flex', minHeight: '100vh', background: '#f7f7f5', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 500, ['--accent' as string]: salonStyle.key === 'barber' ? salonStyle.accent : theme.accent, ['--accent-2' as string]: salonStyle.accent2, ['--glass-wash' as string]: salonStyle.wash, ['--glass-page-wash' as string]: salonStyle.pageWash, ...salonStyle.vars } as React.CSSProperties}>
 
       {/* ── Sidebar (Notion light) — on phones the bottom tab bar replaces it ── */}
       <aside className="max-md:!hidden" style={{
@@ -216,7 +216,7 @@ function Chrome({ children }: { children: ReactNode }) {
 
           {/* Search (Riter-style) */}
           {collapsed ? (
-            <button style={{ ...glass(), display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0', borderRadius: 14, cursor: 'pointer', marginBottom: 4 }}>
+            <button style={{ ...glass(false, 'tile'), display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0', borderRadius: 14, cursor: 'pointer', marginBottom: 4 }}>
               <Search size={16} strokeWidth={1.75} color="#9b9a97" />
             </button>
           ) : (
@@ -253,7 +253,7 @@ function Chrome({ children }: { children: ReactNode }) {
           <button
             onClick={() => setShowNotif(!showNotif)}
             style={{
-              ...glass(showNotif),
+              ...glass(showNotif, 'tile'),
               display: 'flex', alignItems: 'center', gap: 8, width: '100%',
               padding: '8px 10px', borderRadius: 14, cursor: 'pointer',
               color: '#5f5e5b', fontSize: 15, fontWeight: 500, textAlign: 'left', whiteSpace: 'nowrap',
@@ -478,7 +478,7 @@ function Chrome({ children }: { children: ReactNode }) {
               onClick={handleLogout}
               disabled={loggingOut}
               title={t.signOut}
-              style={{ ...glass(), display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', color: '#787774', padding: '8px 0', borderRadius: 14, cursor: 'pointer', marginTop: 4, transition: 'background 0.18s, transform 0.18s' }}
+              style={{ ...glass(false, 'tile'), display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', color: '#787774', padding: '8px 0', borderRadius: 14, cursor: 'pointer', marginTop: 4, transition: 'background 0.18s, transform 0.18s' }}
               onMouseEnter={e => glassHover(e, true)}
               onMouseLeave={e => glassHover(e, false)}
             >

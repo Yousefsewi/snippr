@@ -261,7 +261,7 @@ export default function SettingsPage() {
                 }}
               >
                 {/* preview: the wash with two glass tiles on it */}
-                <div style={{ background: s.pageWash, height: 92, padding: 14, display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                <div style={{ background: s.pageWash, height: 92, padding: 14, display: 'flex', gap: 8, alignItems: 'flex-end', borderBottom: '1px solid #f0f0ee', ...s.vars } as React.CSSProperties}>
                   <div style={{ ...glass(true), width: 64, height: 40, borderRadius: 12 }} />
                   <div style={{ ...glass(), width: 64, height: 40, borderRadius: 12 }} />
                   <div style={{ marginLeft: 'auto', width: 22, height: 22, borderRadius: 7, background: s.accent }} />

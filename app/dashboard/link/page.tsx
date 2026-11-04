@@ -234,7 +234,7 @@ export default function BookingLinkPage() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 24 }}>
           <div>
-            <button onClick={() => router.back()} style={{ ...glass(), display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14, padding: '7px 14px', borderRadius: 999, color: INK, fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <button onClick={() => router.back()} style={{ ...glass(), display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14, padding: '7px 14px', borderRadius: 'var(--btn-radius, 999px)', color: INK, fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
               Back
             </button>

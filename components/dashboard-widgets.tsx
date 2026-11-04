@@ -95,7 +95,7 @@ function Empty({ icon: Icon, title, sub, action }: { icon: typeof BarChart3; tit
       <p className="mt-5 text-[17px] font-semibold" style={{ color: INK }}>{title}</p>
       <p className="mt-1.5 max-w-[320px] text-[14.5px] leading-relaxed" style={{ color: MUTED }}>{sub}</p>
       {action && (
-        <Link href={action.href} className="mt-6 rounded-full bg-[#1c1c1e] px-5 py-3.5 text-[14px] font-semibold text-white hover:bg-black">{action.label}</Link>
+        <Link href={action.href} className="mt-6 rounded-[var(--btn-radius,999px)] bg-[#1c1c1e] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-black">{action.label}</Link>
       )}
     </div>
   )
