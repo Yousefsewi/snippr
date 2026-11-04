@@ -141,7 +141,7 @@ const CARD_BG = [
 // text colour on each card (card 2 is light at the top)
 const CARD_INK = ['#ffffff', '#1d1d1f', '#ffffff', '#ffffff']
 // fine film grain over the colours (SVG noise)
-const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")"
+const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-0.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-0.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-0.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
 
 export default function FeatureAccordion({ lng }: { lng: Lng }) {
   const c = COPY[lng]
@@ -193,7 +193,8 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
                 style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: CARD_BG[i], color: CARD_INK[i], cursor: 'pointer', outline: 'none',
                   boxShadow: open ? '0 24px 50px rgba(15,23,42,0.14)' : '0 4px 16px rgba(15,23,42,0.05)' }}
               >
-                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, mixBlendMode: 'overlay', opacity: 0.5, pointerEvents: 'none' }} />
+                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '140px 140px', mixBlendMode: 'overlay', opacity: 0.9, pointerEvents: 'none' }} />
+                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '140px 140px', mixBlendMode: 'soft-light', opacity: 0.6, pointerEvents: 'none' }} />
                 {CARD_INK[i] === '#ffffff' && <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)', pointerEvents: 'none' }} />}
 
                 {/* peek for closed cards */}
