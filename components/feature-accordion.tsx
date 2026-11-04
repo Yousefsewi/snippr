@@ -130,16 +130,16 @@ function Mock({ i, lng }: { i: number; lng: Lng }) {
 const SHOW_MOCKS = false
 
 // Grainy colour-glow backgrounds for the four cards, drawn in CSS (no image files).
-// 01 dark teal with an orange glow · 02 cream, sea-green and burnt orange
+// 01 dark teal with an orange glow · 02 dark teal with a red-orange glow from the corner
 // 03 dark teal with a glowing orange arc · 04 black, red-orange, teal and peach wave
 const CARD_BG = [
   'radial-gradient(60% 45% at 50% 100%, #ff9a2e 0%, rgba(255,154,46,0.55) 35%, rgba(255,154,46,0) 75%), radial-gradient(70% 60% at 50% 55%, #2f6b6b 0%, rgba(47,107,107,0) 75%), linear-gradient(180deg, #0f1c20 0%, #13262a 100%)',
-  'radial-gradient(55% 35% at 15% 25%, rgba(110,170,160,0.85) 0%, rgba(110,170,160,0) 75%), radial-gradient(80% 50% at 90% 100%, #e2461a 0%, rgba(226,70,26,0) 80%), linear-gradient(180deg, #efe7d6 0%, #d8b494 30%, #e2875a 60%, #e0662f 100%)',
+  'radial-gradient(70% 50% at 85% 100%, #ff6a2b 0%, rgba(240,80,30,0.6) 35%, rgba(240,80,30,0) 75%), radial-gradient(55% 40% at 20% 75%, rgba(255,170,90,0.55) 0%, rgba(255,170,90,0) 75%), radial-gradient(65% 50% at 30% 30%, rgba(47,107,107,0.9) 0%, rgba(47,107,107,0) 75%), linear-gradient(180deg, #0f1c20 0%, #14232a 100%)',
   'radial-gradient(120% 75% at 110% 110%, #ff8c3a 0%, #f2581f 18%, #7a1414 30%, rgba(20,16,20,0) 42%), radial-gradient(60% 40% at 30% 5%, rgba(32,92,96,0.8) 0%, rgba(32,92,96,0) 75%), linear-gradient(180deg, #102024 0%, #151a1f 100%)',
   'radial-gradient(70% 45% at 20% 100%, #f6c889 0%, rgba(246,200,137,0) 75%), radial-gradient(55% 35% at 25% 70%, #22a3a3 0%, rgba(34,163,163,0) 75%), radial-gradient(60% 40% at 75% 45%, #ff4d2e 0%, rgba(255,77,46,0) 75%), radial-gradient(50% 30% at 90% 70%, #ff9a3c 0%, rgba(255,154,60,0) 75%), linear-gradient(180deg, #050608 0%, #0b0d12 35%, #1a1a1a 100%)',
 ]
-// text colour on each card (card 2 is light at the top)
-const CARD_INK = ['#ffffff', '#1d1d1f', '#ffffff', '#ffffff']
+// text colour on each card
+const CARD_INK = ['#ffffff', '#ffffff', '#ffffff', '#ffffff']
 // fine film grain over the colours (SVG noise)
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-0.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-0.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-0.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
 
