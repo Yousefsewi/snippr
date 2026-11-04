@@ -3,7 +3,7 @@
 // Plans: Solo / Salon / Pro, with the monthly–yearly switch, the founder offer, add-ons and
 // a comparison table. Shared by the public pricing page (app/pricing) and the dashboard
 // (app/dashboard/plans). Prices are fixed in euros excl. VAT (lib/legal.ts).
-// Honest on purpose: features that don't exist yet are marked "coming soon"; payments are
+// Features that don't exist yet are hidden (SHOW_UNRELEASED in lib/legal.ts); payments are
 // not live yet, so everyone uses Snippr for free during early access.
 
 import { useState } from 'react'
@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Clock, Minus, MessageSquareText, Mail, Sparkles } from 'lucide-react'
 import SubscriptionTerms from '@/components/subscription-terms'
-import { PLAN_PRICES_EUR, FOUNDER_DISCOUNT, FOUNDER_SPOTS, TRIAL_DAYS, SMS_PACK } from '@/lib/legal'
+import { PLAN_PRICES_EUR, FOUNDER_DISCOUNT, FOUNDER_SPOTS, TRIAL_DAYS, SMS_PACK, SHOW_UNRELEASED, VISIBLE_PLANS } from '@/lib/legal'
 
 export type Lng = 'en' | 'tr'
 type PlanId = 'solo' | 'salon' | 'pro'
@@ -24,7 +24,7 @@ const T = {
   en: {
     monthly: 'Monthly', yearly: 'Yearly', save: '2 months free',
     perMonth: '/mo', exVat: 'excl. VAT', billedYearly: (n: string) => `${n} per year`, billedMonthly: 'billed monthly',
-    soonTag: 'soon', popular: 'Most chosen',
+    soonTag: 'soon', popular: 'Most chosen', everythingSolo: 'Everything in Solo',
     founderTitle: `Founder offer: ${FOUNDER_DISCOUNT}% off for life`,
     founderBody: `For the first ${FOUNDER_SPOTS} shops that join. Solo for ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/mo, for as long as you stay.`,
     early: `Early access: Snippr is free while we open payments. After that, every plan starts with ${TRIAL_DAYS} days free, no card needed.`,
@@ -63,7 +63,7 @@ const T = {
   tr: {
     monthly: 'Aylık', yearly: 'Yıllık', save: '2 ay bedava',
     perMonth: '/ay', exVat: 'KDV hariç', billedYearly: (n: string) => `yıllık ${n}`, billedMonthly: 'aylık ödenir',
-    soonTag: 'yakında', popular: 'En çok seçilen',
+    soonTag: 'yakında', popular: 'En çok seçilen', everythingSolo: 'Solo’daki her şey',
     founderTitle: `Kurucu teklifi: ömür boyu %${FOUNDER_DISCOUNT} indirim`,
     founderBody: `Katılan ilk ${FOUNDER_SPOTS} işletmeye. Solo aylık ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}, Snippr’da kaldığın sürece.`,
     early: `Erken erişim: Ödemeler açılana kadar Snippr ücretsiz. Sonrasında her plan ${TRIAL_DAYS} gün ücretsiz başlar, kart gerekmez.`,
@@ -101,12 +101,23 @@ const T = {
   },
 }
 
-const ORDER: PlanId[] = ['solo', 'salon', 'pro']
+const ORDER: PlanId[] = VISIBLE_PLANS
+const SOON_COL = ['solo', 'salon', 'pro'].map(id => VISIBLE_PLANS.includes(id as PlanId))
 
 /** mode 'public': buttons lead to sign-up / contact. mode 'dashboard': Solo shows that it's free for them now. */
 export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?: string; mode?: 'public' | 'dashboard' }) {
   const t = T[lng] ?? T.en
   const [yearly, setYearly] = useState(false)
+  // hide anything that isn't built yet
+  const items = (id: PlanId): Item[] => SHOW_UNRELEASED ? t.lists[id] : t.lists[id]
+    .filter(([, soon]) => !soon)
+    .map(([label], i) => [id === 'pro' && i === 0 && !VISIBLE_PLANS.includes('salon') ? t.everythingSolo : label] as Item)
+  const addons = t.addons.filter(a => SHOW_UNRELEASED || !a[3].includes(t.soonTag))
+  const rows = t.rows
+    .filter((r, i) => SHOW_UNRELEASED || i !== 0) // staff count: team features aren't built yet
+    .filter(r => SHOW_UNRELEASED || !r.slice(1).includes('soon'))
+    .filter(r => SHOW_UNRELEASED || !r.slice(1).includes('add-on'))
+    .map(([label, ...vals]) => [label, ...vals.filter((_, k) => SOON_COL[k])])
 
   const cell = (v: string | boolean) => {
     if (v === true) return <Check size={17} strokeWidth={2.6} className="mx-auto text-[#1d1d1f]" />
@@ -150,7 +161,7 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
       </div>
 
       {/* plan cards */}
-      <section className={`${mode === 'public' ? 'mt-10' : 'mt-6'} grid gap-4 ${mode === 'public' ? 'lg:grid-cols-3' : 'xl:grid-cols-3'}`}>
+      <section className={`${mode === 'public' ? 'mt-10' : 'mt-6'} grid gap-4 ${ORDER.length === 3 ? (mode === 'public' ? 'lg:grid-cols-3' : 'xl:grid-cols-3') : 'mx-auto max-w-[860px] md:grid-cols-2'}`}>
         {ORDER.map((id, i) => {
           const p = t.plans[id]
           const price = PLAN_PRICES_EUR[id]
@@ -180,7 +191,7 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
               </p>
 
               <ul className="mt-7 flex flex-1 flex-col gap-3">
-                {t.lists[id].map(([label, soon]) => (
+                {items(id).map(([label, soon]) => (
                   <li key={label} className="flex items-start gap-2.5 text-[15px] leading-snug">
                     <Check size={17} strokeWidth={2.6} className={`mt-0.5 flex-shrink-0 ${soon ? (dark ? 'text-white/35' : 'text-[#c7c7cc]') : ''}`} />
                     <span className={soon ? (dark ? 'text-white/55' : 'text-[#8e8e93]') : ''}>
@@ -211,7 +222,7 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
       <section className="mx-auto mt-6 max-w-[860px] rounded-[24px] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
         <h3 className="text-[16px] font-semibold text-[#1d1d1f]">{t.addonsTitle}</h3>
         <div className="mt-3 divide-y divide-[#f0f0f0]">
-          {t.addons.map(([Icon, name, desc, price]) => (
+          {addons.map(([Icon, name, desc, price]) => (
             <div key={name} className="flex items-center gap-3 py-3">
               <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-[#ececec] bg-[#f7f7f8] text-[#6e6e73]"><Icon size={17} strokeWidth={1.75} /></span>
               <div className="min-w-0 flex-1"><p className="text-[15px] font-medium text-[#1d1d1f]">{name}</p><p className="text-[13px] text-[#8e8e93]">{desc}</p></div>
@@ -232,7 +243,7 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
             </tr>
           </thead>
           <tbody>
-            {t.rows.map(([label, ...vals]) => (
+            {rows.map(([label, ...vals]) => (
               <tr key={String(label)} className="border-b border-[#f4f4f5] last:border-0">
                 <td className="py-3 pr-3 text-[14px] text-[#3a3a3c]">{label}</td>
                 {vals.map((v, k) => <td key={k} className="py-3 text-center">{cell(v)}</td>)}

@@ -48,13 +48,13 @@ const regionToCurrency: Record<string, string> = {
   DE: 'EUR', FR: 'EUR', NL: 'EUR', ES: 'EUR', IT: 'EUR', IE: 'EUR', PT: 'EUR', AT: 'EUR', BE: 'EUR',
 }
 
+// Snippr serves shops in the Netherlands, so euros are the default for everyone.
+// The browser's region is NOT used (an en-US or tr-TR browser in Assen still pays in €).
+// Kept for reference / a future non-NL launch.
+export function currencyForRegion(region: string): string | undefined { return regionToCurrency[region.toUpperCase()] }
+export const DEFAULT_CURRENCY = 'EUR'
 export function detectCurrency(): string {
-  try {
-    const loc = Intl.DateTimeFormat().resolvedOptions().locale || navigator.language || 'en-US'
-    const region = loc.split('-')[1]?.toUpperCase()
-    if (region && regionToCurrency[region]) return regionToCurrency[region]
-  } catch { /* ignore */ }
-  return 'USD'
+  return DEFAULT_CURRENCY
 }
 
 // Format an amount in the given currency (correct symbol, decimals, placement)
@@ -73,10 +73,11 @@ export function formatMoney(amount: number, code: string): string {
   }
 }
 
-const KEY = 'snippr-currency'
+// v2: everyone was reset to euros once (old saved values were mostly a wrong $ guess)
+const KEY = 'snippr-currency-v2'
 
 export function getSavedCurrency(): string {
-  if (typeof window === 'undefined') return 'USD'
+  if (typeof window === 'undefined') return DEFAULT_CURRENCY
   return localStorage.getItem(KEY) || detectCurrency()
 }
 
@@ -85,13 +86,13 @@ export function setSavedCurrency(code: string) {
 }
 
 interface CurrencyCtxValue { currency: string; setCurrency: (c: string) => void; format: (n: number) => string }
-const CurrencyCtx = createContext<CurrencyCtxValue>({ currency: 'USD', setCurrency: () => {}, format: (n) => String(n) })
+const CurrencyCtx = createContext<CurrencyCtxValue>({ currency: DEFAULT_CURRENCY, setCurrency: () => {}, format: (n) => String(n) })
 
 // Saved currency (or a guess from the browser) without needing the provider.
 // Used on public pages like the footer picker and the pricing page.
 export function useCurrencyChoice(): [string, (c: string) => void] {
   const saved = useStored(KEY)
-  const detected = useClientValue(detectCurrency, 'USD')
+  const detected = useClientValue(detectCurrency, DEFAULT_CURRENCY)
   return [saved || detected, (c: string) => writeStored(KEY, c)]
 }
 

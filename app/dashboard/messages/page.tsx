@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase'
 import { useLang } from '@/lib/i18n'
 import { isOn, messageHtml, type MsgKind, type MsgSettings } from '@/lib/messages'
 import MessagesHero from '@/components/messages-hero'
+import { SHOW_UNRELEASED } from '@/lib/legal'
 
 type Channel = 'email' | 'push'
 type Card = { id: string; icon: LucideIcon; title: string; desc: string; channels: Channel[]; kind?: MsgKind; always?: boolean; soon?: boolean }
@@ -171,7 +172,11 @@ export default function MessagesPage() {
 
       {!ready && <div className="mt-5 rounded-[18px] border border-[#f5d48a] bg-[#fff8e6] p-4 text-[14px] text-[#5c4300]">{t.setup}</div>}
 
-      {sections.map(sec => (
+      {sections
+        // messages that aren't built yet stay hidden (lib/legal.ts → SHOW_UNRELEASED)
+        .map(sec => ({ ...sec, cards: sec.cards.filter(c => SHOW_UNRELEASED || !c.soon) }))
+        .filter(sec => sec.cards.length)
+        .map(sec => (
         <section key={sec.title} className="mt-9">
           <h2 className="mb-3 text-[19px] font-bold text-[#37352f]">{sec.title}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

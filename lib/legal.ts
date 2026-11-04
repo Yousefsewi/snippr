@@ -18,4 +18,9 @@ export const PLAN_PRICES_EUR = {
 export const TRIAL_DAYS = 14             // free trial, no card
 export const FOUNDER_DISCOUNT = 40       // % off for life
 export const FOUNDER_SPOTS = 20          // first shops that join
-export const SMS_PACK = { count: 100, price: 12 } // add-on, coming soon
+export const SMS_PACK = { count: 100, price: 12 } // add-on, not built yet
+// Features that aren't built yet stay hidden everywhere until this is true
+// (Salon plan, team features, SMS pack, extra add-ons). Flip it when they're ready.
+export const SHOW_UNRELEASED = false
+export const VISIBLE_PLANS = (Object.keys(PLAN_PRICES_EUR) as (keyof typeof PLAN_PRICES_EUR)[])
+  .filter(k => SHOW_UNRELEASED || k !== 'salon')

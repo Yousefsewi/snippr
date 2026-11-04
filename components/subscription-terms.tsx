@@ -8,7 +8,7 @@
 // DRAFT: to be checked by a lawyer.
 
 import Link from 'next/link'
-import { PLAN_PRICES_EUR, VAT_RATE, TRIAL_DAYS, FOUNDER_DISCOUNT, FOUNDER_SPOTS } from '@/lib/legal'
+import { PLAN_PRICES_EUR, VISIBLE_PLANS, VAT_RATE, TRIAL_DAYS, FOUNDER_DISCOUNT, FOUNDER_SPOTS } from '@/lib/legal'
 
 const eur = (n: number) => `€${n.toFixed(2).replace('.', ',')}`
 const incl = (n: number) => eur(Math.round(n * (1 + VAT_RATE) * 100) / 100)
@@ -70,7 +70,7 @@ export default function SubscriptionTerms({ lng }: { lng: 'en' | 'tr' }) {
             <dd className="m-0 leading-relaxed text-[#3a3a3c]">
               {v ?? (
                 <span className="flex flex-col gap-1">
-                  {(Object.keys(PLAN_PRICES_EUR) as PlanKey[]).map(k2 => (
+                  {VISIBLE_PLANS.map(k2 => (
                     <span key={k2}><b className="text-[#1d1d1f]">{c.names[k2]}</b> — {line(k2)}</span>
                   ))}
                 </span>

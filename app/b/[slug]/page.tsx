@@ -128,7 +128,7 @@ type BWords = (typeof BT)['en']
 /* ─────────────────────────  page  ───────────────────────── */
 export default function BookingPage() {
   const slug = useParams().slug as string
-  const ccy = typeof window !== 'undefined' ? detectCurrency() : 'USD'
+  const ccy = detectCurrency()
 
   const [barber, setBarber] = useState<Barber | null>(null)
   const [services, setServices] = useState<Service[]>([])

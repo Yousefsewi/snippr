@@ -14,6 +14,7 @@ import { SITE_URL } from '@/lib/site-url'
 import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
+import { SHOW_UNRELEASED } from '@/lib/legal'
 
 type Icon = React.ComponentType<{ size?: number; strokeWidth?: number }>
 
@@ -150,7 +151,8 @@ export default function AddonsPage() {
     { id: 'maps', icon: MapPin, grad: G.red, title: I.maps[0], desc: I.maps[1], status: 'active', href: '/dashboard/addons/social#google' },
     { id: 'gcal', icon: CalendarSync, grad: G.grey, title: I.gcal[0], desc: I.gcal[1], status: 'soon' },
   ]
-  const list = tab === 'addons' ? addons : integrations
+  // features that aren't built yet stay hidden (lib/legal.ts → SHOW_UNRELEASED)
+  const list = (tab === 'addons' ? addons : integrations).filter(a => SHOW_UNRELEASED || a.status !== 'soon')
 
   const badgeStyle: Record<Status, React.CSSProperties> = {
     active: { background: '#e9f6ec', color: '#1c6b3f' }, free: { background: '#e6f0ff', color: '#1d5bd6' },
