@@ -2,9 +2,6 @@
 // Change it here and every page follows.
 export const SUPPORT_EMAIL = 'seviyusuf6@gmail.com'
 
-// WhatsApp number for the contact page, in international format without "+" or spaces
-// (e.g. '31612345678'). Empty = the WhatsApp card is hidden.
-export const SUPPORT_WHATSAPP = ''
 
 // Company details for the imprint page (/imprint), privacy policy and terms.
 // Fill these in after registering with the KvK (Dutch Chamber of Commerce).

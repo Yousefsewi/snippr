@@ -7,9 +7,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, HelpCircle, Mail, Send, Sparkles, type LucideIcon } from 'lucide-react'
-import { SUPPORT_EMAIL, SUPPORT_WHATSAPP } from '@/lib/site'
+import { SUPPORT_EMAIL } from '@/lib/site'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
-import { WhatsAppIcon } from '@/components/brand-icons'
 
 type Lng = 'tr' | 'nl' | 'en' | 'ar'
 type Topic = 'account' | 'bookings' | 'billing' | 'idea' | 'other'
@@ -19,7 +18,6 @@ const T = {
     back: 'Ana sayfa', h1a: 'Buradayız.', h1b: 'Nasıl yardımcı olabiliriz?',
     sub: 'Hesabın, randevuların ya da Snippr hakkında bir sorun mu var? Bize yaz, e-postana cevap verelim.',
     emailT: 'E-posta', emailD: 'Bize doğrudan e-posta gönder.', copy: 'Kopyala', copied: 'Kopyalandı', write: 'Yaz',
-    waT: 'WhatsApp', waD: 'Hızlı sorular için mesaj at.', waGo: 'Sohbeti aç',
     helpT: 'Yardım merkezi', helpD: 'Adım adım rehberler ve ipuçları.', faqT: 'Sık sorulan sorular', faqD: 'Ödeme, planlar ve daha fazlası.', open: 'Aç',
     formT: 'Bize mesaj gönder', formD: 'Formu doldur, mesajın doğrudan destek ekibimize gelsin.',
     name: 'Adın', email: 'E-posta adresin', topic: 'Konu', message: 'Mesajın', messagePh: 'Ne oldu, nasıl yardımcı olabiliriz?',
@@ -33,7 +31,6 @@ const T = {
     back: 'Home', h1a: 'We zijn er voor je.', h1b: 'Waarmee kunnen we helpen?',
     sub: 'Vragen over je account, afspraken of Snippr? Stuur ons een bericht, we antwoorden per e-mail.',
     emailT: 'E-mail', emailD: 'Mail ons rechtstreeks.', copy: 'Kopiëren', copied: 'Gekopieerd', write: 'Mailen',
-    waT: 'WhatsApp', waD: 'Stuur een bericht voor snelle vragen.', waGo: 'Chat openen',
     helpT: 'Helpcentrum', helpD: 'Stap-voor-stap uitleg en tips.', faqT: 'Veelgestelde vragen', faqD: 'Betalingen, abonnementen en meer.', open: 'Openen',
     formT: 'Stuur ons een bericht', formD: 'Vul het formulier in en je bericht komt direct bij ons supportteam.',
     name: 'Je naam', email: 'Je e-mailadres', topic: 'Onderwerp', message: 'Je bericht', messagePh: 'Wat is er gebeurd en hoe kunnen we helpen?',
@@ -47,7 +44,6 @@ const T = {
     back: 'Home', h1a: 'We’re here.', h1b: 'How can we help?',
     sub: 'Questions about your account, bookings or Snippr? Send us a message and we’ll reply by email.',
     emailT: 'Email', emailD: 'Email us directly.', copy: 'Copy', copied: 'Copied', write: 'Write',
-    waT: 'WhatsApp', waD: 'Message us for quick questions.', waGo: 'Open chat',
     helpT: 'Help center', helpD: 'Step-by-step guides and tips.', faqT: 'FAQ', faqD: 'Payments, plans and more.', open: 'Open',
     formT: 'Send us a message', formD: 'Fill in the form and your message goes straight to our support team.',
     name: 'Your name', email: 'Your email', topic: 'Topic', message: 'Your message', messagePh: 'What happened, and how can we help?',
@@ -61,7 +57,6 @@ const T = {
     back: 'الرئيسية', h1a: 'نحن هنا.', h1b: 'كيف يمكننا مساعدتك؟',
     sub: 'لديك سؤال عن حسابك أو مواعيدك أو عن Snippr؟ راسلنا وسنردّ عليك عبر البريد.',
     emailT: 'البريد الإلكتروني', emailD: 'راسلنا مباشرة عبر البريد.', copy: 'نسخ', copied: 'تم النسخ', write: 'اكتب',
-    waT: 'واتساب', waD: 'راسلنا للأسئلة السريعة.', waGo: 'افتح المحادثة',
     helpT: 'مركز المساعدة', helpD: 'أدلة خطوة بخطوة ونصائح.', faqT: 'الأسئلة الشائعة', faqD: 'الدفع والخطط والمزيد.', open: 'افتح',
     formT: 'أرسل لنا رسالة', formD: 'املأ النموذج وستصل رسالتك مباشرة إلى فريق الدعم.',
     name: 'اسمك', email: 'بريدك الإلكتروني', topic: 'الموضوع', message: 'رسالتك', messagePh: 'ماذا حدث، وكيف يمكننا مساعدتك؟',
@@ -78,7 +73,7 @@ const FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Var
 const ease = [0.22, 1, 0.36, 1] as const
 const field = 'w-full rounded-[14px] bg-[#f2f2f7] px-4 py-3 text-[16px] text-[#1d1d1f] outline-none ring-1 ring-transparent transition placeholder:text-[#aeaeb2] focus:bg-white focus:ring-[#1d1d1f]/30'
 
-function Card({ icon: Icon, grad, title, desc, children }: { icon: LucideIcon | typeof WhatsAppIcon; grad: string; title: string; desc: string; children: React.ReactNode }) {
+function Card({ icon: Icon, grad, title, desc, children }: { icon: LucideIcon; grad: string; title: string; desc: string; children: React.ReactNode }) {
   return (
     <motion.div whileHover={{ y: -3 }} className="flex flex-col rounded-[24px] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_20px_40px_-26px_rgba(0,0,0,0.35)]">
       <span className="flex h-11 w-11 items-center justify-center rounded-[13px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" style={{ background: grad }}>
@@ -161,17 +156,12 @@ export default function ContactPage() {
         </header>
 
         {/* ways to reach us */}
-        <section className={`mt-12 grid gap-3 sm:grid-cols-2 ${SUPPORT_WHATSAPP ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+        <section className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Card icon={Mail} grad="linear-gradient(145deg,#9a8cff,#5e5ce6)" title={t.emailT} desc={t.emailD}>
             <a href={`mailto:${SUPPORT_EMAIL}`} className={pillDark}><Mail size={15} /> {t.write}</a>
             <button onClick={copy} className={pillLight}>{copied ? <Check size={15} /> : <Copy size={15} />} {copied ? t.copied : t.copy}</button>
             <p className="w-full truncate pt-1 text-[13px] text-[#8e8e93]" dir="ltr">{SUPPORT_EMAIL}</p>
           </Card>
-          {SUPPORT_WHATSAPP && (
-            <Card icon={WhatsAppIcon} grad="linear-gradient(145deg,#5ff07f,#1ebe57)" title={t.waT} desc={t.waD}>
-              <a href={`https://wa.me/${SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className={pillDark}>{t.waGo}</a>
-            </Card>
-          )}
           <Card icon={BookOpen} grad="linear-gradient(145deg,#ffc24d,#ff7a00)" title={t.helpT} desc={t.helpD}>
             <Link href="/help" className={pillLight}>{t.open} <ArrowRight size={15} className="rtl:-scale-x-100" /></Link>
           </Card>
