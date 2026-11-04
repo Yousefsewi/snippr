@@ -111,22 +111,22 @@ export default function DashboardPage() {
 
   return (
     <div dir={isRTL ? 'rtl' : 'ltr'} style={{ background: PAGE_WASH, minHeight: '100vh', color: '#37352f', fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 48px 96px', animation: 'fadeIn 0.35s ease' }}>
+      <div style={{ maxWidth: 1320, margin: '0 auto', padding: 'clamp(28px, 4vw, 56px) clamp(16px, 4vw, 56px) 96px', animation: 'fadeIn 0.35s ease' }}>
         <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}}`}</style>
 
         {/* Greeting */}
-        <div style={{ marginBottom: 40, textAlign: 'center' }}>
-          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: '#37352f' }}>
+        <div style={{ marginBottom: 48, textAlign: 'center' }}>
+          <h1 style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: '#37352f' }}>
             {greeting}, {barber.name}
           </h1>
           <p style={{ marginTop: 6, fontSize: 14, color: '#9b9a97', margin: 0 }}>
-            {new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}
+            {new Date().toLocaleDateString(lang || undefined, { weekday: 'long', day: 'numeric', month: 'long' })}
             {' · '}{upcoming.length} {t.upcomingWord} {upcoming.length !== 1 ? t.apptWordPlural : t.apptWord}
           </p>
         </div>
 
         {/* Overview widgets */}
-        <div style={{ marginBottom: 40 }}>
+        <div style={{ marginBottom: 56 }}>
           <DashboardWidgets appts={appointments} lang={lang} format={format} statusLabel={statusLabel} applyDiscount={FIRST_VISIT_DISCOUNT} />
         </div>
 

@@ -78,9 +78,9 @@ function niceMax(v: number) {
 
 function Card({ title, sub, children, className = '' }: { title: string; sub?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`flex min-w-0 flex-col rounded-[22px] p-5 ${className}`} style={glass()}>
-      <h2 className="text-[16px] font-semibold" style={{ color: INK }}>{title}</h2>
-      {sub && <p className="mt-0.5 text-[13px]" style={{ color: MUTED }}>{sub}</p>}
+    <section className={`flex min-h-[360px] min-w-0 flex-col rounded-[26px] p-6 sm:p-8 ${className}`} style={glass()}>
+      <h2 className="text-[19px] font-semibold tracking-[-0.01em]" style={{ color: INK }}>{title}</h2>
+      {sub && <p className="mt-1 text-[14px]" style={{ color: MUTED }}>{sub}</p>}
       {children}
     </section>
   )
@@ -88,14 +88,14 @@ function Card({ title, sub, children, className = '' }: { title: string; sub?: s
 
 function Empty({ icon: Icon, title, sub, action }: { icon: typeof BarChart3; title: string; sub: string; action?: { href: string; label: string } }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-[14px]" style={{ background: 'rgba(42,120,214,0.1)', color: C_SALES }}>
-        <Icon size={24} strokeWidth={1.8} />
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-[16px]" style={{ background: 'rgba(42,120,214,0.1)', color: C_SALES }}>
+        <Icon size={26} strokeWidth={1.8} />
       </span>
-      <p className="mt-4 text-[15px] font-semibold" style={{ color: INK }}>{title}</p>
-      <p className="mt-1 max-w-[280px] text-[13.5px]" style={{ color: MUTED }}>{sub}</p>
+      <p className="mt-5 text-[17px] font-semibold" style={{ color: INK }}>{title}</p>
+      <p className="mt-1.5 max-w-[320px] text-[14.5px] leading-relaxed" style={{ color: MUTED }}>{sub}</p>
       {action && (
-        <Link href={action.href} className="mt-4 rounded-full bg-[#1c1c1e] px-4 py-2 text-[13px] font-semibold text-white hover:bg-black">{action.label}</Link>
+        <Link href={action.href} className="mt-6 rounded-full bg-[#1c1c1e] px-5 py-3.5 text-[14px] font-semibold text-white hover:bg-black">{action.label}</Link>
       )}
     </div>
   )
@@ -108,8 +108,8 @@ function Pill({ status, label }: { status: string; label: string }) {
 
 function DateBlock({ d, locale }: { d: Date; locale: string }) {
   return (
-    <div className="w-10 flex-shrink-0 text-center leading-none">
-      <p className="text-[19px] font-bold" style={{ color: INK }}>{d.getDate()}</p>
+    <div className="w-12 flex-shrink-0 text-center leading-none">
+      <p className="text-[22px] font-bold" style={{ color: INK }}>{d.getDate()}</p>
       <p className="mt-1 text-[11.5px] font-medium" style={{ color: MUTED }}>{d.toLocaleDateString(locale, { month: 'short' })}</p>
     </div>
   )
@@ -130,7 +130,7 @@ function SalesChart({ days, sales, booked, format, labels, locale }: {
   const path = (vals: number[]) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')
 
   return (
-    <div className="relative mt-4">
+    <div className="relative mt-6">
       <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label={`${labels[0]} / ${labels[1]}`}
         onMouseLeave={() => setHover(null)}>
         {[0, 1, 2, 3, 4].map(k => {
@@ -184,7 +184,7 @@ function UpcomingBars({ days, counts, locale }: { days: Date[]; counts: number[]
   const bw = Math.min(38, slot * 0.55)
   const y = (v: number) => PT + ih - (ih * v) / ticks
   return (
-    <div className="relative mt-4">
+    <div className="relative mt-6">
       <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label="Upcoming appointments per day" onMouseLeave={() => setHover(null)}>
         {[0, 1, 2, 3, 4].map(k => {
           const v = (ticks / 4) * k
@@ -227,9 +227,9 @@ function UpcomingBars({ days, counts, locale }: { days: Date[]; counts: number[]
 function RankTable({ head, rows, empty }: { head: [string, string, string]; rows: [string, number, number][]; empty: React.ReactNode }) {
   if (!rows.length) return <>{empty}</>
   return (
-    <table className="mt-3 w-full text-[13.5px]" style={{ color: INK }}>
+    <table className="mt-5 w-full text-[15px]" style={{ color: INK }}>
       <thead>
-        <tr style={{ color: MUTED }} className="text-left text-[12.5px]">
+        <tr style={{ color: MUTED }} className="text-left text-[13px]">
           <th className="py-2 font-medium">{head[0]}</th>
           <th className="w-20 py-2 text-right font-medium">{head[1]}</th>
           <th className="w-20 py-2 text-right font-medium">{head[2]}</th>
@@ -238,9 +238,9 @@ function RankTable({ head, rows, empty }: { head: [string, string, string]; rows
       <tbody>
         {rows.map(([name, a, b]) => (
           <tr key={name} style={{ borderTop: `1px solid ${GRID}` }}>
-            <td className="max-w-0 truncate py-2.5 pr-2">{name}</td>
-            <td className="py-2.5 text-right font-semibold tabular-nums">{a}</td>
-            <td className="py-2.5 text-right tabular-nums" style={{ color: MUTED }}>{b}</td>
+            <td className="max-w-0 truncate py-3.5 pr-2">{name}</td>
+            <td className="py-3.5 text-right font-semibold tabular-nums">{a}</td>
+            <td className="py-3.5 text-right tabular-nums" style={{ color: MUTED }}>{b}</td>
           </tr>
         ))}
       </tbody>
@@ -302,28 +302,28 @@ export default function DashboardWidgets({ appts, lang, format, statusLabel, app
   const apptLine = (a: WAppt) => {
     const d = new Date(a.start_time)
     return (
-      <div className="flex min-w-0 gap-3 py-3" style={{ borderTop: `1px solid ${GRID}` }}>
+      <div className="flex min-w-0 gap-4 py-4" style={{ borderTop: `1px solid ${GRID}` }}>
         <DateBlock d={d} locale={locale} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 text-[12.5px]" style={{ color: MUTED }}>
             <span>{d.toLocaleString(locale, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
             <Pill status={a.status} label={statusLabel[a.status] ?? a.status} />
           </div>
-          <p className="mt-0.5 truncate text-[14.5px] font-semibold" style={{ color: INK }}>{a.services?.name ?? '—'}</p>
-          <p className="truncate text-[12.5px]" style={{ color: MUTED }}>{a.customer_name} · {durMin(a)} {t.min}</p>
+          <p className="mt-1 truncate text-[16px] font-semibold" style={{ color: INK }}>{a.services?.name ?? '—'}</p>
+          <p className="mt-0.5 truncate text-[13.5px]" style={{ color: MUTED }}>{a.customer_name} · {durMin(a)} {t.min}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-3 md:grid-cols-2">
+    <div className="grid gap-5 md:grid-cols-2 lg:gap-6">
       <Card title={t.sales} sub={t.last7}>
-        <p className="mt-3 text-[30px] leading-none font-bold tracking-[-0.02em]" style={{ color: INK }}>{format(sales.reduce((s, v) => s + v, 0))}</p>
-        <p className="mt-3 text-[13px]" style={{ color: INK }}>{t.appts} <b>{pastCount}</b></p>
-        <p className="text-[13px]" style={{ color: INK }}>{t.apptValue} <b>{format(booked.reduce((s, v) => s + v, 0))}</b></p>
+        <p className="mt-5 text-[40px] leading-none font-bold tracking-[-0.02em]" style={{ color: INK }}>{format(sales.reduce((s, v) => s + v, 0))}</p>
+        <p className="mt-4 text-[14px]" style={{ color: INK }}>{t.appts} <b>{pastCount}</b></p>
+        <p className="mt-0.5 text-[14px]" style={{ color: INK }}>{t.apptValue} <b>{format(booked.reduce((s, v) => s + v, 0))}</b></p>
         <SalesChart days={past} sales={sales} booked={booked} format={format} labels={[t.salesS, t.bookedS]} locale={locale} />
-        <p className="mt-2 text-[11.5px]" style={{ color: MUTED }}>{t.salesNote}</p>
+        <p className="mt-3 text-[12.5px]" style={{ color: MUTED }}>{t.salesNote}</p>
       </Card>
 
       <Card title={t.upcoming} sub={upcomingList.length ? `${t.next7} · ${t.booked(upcomingList.length)}` : t.next7}>
