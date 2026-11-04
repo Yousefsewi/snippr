@@ -187,7 +187,7 @@ function Chrome({ children }: { children: ReactNode }) {
           padding: collapsed ? '14px 0 10px' : '14px 12px 10px',
           borderBottom: '1px solid #e9e9e7',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
+          <Link href="/dashboard" title={tr ? 'Ana sayfa' : 'Home'} aria-label={tr ? 'Panel ana sayfası' : 'Dashboard home'} style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden', textDecoration: 'none', cursor: 'pointer' }}>
             {collapsed ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src="/icon-192.png" alt="Snippr" style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, display: 'block' }} />
@@ -198,7 +198,7 @@ function Chrome({ children }: { children: ReactNode }) {
                 <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>{tr ? 'Akıllı randevu' : 'Book smarter'}</p>
               </div>
             )}
-          </div>
+          </Link>
           <button
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? (tr ? 'Menüyü aç' : 'Expand menu') : (tr ? 'Menüyü daralt' : 'Collapse menu')}
