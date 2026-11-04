@@ -6,6 +6,7 @@ import { bookingReceivedHtml, normLang, LOCALE } from '@/lib/messages'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import webpush from 'web-push'
+import { manageUrl } from '@/lib/manage-link'
 
 // Called by the public booking page right after a booking is made.
 // It only takes the appointment id: recipient, names and times are read from the
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
   else {
     try {
       const discountText = discount ? `-${discount}%${price ? ` (${money(price * (100 - discount) / 100)})` : ''}` : null
-      const { subject, html } = bookingReceivedHtml(cl, { client: appt.customer_name, barber: barberName, service: appt.services?.name, date: niceDate, time: niceTime, discount: discountText, bookUrl: appt.barbers?.slug ? `${SITE_URL}/b/${appt.barbers.slug}` : null })
+      const { subject, html } = bookingReceivedHtml(cl, { client: appt.customer_name, barber: barberName, service: appt.services?.name, date: niceDate, time: niceTime, discount: discountText, bookUrl: appt.barbers?.slug ? `${SITE_URL}/b/${appt.barbers.slug}` : null, manageUrl: manageUrl(appointmentId, cl) })
       if (mailerReady) await sendMail(appt.customer_email, subject, html)
       else await new Resend(apiKey).emails.send({ from: process.env.EMAIL_FROM || 'Snippr <onboarding@resend.dev>', to: appt.customer_email, subject, html })
       result.email = 'sent'

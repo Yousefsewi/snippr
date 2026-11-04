@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, isPlainEmail, rateLimited, clientIp } from '@/lib/mailer'
 import { isOn, messageHtml, normLang, LOCALE, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { manageUrl } from '@/lib/manage-link'
 import { hasOptedOut, optoutLinks } from '@/lib/optout'
 
 // Daily reminder job (vercel.json → crons). Emails clients whose appointment is
@@ -90,6 +91,7 @@ export async function GET(req: NextRequest) {
         time: start.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: tz }),
         bookUrl: `${SITE_URL}/b/${a.barbers.slug}`,
         unsubscribeUrl: links.page,
+        manageUrl: manageUrl(a.id, lang),
       })
       try {
         if (mailerReady) await sendMail(a.customer_email, msg.subject, msg.html, { unsubscribeUrl: links.oneClick })

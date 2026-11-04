@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, rateLimited, isPlainEmail } from '@/lib/mailer'
 import { isOn, messageHtml, normLang, LOCALE, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
 import { OPTOUT_KINDS, hasOptedOut, optoutLinks } from '@/lib/optout'
+import { manageUrl } from '@/lib/manage-link'
 
 // Sends one automatic email to a client after the barber changes an appointment
 // (confirmed, cancelled, completed → thanks, tip). The caller proves who they are with
@@ -91,6 +92,7 @@ export async function POST(req: NextRequest) {
       ? `${new Date(previousStart).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz })} · ${new Date(previousStart).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: tz })}`
       : null,
     unsubscribeUrl: links?.page ?? null,
+    manageUrl: manageUrl(a.id, l),
   })
 
   try {

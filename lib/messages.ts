@@ -26,7 +26,18 @@ export interface MsgData {
   previous?: string | null
   /** link to stop these emails (thank-you, tip, reminders) */
   unsubscribeUrl?: string | null
+  /** link where the client can cancel the appointment (lib/manage-link.ts) */
+  manageUrl?: string | null
 }
+
+const MANAGE: Record<ClientLang, { text: string; label: string }> = {
+  tr: { text: 'Gelemeyecek misin?', label: 'Randevumu iptal et' },
+  nl: { text: 'Kun je niet komen?', label: 'Afspraak annuleren' },
+  en: { text: 'Can’t make it?', label: 'Cancel my appointment' },
+  ar: { text: 'لا تستطيع الحضور؟', label: 'إلغاء موعدي' },
+}
+const UPCOMING_KINDS: MsgKind[] = ['confirmed', 'remind1d', 'remind3d', 'rescheduled']
+const manageLine = (lang: ClientLang, url?: string | null) => url ? { ...MANAGE[lang], url } : undefined
 
 const first = (n: string) => n.trim().split(/\s+/)[0] || n
 
@@ -198,12 +209,13 @@ export function messageHtml(kind: MsgKind, lang: ClientLang, d: MsgData) {
       button: m.button,
       footer: footer(lang, d.barber),
       unsubscribe: d.unsubscribeUrl ? { url: d.unsubscribeUrl, label: STOP[lang] } : undefined,
+      manage: UPCOMING_KINDS.includes(kind) ? manageLine(lang, d.manageUrl) : undefined,
     }),
   }
 }
 
 /** "Your booking request was received" email, sent right after a client books. */
-export function bookingReceivedHtml(lang: ClientLang, d: { client: string; barber: string; service?: string | null; date: string; time: string; discount?: string | null; bookUrl?: string | null }) {
+export function bookingReceivedHtml(lang: ClientLang, d: { client: string; barber: string; service?: string | null; date: string; time: string; discount?: string | null; bookUrl?: string | null; manageUrl?: string | null }) {
   const c = first(d.client)
   const L = {
     tr: { subject: `${d.barber} ile randevun alındı`, hi: `Randevun alındı, ${c}!`, intro: `${d.barber} randevunu aldı. Bilgiler aşağıda.`, note: 'Gelemeyeceksen lütfen berberine haber ver, böylece başkası o saati alabilir.', page: 'Randevu sayfası' },
@@ -222,7 +234,8 @@ export function bookingReceivedHtml(lang: ClientLang, d: { client: string; barbe
       lang, preheader: `${d.date} · ${d.time}`, shop: d.barber,
       heading: L.hi, text: L.intro, details: rows,
       button: d.bookUrl ? { label: L.page, url: d.bookUrl } : undefined,
-      note: L.note,
+      manage: manageLine(lang, d.manageUrl),
+      note: d.manageUrl ? undefined : L.note,
       footer: footer(lang, d.barber),
     }),
   }

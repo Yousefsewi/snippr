@@ -202,7 +202,7 @@ const FAQ_DATA: Record<string, { q: string; a: string }[]> = {
   ],
   'Bookings': [
     { q: 'What if a customer doesn’t show up?', a: 'You get a notification for every booking and can confirm or cancel it from your dashboard. Every booking includes the customer’s contact details, so you can reach them. Customers who left an email also get an automatic reminder before their appointment.' },
-    { q: 'Can customers cancel or reschedule?', a: 'For now they contact you directly, and you update the booking in your dashboard — your calendar updates live. Self-service changes for customers are coming soon.' },
+    { q: 'Can customers cancel their appointment?', a: 'Yes. Every booking email has a “Cancel my appointment” link. The time opens up again in your calendar right away and you get a notification. To change the time, they cancel and pick a new one on your booking page.' },
     { q: 'Can two people book the same time?', a: 'Never. Once a slot is taken it disappears for everyone, so you can’t get double-booked.' },
     { q: 'Can I set my working hours and days off?', a: 'Yes — set your hours for each day of the week and switch off the days you’re closed. Those times are never offered to customers.' },
   ],
@@ -238,7 +238,7 @@ const FAQ_DATA_TR: Record<string, { q: string; a: string }[]> = {
   ],
   'Randevular': [
     { q: 'Müşteri gelmezse ne olur?', a: 'Her randevuda bildirim alırsın ve panelinden onaylayıp iptal edebilirsin. Her randevuda müşterinin iletişim bilgisi olduğu için ona ulaşabilirsin. E-postasını bırakan müşteriler randevudan önce otomatik hatırlatma da alır.' },
-    { q: 'Müşteriler iptal/erteleme yapabilir mi?', a: 'Şimdilik seninle doğrudan iletişime geçerler, sen de randevuyu panelinden güncellersin — takvimin anında yenilenir. Müşterinin kendisi değiştirebilmesi yakında.' },
+    { q: 'Müşteriler randevusunu iptal edebilir mi?', a: 'Evet. Her randevu e-postasında “Randevumu iptal et” linki var. O saat takviminde hemen tekrar boşalır ve sana bildirim gelir. Saati değiştirmek isteyen müşteri iptal edip randevu sayfandan yeni bir saat seçer.' },
     { q: 'İki kişi aynı saati alabilir mi?', a: 'Asla. Bir saat dolunca herkes için kaybolur, böylece çift rezervasyon olmaz.' },
     { q: 'Çalışma saatlerimi ve izin günlerimi ayarlayabilir miyim?', a: 'Evet — haftanın her günü için saatlerini ayarla, kapalı olduğun günleri kapat. O saatler müşterilere hiç gösterilmez.' },
   ],

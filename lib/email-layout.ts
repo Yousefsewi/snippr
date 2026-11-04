@@ -27,6 +27,8 @@ export interface EmailParts {
   /** footer lines (plain text) */
   footer?: string[]
   unsubscribe?: { url: string; label: string }
+  /** small line with a link, e.g. "Can't make it? Cancel your appointment" */
+  manage?: { text: string; label: string; url: string }
 }
 
 const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
@@ -79,6 +81,10 @@ export function emailLayout(p: EmailParts): string {
 
   const note = p.note ? `<tr><td style="padding:18px 0 0;font:400 13px/1.55 ${FONT};color:${MUTED};">${esc(p.note)}</td></tr>` : ''
 
+  const manage = p.manage
+    ? `<tr><td style="padding:16px 0 0;font:400 14px/1.55 ${FONT};color:${MUTED};">${esc(p.manage.text)} <a href="${esc(p.manage.url)}" style="color:${INK};font-weight:600;text-decoration:underline;">${esc(p.manage.label)}</a></td></tr>`
+    : ''
+
   const footer = [...(p.footer ?? [])].map(esc)
   if (p.unsubscribe) footer.push(`<a href="${esc(p.unsubscribe.url)}" style="color:#8e8e93;text-decoration:underline;">${esc(p.unsubscribe.label)}</a>`)
 
@@ -95,7 +101,7 @@ export function emailLayout(p: EmailParts): string {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr><td style="font:700 24px/1.25 ${FONT};color:${INK};letter-spacing:-0.4px;">${esc(p.heading)}</td></tr>
             ${paras.map((t, i) => `<tr><td style="padding:${i ? 10 : 12}px 0 0;font:400 15px/1.6 ${FONT};color:#3a3a3c;">${esc(t)}</td></tr>`).join('')}
-            ${details}${quote}${button}${note}
+            ${details}${quote}${button}${manage}${note}
           </table>
         </td></tr>
         ${footer.length ? `<tr><td style="padding:18px 8px 0;font:400 12px/1.6 ${FONT};color:#8e8e93;text-align:center;">${footer.join('<br>')}</td></tr>` : ''}
