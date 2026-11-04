@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import { emailLayout } from './email-layout'
 
 // SERVER ONLY — import this from app/api routes, never from a 'use client' file.
 // All of Snippr's emails (sign-up confirmation, password reset, booking confirmation)
@@ -42,17 +43,12 @@ export async function sendMail(to: string, subject: string, html: string, opts: 
   })
 }
 
-// Simple branded layout with one big button
+// Snippr's own emails (account confirmation, password reset): the shared design, one big button
 export function buttonEmail(heading: string, text: string, buttonLabel: string, url: string, footnote: string) {
-  return `
-    <div style="font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #1d1d1f;">
-      <p style="font-size: 18px; font-weight: 700; margin: 0 0 24px;">✦ Snippr</p>
-      <h2 style="font-size: 22px; margin: 0 0 8px;">${esc(heading)}</h2>
-      <p style="color: #555; line-height: 1.5; margin: 0 0 24px;">${esc(text)}</p>
-      <a href="${esc(url)}" style="display: inline-block; background: #1d1d1f; color: #fff; text-decoration: none; font-weight: 600; padding: 12px 22px; border-radius: 12px;">${esc(buttonLabel)}</a>
-      <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 28px 0 0;">${esc(footnote)}</p>
-    </div>
-  `
+  return emailLayout({
+    preheader: text, heading, text, button: { label: buttonLabel, url }, note: footnote,
+    footer: ['Snippr · online booking for barbers and salons', 'snipprcalendar.com'],
+  })
 }
 
 // Small in-memory rate limiter (per server instance; resets on restart)

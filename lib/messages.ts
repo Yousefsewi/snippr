@@ -1,3 +1,4 @@
+import { emailLayout, type DetailRow } from './email-layout'
 // Client emails: what they say (Turkish, Dutch, English, Arabic) and whether they are on.
 // Used by the server (app/api/notify-booking, notify-status, cron/reminders) and by the
 // dashboard preview, so what the barber previews is exactly what clients get.
@@ -27,7 +28,6 @@ export interface MsgData {
   unsubscribeUrl?: string | null
 }
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 const first = (n: string) => n.trim().split(/\s+/)[0] || n
 
 type Built = { subject: string; heading: string; text: string; button: { label: string; url: string } }
@@ -123,56 +123,107 @@ export function buildMessage(kind: MsgKind, lang: ClientLang, d: MsgData): Built
 }
 
 const FOOT: Record<ClientLang, (b: string) => string> = {
-  tr: b => `${b} adına Snippr tarafından gönderildi.`,
-  nl: b => `Verstuurd door Snippr namens ${b}.`,
-  en: b => `Sent by Snippr on behalf of ${b}.`,
-  ar: b => `أُرسلت بواسطة Snippr نيابةً عن ${b}.`,
+  tr: b => `${b} adına Snippr ile gönderildi.`,
+  nl: b => `Verstuurd via Snippr namens ${b}.`,
+  en: b => `Sent with Snippr on behalf of ${b}.`,
+  ar: b => `أُرسلت عبر Snippr نيابةً عن ${b}.`,
 }
 
 const STOP: Record<ClientLang, string> = { tr: 'Bu e-postaları almak istemiyorum', nl: 'Ik wil deze e-mails niet meer ontvangen', en: 'I don’t want these emails', ar: 'لا أريد تلقي هذه الرسائل' }
 
-function layout(lang: ClientLang, barber: string, inner: string, unsubscribeUrl?: string | null) {
-  const dir = lang === 'ar' ? 'rtl' : 'ltr'
-  return `
-    <div dir="${dir}" lang="${lang}" style="font-family: -apple-system, 'Segoe UI', Roboto, Tahoma, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #1d1d1f; text-align: ${dir === 'rtl' ? 'right' : 'left'};">
-      <p style="font-size: 16px; font-weight: 700; margin: 0 0 22px;">✂️ ${esc(barber)}</p>
-      ${inner}
-      <p style="color: #999; font-size: 12px; line-height: 1.5; margin: 28px 0 0;">${esc(FOOT[lang](barber))} · Snippr · snipprcalendar.com${unsubscribeUrl ? ` · <a href="${esc(unsubscribeUrl)}" style="color: #999;">${esc(STOP[lang])}</a>` : ''}</p>
-    </div>`
+const LABELS: Record<ClientLang, { service: string; date: string; time: string; was: string; now: string; total: string; discount: string }> = {
+  tr: { service: 'Hizmet', date: 'Tarih', time: 'Saat', was: 'Eski saat', now: 'Yeni saat', total: 'Tutar', discount: 'İlk ziyaret indirimi' },
+  nl: { service: 'Dienst', date: 'Datum', time: 'Tijd', was: 'Oude tijd', now: 'Nieuwe tijd', total: 'Bedrag', discount: 'Korting eerste bezoek' },
+  en: { service: 'Service', date: 'Date', time: 'Time', was: 'Old time', now: 'New time', total: 'Amount', discount: 'First-visit discount' },
+  ar: { service: 'الخدمة', date: 'التاريخ', time: 'الوقت', was: 'الموعد السابق', now: 'الموعد الجديد', total: 'المبلغ', discount: 'خصم الزيارة الأولى' },
+}
+
+const footer = (lang: ClientLang, barber: string) => [FOOT[lang](barber), 'snipprcalendar.com']
+
+/** the date/time box shown in booking-related emails */
+function bookingDetails(kind: MsgKind, lang: ClientLang, d: MsgData): DetailRow[] | undefined {
+  const L = LABELS[lang]
+  if (kind === 'thanks' || kind === 'tip') return undefined
+  const rows: DetailRow[] = []
+  if (d.service) rows.push({ label: L.service, value: d.service })
+  if (kind === 'rescheduled') {
+    rows.push({ label: L.now, value: `${d.date} · ${d.time}` })
+    if (d.previous) rows.push({ label: L.was, value: d.previous, tone: 'strike', strong: false })
+  } else {
+    rows.push({ label: L.date, value: d.date }, { label: L.time, value: d.time, tone: kind === 'cancelled' ? 'strike' : undefined })
+  }
+  return rows
+}
+
+// shorter text for emails that show date and time in the details box (no repeating)
+function boxedText(kind: MsgKind, lang: ClientLang, b: string): string | null {
+  switch (kind) {
+    case 'confirmed': return {
+      tr: `${b} randevunu onayladı. Seni bekliyoruz.`,
+      nl: `${b} heeft je afspraak bevestigd. Tot dan!`,
+      en: `${b} confirmed your appointment. See you then!`,
+      ar: `أكّد ${b} موعدك. نراك قريبًا!`,
+    }[lang]
+    case 'cancelled': return {
+      tr: `${b} bu randevuyu iptal etti. İstediğin zaman yeni bir saat seçebilirsin.`,
+      nl: `${b} heeft deze afspraak geannuleerd. Je kunt altijd een nieuwe tijd kiezen.`,
+      en: `${b} cancelled this appointment. You can pick a new time whenever you like.`,
+      ar: `ألغى ${b} هذا الموعد. يمكنك اختيار وقت جديد متى شئت.`,
+    }[lang]
+    case 'remind1d': case 'remind3d': return {
+      tr: `Gelemeyeceksen lütfen ${b}’e haber ver, böylece başkası o saati alabilir.`,
+      nl: `Kun je niet komen? Laat het ${b} even weten, zodat iemand anders die tijd kan krijgen.`,
+      en: `If you can’t make it, please let ${b} know so someone else can take the slot.`,
+      ar: `إذا لم تتمكن من الحضور، يرجى إبلاغ ${b} ليتمكن شخص آخر من أخذ الموعد.`,
+    }[lang]
+    case 'rescheduled': return {
+      tr: `${b} randevunu yeni bir saate taşıdı. Bu saat uymuyorsa lütfen haber ver.`,
+      nl: `${b} heeft je afspraak naar een nieuwe tijd verplaatst. Past dit niet? Laat het even weten.`,
+      en: `${b} moved your appointment to a new time. If it doesn’t work for you, please let them know.`,
+      ar: `نقل ${b} موعدك إلى وقت جديد. إذا لم يناسبك، يرجى إبلاغه.`,
+    }[lang]
+    default: return null
+  }
 }
 
 export function messageHtml(kind: MsgKind, lang: ClientLang, d: MsgData) {
   const m = buildMessage(kind, lang, d)
+  const text = boxedText(kind, lang, d.barber) ?? m.text
   return {
     subject: m.subject,
-    html: layout(lang, d.barber, `
-      <h2 style="font-size: 22px; margin: 0 0 8px;">${esc(m.heading)}</h2>
-      <p style="color: #555; line-height: 1.55; margin: 0 0 24px;">${esc(m.text)}</p>
-      <a href="${esc(m.button.url)}" style="display: inline-block; background: #1d1d1f; color: #fff; text-decoration: none; font-weight: 600; padding: 12px 22px; border-radius: 12px;">${esc(m.button.label)}</a>`, d.unsubscribeUrl),
+    html: emailLayout({
+      lang, preheader: kind === 'thanks' || kind === 'tip' ? m.text : `${d.date} · ${d.time}`, shop: d.barber,
+      heading: m.heading, text,
+      details: bookingDetails(kind, lang, d),
+      button: m.button,
+      footer: footer(lang, d.barber),
+      unsubscribe: d.unsubscribeUrl ? { url: d.unsubscribeUrl, label: STOP[lang] } : undefined,
+    }),
   }
 }
 
 /** "Your booking request was received" email, sent right after a client books. */
-export function bookingReceivedHtml(lang: ClientLang, d: { client: string; barber: string; service?: string | null; date: string; time: string; extraRow?: string }) {
+export function bookingReceivedHtml(lang: ClientLang, d: { client: string; barber: string; service?: string | null; date: string; time: string; discount?: string | null; bookUrl?: string | null }) {
   const c = first(d.client)
   const L = {
-    tr: { subject: `${d.barber} ile randevun alındı`, hi: `Randevun alındı, ${c}!`, intro: 'Randevu bilgilerin:', barber: 'Berber', service: 'Hizmet', date: 'Tarih', time: 'Saat' },
-    nl: { subject: `Je afspraak bij ${d.barber} is geboekt`, hi: `Je bent geboekt, ${c}!`, intro: 'Dit zijn je afspraakgegevens:', barber: 'Kapper', service: 'Dienst', date: 'Datum', time: 'Tijd' },
-    en: { subject: `Your appointment with ${d.barber} is booked`, hi: `You're booked, ${c}!`, intro: 'Here are your appointment details:', barber: 'Barber', service: 'Service', date: 'Date', time: 'Time' },
-    ar: { subject: `تم حجز موعدك مع ${d.barber}`, hi: `تم حجز موعدك يا ${c}!`, intro: 'تفاصيل موعدك:', barber: 'الحلاق', service: 'الخدمة', date: 'التاريخ', time: 'الوقت' },
+    tr: { subject: `${d.barber} ile randevun alındı`, hi: `Randevun alındı, ${c}!`, intro: `${d.barber} randevunu aldı. Bilgiler aşağıda.`, note: 'Gelemeyeceksen lütfen berberine haber ver, böylece başkası o saati alabilir.', page: 'Randevu sayfası' },
+    nl: { subject: `Je afspraak bij ${d.barber} is geboekt`, hi: `Je bent geboekt, ${c}!`, intro: `${d.barber} heeft je afspraak ontvangen. Hieronder de gegevens.`, note: 'Kun je niet komen? Laat het je kapper even weten, dan kan iemand anders die tijd krijgen.', page: 'Afsprakenpagina' },
+    en: { subject: `Your appointment with ${d.barber} is booked`, hi: `You're booked, ${c}!`, intro: `${d.barber} has your appointment. Here are the details.`, note: 'Can’t make it? Please let your barber know, so someone else can take the slot.', page: 'Booking page' },
+    ar: { subject: `تم حجز موعدك مع ${d.barber}`, hi: `تم حجز موعدك يا ${c}!`, intro: `استلم ${d.barber} موعدك. التفاصيل أدناه.`, note: 'إذا لم تتمكن من الحضور، يرجى إبلاغ الحلاق ليتمكن شخص آخر من أخذ الموعد.', page: 'صفحة الحجز' },
   }[lang]
-  const row = (k: string, v: string) => `<tr><td style="padding: 6px 0; color: #888; width: 35%;">${esc(k)}</td><td style="padding: 6px 0; font-weight: 600;">${esc(v)}</td></tr>`
+  const D = LABELS[lang]
+  const rows: DetailRow[] = []
+  if (d.service) rows.push({ label: D.service, value: d.service })
+  rows.push({ label: D.date, value: d.date }, { label: D.time, value: d.time })
+  if (d.discount) rows.push({ label: D.discount, value: d.discount, tone: 'pink' })
   return {
     subject: L.subject,
-    html: layout(lang, d.barber, `
-      <h2 style="font-size: 22px; margin: 0 0 8px;">${esc(L.hi)}</h2>
-      <p style="color: #555; margin: 0;">${esc(L.intro)}</p>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
-        ${row(L.barber, d.barber)}
-        ${d.service ? row(L.service, d.service) : ''}
-        ${row(L.date, d.date)}
-        ${row(L.time, d.time)}
-        ${d.extraRow ?? ''}
-      </table>`),
+    html: emailLayout({
+      lang, preheader: `${d.date} · ${d.time}`, shop: d.barber,
+      heading: L.hi, text: L.intro, details: rows,
+      button: d.bookUrl ? { label: L.page, url: d.bookUrl } : undefined,
+      note: L.note,
+      footer: footer(lang, d.barber),
+    }),
   }
 }

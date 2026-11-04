@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { mailerReady, sendMail, esc, isPlainEmail, rateLimited, clientIp } from '@/lib/mailer'
+import { mailerReady, sendMail, isPlainEmail, rateLimited, clientIp } from '@/lib/mailer'
 import { SUPPORT_EMAIL } from '@/lib/site'
+import { emailLayout } from '@/lib/email-layout'
 
 // Contact form (app/contact). Sends the message to Snippr's support inbox only —
 // never to an address taken from the request — with the sender as reply-to.
@@ -25,18 +26,16 @@ export async function POST(req: NextRequest) {
   if (rateLimited(`contact:${clientIp(req.headers)}`, 5, 60 * 60000)) return NextResponse.json({ error: 'rate' }, { status: 429 })
 
   const subject = `Snippr contact · ${tp} · ${n}`.slice(0, 150)
-  const html = `
-    <div style="font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; max-width: 560px; color: #1d1d1f;">
-      <h2 style="margin: 0 0 12px;">New message from the contact form</h2>
-      <table style="border-collapse: collapse; font-size: 14px;">
-        <tr><td style="padding: 4px 12px 4px 0; color: #888;">Name</td><td style="padding: 4px 0; font-weight: 600;">${esc(n)}</td></tr>
-        <tr><td style="padding: 4px 12px 4px 0; color: #888;">Email</td><td style="padding: 4px 0; font-weight: 600;">${esc(e)}</td></tr>
-        <tr><td style="padding: 4px 12px 4px 0; color: #888;">Topic</td><td style="padding: 4px 0;">${esc(tp)}</td></tr>
-        <tr><td style="padding: 4px 12px 4px 0; color: #888;">Language</td><td style="padding: 4px 0;">${esc(typeof lang === 'string' ? lang.slice(0, 5) : '-')}</td></tr>
-      </table>
-      <p style="white-space: pre-wrap; line-height: 1.55; background: #f5f5f7; padding: 14px 16px; border-radius: 12px; margin-top: 16px;">${esc(m)}</p>
-      <p style="color: #999; font-size: 12px;">Reply to this email to answer ${esc(n)} directly.</p>
-    </div>`
+  const html = emailLayout({
+    preheader: m.slice(0, 120), heading: 'New message from the contact form',
+    text: `${n} wrote to Snippr. Reply to this email to answer them directly.`,
+    details: [
+      { label: 'Name', value: n }, { label: 'Email', value: e },
+      { label: 'Topic', value: tp, strong: false }, { label: 'Language', value: typeof lang === 'string' ? lang.slice(0, 5) : '-', strong: false },
+    ],
+    quote: m,
+    footer: ['Sent from the contact form on snipprcalendar.com'],
+  })
 
   try {
     const apiKey = process.env.RESEND_API_KEY

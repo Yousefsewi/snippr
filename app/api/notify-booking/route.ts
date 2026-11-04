@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { mailerReady, sendMail, esc, isPlainEmail } from '@/lib/mailer'
+import { mailerReady, sendMail, isPlainEmail, SITE_URL } from '@/lib/mailer'
 import { bookingReceivedHtml, normLang, LOCALE } from '@/lib/messages'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
@@ -29,7 +29,7 @@ type Claimed = {
   start_time: string
   discount_percent?: number // first-visit discount (absent until first-visit-discount.sql is run)
   services: { name: string; price: number } | null
-  barbers: { name: string; push_subscription: webpush.PushSubscription | null; push_token: string | null } | null
+  barbers: { name: string; slug: string | null; push_subscription: webpush.PushSubscription | null; push_token: string | null } | null
 }
 
 export async function POST(req: NextRequest) {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     .eq('id', appointmentId)
     .is('notified_at', null)
     .gt('created_at', tenMinutesAgo)
-    .select('*, services(name, price), barbers(name, push_subscription, push_token)')
+    .select('*, services(name, price), barbers(name, slug, push_subscription, push_token)')
     .maybeSingle()
 
   if (error) {
@@ -76,10 +76,8 @@ export async function POST(req: NextRequest) {
   else if (!mailerReady && !apiKey) result.email = 'email not configured'
   else {
     try {
-      const extraRow = discount
-        ? `<tr><td style="padding: 6px 0; color: #888;">🎁</td><td style="padding: 6px 0; font-weight: 600; color: #be185d;">-${discount}%${price ? ` (${esc(money(price * (100 - discount) / 100))})` : ''}</td></tr>`
-        : ''
-      const { subject, html } = bookingReceivedHtml(cl, { client: appt.customer_name, barber: barberName, service: appt.services?.name, date: niceDate, time: niceTime, extraRow })
+      const discountText = discount ? `-${discount}%${price ? ` (${money(price * (100 - discount) / 100)})` : ''}` : null
+      const { subject, html } = bookingReceivedHtml(cl, { client: appt.customer_name, barber: barberName, service: appt.services?.name, date: niceDate, time: niceTime, discount: discountText, bookUrl: appt.barbers?.slug ? `${SITE_URL}/b/${appt.barbers.slug}` : null })
       if (mailerReady) await sendMail(appt.customer_email, subject, html)
       else await new Resend(apiKey).emails.send({ from: process.env.EMAIL_FROM || 'Snippr <onboarding@resend.dev>', to: appt.customer_email, subject, html })
       result.email = 'sent'
