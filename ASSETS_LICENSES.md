@@ -16,7 +16,7 @@ Status: ✅ OK for commercial use · ❓ source unknown — confirm or replace b
 | `public/themes/forest.jpg` | Dashboard "Forest" theme | Unsplash, photo `1470071459604-3b5ec3a7fe05` | Unsplash License (free commercial use, no attribution required) | ✅ |
 | `public/hero-clouds.webp` | Homepage hero picture | Supplied by the owner (halftone cloud artwork) | — | ❓ confirm origin (own / AI-generated / licensed) |
 | `public/auth-fog.jpg` | Login & sign-up background | Unknown | — | ❓ confirm or replace |
-| `public/hero-video.mp4` | Homepage background video — **currently switched off** (`SHOW_HERO_VIDEO`) | Unknown | — | ❓ confirm or delete before switching it on |
+| `private/media/hero-video.mp4` | Homepage background video — **off and not published** (kept locally, git-ignored) | Unknown | — | ❓ confirm the source before publishing it again |
 | `public/file.svg`, `public/next.svg`, `public/vercel.svg`, `public/window.svg` | Not used (Next.js starter files) | Next.js template | MIT | ✅ (can be deleted) |
 
 Barbers upload their own photos (profile, cover, link images); they keep the rights and

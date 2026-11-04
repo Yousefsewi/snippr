@@ -37,8 +37,9 @@ const GLASS_BUTTON: React.CSSProperties = {
   border: '1px solid rgba(255,255,255,0.45)',
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 0 12px rgba(255,255,255,0.08), 0 4px 16px rgba(0,0,0,0.25)',
 }
-// Hero background video (public/hero-video.mp4). Turned off for now but kept:
-// set to true to bring it back — text and menu colours switch back automatically.
+// Hero background video. Turned off; the file is kept off the site in private/media/hero-video.mp4
+// (not published). To bring it back: move it to public/hero-video.mp4 and set this to true —
+// text and menu colours switch back automatically.
 const SHOW_HERO_VIDEO = false
 
 // "How it works": expanding feature cards (components/feature-accordion.tsx).
