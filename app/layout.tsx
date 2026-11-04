@@ -25,14 +25,14 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, view
 
 export const metadata: Metadata = {
   title: "Snippr — Premium Barber Booking",
-  description: "Booking made beautifully simple — scheduling, reminders, waitlist, sales and more. Free online booking for barbers.",
+  description: "Online booking for barbers and salons. Put your link in your bio or on Instagram, or hang up your QR code — clients book in seconds.",
   // All links in tags point at the real address (SITE_URL), even when the site is opened
   // on another address such as the old *.vercel.app one. "./" = the current page's own path.
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "./" },
   openGraph: {
     url: "./", siteName: "Snippr", type: "website",
-    description: "Booking made beautifully simple — scheduling, reminders, waitlist, sales and more.",
+    description: "Put your link in your bio or on Instagram, or hang up your QR code — clients book in seconds.",
   },
 };
 
