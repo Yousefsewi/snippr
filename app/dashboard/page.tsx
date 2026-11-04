@@ -29,6 +29,9 @@ const statusPill: Record<string, string> = {
   completed: 'bg-[#e3e2e0] text-[#32302c]',
 }
 
+// The full appointments table is on /dashboard/appointments; flip to show it here too
+const SHOW_ALL_APPOINTMENTS = false
+
 export default function DashboardPage() {
   const router = useRouter()
   const { t, isRTL, lang } = useLang()
@@ -130,7 +133,8 @@ export default function DashboardPage() {
           <DashboardWidgets appts={appointments} lang={lang} format={format} statusLabel={statusLabel} applyDiscount={FIRST_VISIT_DISCOUNT} />
         </div>
 
-        {/* Appointments */}
+        {/* All appointments: hidden here, the same list lives on the Appointments page */}
+        {SHOW_ALL_APPOINTMENTS && (
         <section>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, padding: '0 4px' }}>
             <p style={{ fontSize: 12, fontWeight: 600, color: '#9b9a97', letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>{t.allAppointments}</p>
@@ -211,6 +215,7 @@ export default function DashboardPage() {
             })}
           </div>
         </section>
+        )}
       </div>
     </div>
   )
