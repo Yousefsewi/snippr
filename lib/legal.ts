@@ -15,12 +15,15 @@ export const PLAN_PRICES_EUR = {
   salon: { monthly: 34.95, yearly: 349 },  // 2–5 people, fixed price
   pro: { monthly: 59.95, yearly: 599 },    // unlimited, price on request
 } as const
-export const TRIAL_DAYS = 14             // free trial, no card
+export const TRIAL_DAYS = 15             // free trial, no card
 export const FOUNDER_DISCOUNT = 40       // % off for life
 export const FOUNDER_SPOTS = 20          // first shops that join
 export const SMS_PACK = { count: 100, price: 12 } // add-on, not built yet
 // Features that aren't built yet stay hidden everywhere until this is true
 // (Salon plan, team features, SMS pack, extra add-ons). Flip it when they're ready.
 export const SHOW_UNRELEASED = false
+// Launch: every plan can be picked and tried for free (no payments yet), even if its
+// team features are still hidden. Set to false to hide the Salon plan again.
+export const LAUNCH_ALL_PLANS = true
 export const VISIBLE_PLANS = (Object.keys(PLAN_PRICES_EUR) as (keyof typeof PLAN_PRICES_EUR)[])
-  .filter(k => SHOW_UNRELEASED || k !== 'salon')
+  .filter(k => SHOW_UNRELEASED || LAUNCH_ALL_PLANS || k !== 'salon')

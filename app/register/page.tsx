@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { detectTimezone, setSavedTimezone } from '@/lib/timezones'
@@ -10,11 +10,17 @@ import { suggestEmail } from '@/lib/email-typo'
 import { ageFrom, MIN_AGE } from '@/lib/age'
 import { AUTH_COPY, errorText, useAuthLng } from '@/lib/auth-copy'
 import ResendConfirmation from '@/components/resend-confirmation'
+import { isPlan, PLAN_PREF_KEY } from '@/lib/plan'
 
 export default function RegisterPage() {
   const router = useRouter()
   const c = AUTH_COPY[useAuthLng()]
   // Captured silently from the browser; users adjust these later in Settings
+  // plan picked on the pricing page (?plan=salon): pre-selected on /choose-plan
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get('plan')
+    if (isPlan(p)) try { localStorage.setItem(PLAN_PREF_KEY, p) } catch { /* blocked */ }
+  }, [])
   const [timezone] = useState(detectTimezone())
   const [currency] = useState(detectCurrency())
   const [loading, setLoading] = useState(false)

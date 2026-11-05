@@ -19,6 +19,7 @@ import { SALON_STYLE_KEY } from '@/lib/glass'
 import { AddressAutocomplete } from '@/components/address-autocomplete'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
 import { markOnboarded } from '@/lib/onboarding'
+import { isPlan } from '@/lib/plan'
 
 type Lng = 'en' | 'tr'
 type Kind = 'barber' | 'salon' | 'solo'
@@ -170,6 +171,7 @@ export default function OnboardingPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.replace('/login'); return }
       if (!user.user_metadata?.terms_accepted_at) { router.replace('/complete-signup'); return }
+      if (!isPlan(user.user_metadata?.plan)) { router.replace('/choose-plan?next=/onboarding'); return }
       const { data: b } = await supabase.from('barbers').select('id, name, slug, address, photo_url').eq('user_id', user.id).single()
       if (!b) { router.replace('/dashboard'); return } // the dashboard creates the profile, then sends them back
       const { count } = await supabase.from('services').select('id', { count: 'exact', head: true }).eq('barber_id', b.id)

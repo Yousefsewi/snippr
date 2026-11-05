@@ -6,7 +6,9 @@
 // Features that don't exist yet are hidden (SHOW_UNRELEASED in lib/legal.ts); payments are
 // not live yet, so everyone uses Snippr for free during early access.
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { isPlan } from '@/lib/plan'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Clock, Minus, MessageSquareText, Mail, Sparkles } from 'lucide-react'
@@ -27,11 +29,11 @@ const T = {
     soonTag: 'soon', popular: 'Most chosen', everythingSolo: 'Everything in Solo',
     founderTitle: `Founder offer: ${FOUNDER_DISCOUNT}% off for life`,
     founderBody: `For the first ${FOUNDER_SPOTS} shops that join. Solo for ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/mo, for as long as you stay.`,
-    early: `Early access: Snippr is free while we open payments. After that, every plan starts with ${TRIAL_DAYS} days free, no card needed.`,
+    early: `Launch: every plan is free for ${TRIAL_DAYS} days. No card needed, and nothing is charged when the trial ends.`, yourPlan: 'Your plan',
     plans: {
-      solo: { name: 'Solo', who: 'For one barber or stylist', cta: `Try ${TRIAL_DAYS} days free`, ctaDash: 'You use this for free now' },
-      salon: { name: 'Salon', who: 'For a shop with 2–5 people', cta: 'Coming soon', ctaDash: 'Coming soon' },
-      pro: { name: 'Pro', who: 'For bigger shops and chains', cta: 'Contact us', ctaDash: 'Contact us' },
+      solo: { name: 'Solo', who: 'For one barber or stylist', cta: `Try ${TRIAL_DAYS} days free`, ctaDash: 'Switch to this plan' },
+      salon: { name: 'Salon', who: 'For a shop with 2–5 people', cta: `Try ${TRIAL_DAYS} days free`, ctaDash: 'Switch to this plan' },
+      pro: { name: 'Pro', who: 'For bigger shops and chains', cta: `Try ${TRIAL_DAYS} days free`, ctaDash: 'Switch to this plan' },
     } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
     lists: {
       solo: [['Your own booking page, link and QR code'], ['Live calendar: day, week, month, drag to move'], ['Unlimited appointments and clients'], ['Email confirmations and reminders'], ['Waitlist'], ['Sales and tips reports, PDF/Excel export'], ['Booking page in 4 languages'], ['No commission on bookings']],
@@ -66,11 +68,11 @@ const T = {
     soonTag: 'yakında', popular: 'En çok seçilen', everythingSolo: 'Solo’daki her şey',
     founderTitle: `Kurucu teklifi: ömür boyu %${FOUNDER_DISCOUNT} indirim`,
     founderBody: `Katılan ilk ${FOUNDER_SPOTS} işletmeye. Solo aylık ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}, Snippr’da kaldığın sürece.`,
-    early: `Erken erişim: Ödemeler açılana kadar Snippr ücretsiz. Sonrasında her plan ${TRIAL_DAYS} gün ücretsiz başlar, kart gerekmez.`,
+    early: `Lansman: Bütün planlar ${TRIAL_DAYS} gün ücretsiz. Kart gerekmez, deneme bitince otomatik ücret alınmaz.`, yourPlan: 'Senin planın',
     plans: {
-      solo: { name: 'Solo', who: 'Tek berber ya da kuaför için', cta: `${TRIAL_DAYS} gün ücretsiz dene`, ctaDash: 'Şu an ücretsiz kullanıyorsun' },
-      salon: { name: 'Salon', who: '2–5 kişilik dükkân için', cta: 'Yakında', ctaDash: 'Yakında' },
-      pro: { name: 'Pro', who: 'Büyük dükkânlar ve zincirler için', cta: 'Bize ulaş', ctaDash: 'Bize ulaş' },
+      solo: { name: 'Solo', who: 'Tek berber ya da kuaför için', cta: `${TRIAL_DAYS} gün ücretsiz dene`, ctaDash: 'Bu plana geç' },
+      salon: { name: 'Salon', who: '2–5 kişilik dükkân için', cta: `${TRIAL_DAYS} gün ücretsiz dene`, ctaDash: 'Bu plana geç' },
+      pro: { name: 'Pro', who: 'Büyük dükkânlar ve zincirler için', cta: `${TRIAL_DAYS} gün ücretsiz dene`, ctaDash: 'Bu plana geç' },
     } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
     lists: {
       solo: [['Kendi randevu sayfan, linkin ve QR kodun'], ['Canlı takvim: gün, hafta, ay, sürükleyerek taşı'], ['Sınırsız randevu ve müşteri'], ['E-posta onay ve hatırlatmaları'], ['Bekleme listesi'], ['Satış ve bahşiş raporları, PDF/Excel'], ['4 dilde randevu sayfası'], ['Randevulardan komisyon yok']],
@@ -108,6 +110,19 @@ const SOON_COL = ['solo', 'salon', 'pro'].map(id => VISIBLE_PLANS.includes(id as
 export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?: string; mode?: 'public' | 'dashboard' }) {
   const t = T[lng] ?? T.en
   const [yearly, setYearly] = useState(false)
+  // dashboard: the plan this account picked (lib/plan.ts), and switching to another one
+  const [current, setCurrent] = useState<PlanId | null>(null)
+  const [switching, setSwitching] = useState<PlanId | null>(null)
+  useEffect(() => {
+    if (mode !== 'dashboard') return
+    supabase.auth.getUser().then(({ data: { user } }) => { const p = user?.user_metadata?.plan; if (isPlan(p)) setCurrent(p) })
+  }, [mode])
+  const switchTo = async (id: PlanId) => {
+    setSwitching(id)
+    const { error } = await supabase.auth.updateUser({ data: { plan: id } })
+    setSwitching(null)
+    if (!error) setCurrent(id)
+  }
   // hide anything that isn't built yet
   const items = (id: PlanId): Item[] => SHOW_UNRELEASED ? t.lists[id] : t.lists[id]
     .filter(([, soon]) => !soon)
@@ -168,8 +183,7 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
           const shown = yearly ? Math.round((price.yearly / 12) * 100) / 100 : price.monthly
           const featured = id === 'solo'
           const dark = featured
-          const href = id === 'pro' ? '/contact' : '/register'
-          const live = id !== 'salon'
+          const href = `/register?plan=${id}`
           return (
             <motion.article key={id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.07 * i, ease: [0.22, 1, 0.36, 1] }}
               className={`relative flex flex-col rounded-[28px] p-7 ${dark ? 'bg-[#1d1d1f] text-white shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)]' : 'bg-white text-[#1d1d1f] shadow-[0_1px_2px_rgba(0,0,0,0.04)]'}`}>
@@ -202,16 +216,21 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
               </ul>
 
               <p className={`mt-7 text-[13px] ${dark ? 'text-white/55' : 'text-[#8e8e93]'}`}>{t.foot[id]}</p>
-              {mode === 'dashboard' && id === 'solo' ? (
-                <span className="mt-3 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white/10 text-[15px] font-semibold">
-                  <Check size={16} strokeWidth={3} className="text-[#34c759]" /> {p.ctaDash}
-                </span>
-              ) : live ? (
-                <Link href={href} className={`mt-3 inline-flex h-12 items-center justify-center rounded-full text-[15px] font-semibold transition ${dark ? 'bg-white text-[#1d1d1f] hover:bg-[#f2f2f7]' : 'bg-[#1d1d1f] text-white hover:bg-black'}`}>
-                  {mode === 'dashboard' ? p.ctaDash : p.cta}
-                </Link>
+              {mode === 'dashboard' ? (
+                current === id ? (
+                  <span className={`mt-3 inline-flex h-12 items-center justify-center gap-2 rounded-full text-[15px] font-semibold ${dark ? 'bg-white/10' : 'bg-[#f2f2f7]'}`}>
+                    <Check size={16} strokeWidth={3} className="text-[#34c759]" /> {t.yourPlan}
+                  </span>
+                ) : (
+                  <button type="button" onClick={() => switchTo(id)} disabled={!!switching}
+                    className={`mt-3 inline-flex h-12 items-center justify-center rounded-full text-[15px] font-semibold transition disabled:opacity-60 ${dark ? 'bg-white text-[#1d1d1f] hover:bg-[#f2f2f7]' : 'bg-[#1d1d1f] text-white hover:bg-black'}`}>
+                    {switching === id ? '…' : p.ctaDash}
+                  </button>
+                )
               ) : (
-                <span aria-disabled="true" className="mt-3 inline-flex h-12 cursor-default items-center justify-center rounded-full bg-[#f2f2f7] text-[15px] font-semibold text-[#8e8e93]">{p.cta}</span>
+                <Link href={href} className={`mt-3 inline-flex h-12 items-center justify-center rounded-full text-[15px] font-semibold transition ${dark ? 'bg-white text-[#1d1d1f] hover:bg-[#f2f2f7]' : 'bg-[#1d1d1f] text-white hover:bg-black'}`}>
+                  {p.cta}
+                </Link>
               )}
             </motion.article>
           )

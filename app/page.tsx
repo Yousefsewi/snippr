@@ -17,6 +17,7 @@ import ClaimLink from '@/components/claim-link'
 import FeatureAccordion from '@/components/feature-accordion'
 import HeroCalendar from '@/components/hero-calendar'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
+import { TRIAL_DAYS } from '@/lib/legal'
 
 const serif = Inter({ subsets: ['latin'], weight: ['600', '700', '800', '900'], display: 'swap' })
 const playfair = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['500', '600', '700'], display: 'swap' })
@@ -207,7 +208,7 @@ const FAQ_DATA: Record<string, { q: string; a: string }[]> = {
     { q: 'Can I set my working hours and days off?', a: 'Yes — set your hours for each day of the week and switch off the days you’re closed. Those times are never offered to customers.' },
   ],
   'Pricing': [
-    { q: 'Is Snippr free?', a: 'Yes — everything available today is free, no credit card needed. Paid plans with extra features will come later, and you keep all your data.' },
+    { q: 'Is Snippr free?', a: `Every plan is free to try for ${TRIAL_DAYS} days, no credit card needed. Nothing is charged when the trial ends: before payments open we email you first, and you keep all your data.` },
     { q: 'Are there hidden costs?', a: 'No. No setup fees, no subscription today, and we never take a commission on your bookings.' },
     { q: 'Can I delete my account?', a: 'Anytime, from Settings → Delete account. Your page, services and appointments are removed for good.' },
   ],
@@ -243,7 +244,7 @@ const FAQ_DATA_TR: Record<string, { q: string; a: string }[]> = {
     { q: 'Çalışma saatlerimi ve izin günlerimi ayarlayabilir miyim?', a: 'Evet — haftanın her günü için saatlerini ayarla, kapalı olduğun günleri kapat. O saatler müşterilere hiç gösterilmez.' },
   ],
   'Fiyatlandırma': [
-    { q: 'Snippr ücretsiz mi?', a: 'Evet — bugün sunulan her şey ücretsiz, kredi kartı gerekmez. Ek özellikli ücretli planlar ileride gelecek, tüm verilerin seninle kalır.' },
+    { q: 'Snippr ücretsiz mi?', a: `Bütün planları ${TRIAL_DAYS} gün ücretsiz deneyebilirsin, kredi kartı gerekmez. Deneme bitince otomatik ücret alınmaz: ödemeler açılmadan önce sana e-postayla haber veririz, tüm verilerin seninle kalır.` },
     { q: 'Gizli bir ücret var mı?', a: 'Hayır. Kurulum ücreti yok, şu an abonelik yok ve randevularından asla komisyon alınmaz.' },
     { q: 'Hesabımı silebilir miyim?', a: 'İstediğin an, Ayarlar → Hesabı sil’den. Sayfan, hizmetlerin ve randevuların kalıcı olarak silinir.' },
   ],
@@ -660,12 +661,13 @@ export default function Home() {
             transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             className="max-w-3xl mb-9"
           >
-            {/* small welcome label above the headline */}
-            <p className="mb-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium"
+            {/* launch label above the headline: every plan free to try (lib/legal.ts → TRIAL_DAYS) */}
+            <Link href="/pricing" className="pointer-events-auto mb-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition hover:opacity-80"
               style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.85)', color: SHOW_HERO_VIDEO ? '#f4efe7' : '#3a3a3c', boxShadow: '0 4px 14px rgba(29,29,31,0.06)' }}>
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#34c759' }} />
-              {lng === 'tr' ? 'Snippr’a hoş geldin · Berberler için ücretsiz online randevu' : 'Welcome to Snippr · Free online booking for barbers'}
-            </p>
+              {lng === 'tr' ? `Lansman · Bütün planlar ${TRIAL_DAYS} gün ücretsiz, kart gerekmez` : `Launch · Every plan free for ${TRIAL_DAYS} days, no card needed`}
+              <span aria-hidden>→</span>
+            </Link>
             <h1 className={`${serif.className} leading-[0.95] whitespace-pre-line`} style={{ fontSize: 'clamp(44px, 8vw, 110px)', fontWeight: 600, letterSpacing: '-0.03em', color: SHOW_HERO_VIDEO ? '#f4efe7' : '#1d1d1f', textShadow: SHOW_HERO_VIDEO ? '0 8px 40px rgba(0,0,0,0.4)' : 'none' }}>
               {c.heroBig}
             </h1>

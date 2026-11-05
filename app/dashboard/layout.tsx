@@ -14,6 +14,7 @@ import NotificationOptIn from '@/components/notification-opt-in'
 import MobileTabBar from '@/components/mobile-tab-bar'
 import { useStored } from '@/lib/use-stored'
 import { glass, glassHover, GLASS_WASH, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
+import { isPlan, PLAN_NAMES, trialDaysLeft, trialCopy, type PlanId } from '@/lib/plan'
 
 const navIcons: Record<string, LucideIcon> = {
   overview: Home, calendar: Calendar, waitlist: Hourglass, sales: Receipt, appointmentsNav: ListChecks, addons: Blocks, services: Scissors, profile: User,
@@ -87,6 +88,7 @@ function Chrome({ children }: { children: ReactNode }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [notifs, setNotifs] = useState<Notif[]>(ANNOUNCEMENTS)
   const [me, setMe] = useState<{ name: string; email: string; photo: string | null }>({ name: '', email: '', photo: null })
+  const [trial, setTrial] = useState<{ plan: string; left: number } | null>(null)
   // Services visibility is controlled from Settings (persisted in localStorage)
   const servicesOn = useStored('snippr:services') !== 'off'
   // Salon style (Settings → Salon style): pastel hair salon or black/grey barbershop
@@ -107,6 +109,9 @@ function Chrome({ children }: { children: ReactNode }) {
       if (!user) return
       // no date of birth / Terms acceptance yet (Google sign-in, or an account from before): finish that first
       if (!user.user_metadata?.terms_accepted_at) { router.replace('/complete-signup'); return }
+      // no plan picked yet: choose one first (free trial, lib/plan.ts)
+      if (!isPlan(user.user_metadata?.plan)) { router.replace('/choose-plan?next=/dashboard'); return }
+      if (active) setTrial({ plan: PLAN_NAMES[user.user_metadata.plan as PlanId], left: trialDaysLeft(user.user_metadata.trial_started_at, Date.now()) })
       let { data: barber } = await supabase.from('barbers').select('id, name, photo_url, working_hours').eq('user_id', user.id).single()
 
       if (!barber) {
@@ -350,9 +355,10 @@ function Chrome({ children }: { children: ReactNode }) {
               {/* Upgrade / Plans card */}
               <div style={{ marginTop: 'auto', paddingTop: 16, padding: '16px 2px 0' }}>
                 <div style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', borderRadius: 20, padding: 14 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: 0 }}>{t.freePlanTitle}</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: 0 }}>{trial ? trialCopy(lang).title(trial.plan) : t.freePlanTitle}</p>
+                  {trial && trial.left > 0 && <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: '4px 0 0' }}>{trialCopy(lang).left(trial.left)}</p>}
                   <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)', margin: '4px 0 10px', lineHeight: 1.4 }}>
-                    {t.freePlanSub}
+                    {trial ? (trial.left > 0 ? trialCopy(lang).sub : trialCopy(lang).over) : t.freePlanSub}
                   </p>
                   <Link href="/dashboard/plans" style={{
                     display: 'block', textAlign: 'center', background: '#fff', color: '#1f1f1f',
