@@ -195,7 +195,7 @@ function Chrome({ children }: { children: ReactNode }) {
           <Link href="/dashboard" title={tr ? 'Ana sayfa' : 'Home'} aria-label={tr ? 'Panel ana sayfası' : 'Dashboard home'} style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden', textDecoration: 'none', cursor: 'pointer' }}>
             {collapsed ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src="/icon-192.png" alt="Snippr" style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, display: 'block' }} />
+              <img src="/logo.svg" alt="Snippr" style={{ width: 40, height: 'auto', flexShrink: 0, display: 'block' }} />
             ) : (
               <div style={{ overflow: 'hidden' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}

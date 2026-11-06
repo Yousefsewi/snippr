@@ -137,8 +137,6 @@ export default function HelpPage() {
 
         {/* title + search */}
         <div className="mt-8 flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icon-192.png" alt="" className="h-11 w-11 rounded-[12px]" />
           <div>
             <h1 className="text-[34px] leading-tight font-bold tracking-[-0.02em]">{c.title}</h1>
             <p className="text-[15px] text-[#6e6e73]">{c.sub}</p>

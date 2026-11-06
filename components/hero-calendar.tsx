@@ -205,8 +205,7 @@ export default function HeroCalendar({ lng }: { lng: Lng }) {
                 transition={{ type: 'spring', stiffness: 360, damping: 26 }}>
                 <div className="flex items-center gap-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/icon-192.png" alt="" className="h-5 w-5 rounded-[6px]" />
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: SUB }}>Snippr</span>
+                  <img src="/logo.svg" alt="Snippr" className="h-[13px] w-auto" />
                   <span className="ml-auto text-[11px]" style={{ color: SUB }}>{t.now}</span>
                 </div>
                 <p className="mt-1.5 text-[14px] font-semibold" style={{ color: INK }}>{t.notifTitle}</p>

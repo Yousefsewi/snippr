@@ -91,8 +91,7 @@ function Mock({ i, lng }: { i: number; lng: Lng }) {
     <div style={{ ...card, padding: '11px 14px 13px', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icon-192.png" alt="" width={18} height={18} style={{ borderRadius: 5, display: 'block' }} />
-        <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.06em', color: '#64748b' }}>SNIPPR</span>
+        <img src="/logo.svg" alt="Snippr" style={{ height: 13, width: 'auto', display: 'block' }} />
         <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94a3b8' }}>{tr ? 'şimdi' : 'now'}</span>
       </div>
       <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{tr ? 'Yeni randevu' : 'New booking'}</p>

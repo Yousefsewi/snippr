@@ -110,8 +110,7 @@ function HeroArt({ lng }: { lng: string }) {
         <div className="hero-float-late absolute -left-20 bottom-16 w-[270px] rounded-[20px] px-4 pt-3 pb-3.5" style={glass}>
           <div className="mb-1.5 flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icon-192.png" alt="" width={18} height={18} className="rounded-[5px]" />
-            <span className="text-[10.5px] font-semibold tracking-[0.06em] text-[#6b7280]">SNIPPR</span>
+            <img src="/logo.svg" alt="Snippr" style={{ height: 13, width: 'auto' }} />
             <span className="ml-auto text-[11px] text-[#9ca3af]">{tr ? 'şimdi' : 'now'}</span>
           </div>
           <p className="text-[13.5px] font-semibold text-[#1d1d1f]">{tr ? 'Yeni randevu' : 'New booking'}</p>

@@ -125,7 +125,7 @@ export default function AboutPage() {
               transition={{ delay: 1, type: 'spring', stiffness: 300, damping: 24 }}
               className="flex items-center gap-3 rounded-[20px] bg-white/80 p-3.5 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.25)] backdrop-blur">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/icon-192.png" alt="" className="h-10 w-10 rounded-[10px]" />
+              <span className="flex h-10 w-16 flex-shrink-0 items-center justify-center rounded-[10px] bg-white ring-1 ring-black/5"><img src="/logo.svg" alt="Snippr" className="h-[14px] w-auto" /></span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-[15px] font-semibold">{t.notifTitle}</p>

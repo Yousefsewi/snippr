@@ -46,8 +46,7 @@ export function emailLayout(p: EmailParts): string {
         <td style="padding-${rtl ? 'right' : 'left'}:12px;font:600 16px ${FONT};color:${INK};">${esc(p.shop)}</td>
       </tr></table>`
     : `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td valign="middle"><img src="${SITE_URL}/icon-192.png" width="32" height="32" alt="" style="display:block;border:0;border-radius:9px;" /></td>
-        <td style="padding-${rtl ? 'right' : 'left'}:10px;font:700 19px ${FONT};color:${INK};letter-spacing:-0.3px;">snippr</td>
+        <td valign="middle"><img src="${SITE_URL}/logo-email.png" width="72" height="32" alt="snippr" style="display:block;border:0;width:72px;height:32px;" /></td>
       </tr></table>`
 
   const details = p.details?.length
