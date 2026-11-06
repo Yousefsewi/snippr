@@ -374,9 +374,10 @@ export default function BookingPage() {
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%)' }} />
 
             {/* Snippr logo + share */}
-            <Link href="/" aria-label="Snippr" title="Snippr" style={{ position: 'absolute', top: 14, left: 14, height: 40, padding: '0 12px', borderRadius: 12, background: 'rgba(255,255,255,0.92)', display: 'flex', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+            <Link href="/" aria-label="Snippr" title="Snippr" style={{ position: 'absolute', top: 18, left: 18, display: 'block' }}>
+              {/* just the wordmark: white on a photo (soft shadow so it stays readable), black otherwise */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.svg" alt="Snippr" style={{ display: 'block', height: 18, width: 'auto' }} />
+              <img src={bgImage ? '/logo-white.svg' : '/logo.svg'} alt="Snippr" style={{ display: 'block', height: 26, width: 'auto', filter: bgImage ? 'drop-shadow(0 1px 6px rgba(0,0,0,0.45))' : 'none' }} />
             </Link>
             <button onClick={share} aria-label="Share"
               style={{ ...GLASS_CHIP, position: 'absolute', top: 14, right: 14, width: 40, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--chip-fg)' }}>
