@@ -373,8 +373,11 @@ export default function BookingPage() {
               : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(var(--ink),0.92)', fontSize: 92, fontWeight: 800 }}>{barber.name?.charAt(0).toUpperCase()}</div>}
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%)' }} />
 
-            {/* logo + share */}
-            <div style={{ ...GLASS_CHIP, position: 'absolute', top: 14, left: 14, width: 40, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800 }}>✦</div>
+            {/* Snippr logo + share */}
+            <a href="/" aria-label="Snippr" title="Snippr" style={{ position: 'absolute', top: 14, left: 14, width: 40, height: 40, borderRadius: 12, overflow: 'hidden', display: 'block', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icon-192.png" alt="Snippr" width={40} height={40} style={{ display: 'block', width: '100%', height: '100%' }} />
+            </a>
             <button onClick={share} aria-label="Share"
               style={{ ...GLASS_CHIP, position: 'absolute', top: 14, right: 14, width: 40, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--chip-fg)' }}>
               {copied
