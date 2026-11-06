@@ -155,8 +155,8 @@ export default function AddonsPage() {
   const list = (tab === 'addons' ? addons : integrations).filter(a => SHOW_UNRELEASED || a.status !== 'soon')
 
   const badgeStyle: Record<Status, React.CSSProperties> = {
-    active: { background: '#e9f6ec', color: '#1c6b3f' }, free: { background: '#e6f0ff', color: '#1d5bd6' },
-    soon: { background: '#f1f1ef', color: '#9b9a97' }, setup: { background: '#fff4e0', color: '#9a6516' },
+    active: { color: '#2f7d4f' }, free: { color: '#787774' },
+    soon: { color: '#9b9a97' }, setup: { color: '#b26b00' },
   }
 
   return (
@@ -164,11 +164,11 @@ export default function AddonsPage() {
       <h1 className="text-[30px] font-bold tracking-[-0.02em] text-[#37352f]">{t.title}</h1>
       <p className="mt-1 text-[15px] text-[#787774]">{t.sub}</p>
 
-      <div className="mt-6 flex gap-1.5">
+      <div className="mt-6 flex gap-6 border-b border-[#ececea]">
         {(['addons', 'integrations'] as const).map(k => (
-          <button key={k} onClick={() => setTab(k)} className="relative rounded-full px-4 py-2 text-[14.5px] font-semibold" style={{ color: tab === k ? '#fff' : '#37352f' }}>
-            {tab === k && <motion.span layoutId="addon-tab" className="absolute inset-0 rounded-full bg-[#37352f]" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
-            <span className="relative">{t.tabs[k]}</span>
+          <button key={k} onClick={() => setTab(k)} className="relative -mb-px pb-2.5 text-[14.5px] font-semibold transition" style={{ color: tab === k ? '#1d1d1f' : '#9b9a97' }}>
+            {t.tabs[k]}
+            {tab === k && <motion.span layoutId="addon-tab" className="absolute right-0 bottom-0 left-0 h-[2px] bg-[#1d1d1f]" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
           </button>
         ))}
       </div>
@@ -181,21 +181,23 @@ export default function AddonsPage() {
             const Inner = (
               <>
                 <div className="flex items-start justify-between gap-2">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-[14px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_8px_20px_-10px_rgba(0,0,0,0.4)]" style={{ background: a.grad }}>
-                    <a.icon size={23} strokeWidth={2} />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#ececea] bg-[#f7f7f5] text-[#37352f]">
+                    <a.icon size={19} strokeWidth={1.75} />
                   </span>
-                  <span className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold" style={badgeStyle[a.status]}>{t.badge[a.status]}</span>
+                  <span className="flex items-center gap-1.5 text-[12.5px] font-medium" style={{ color: badgeStyle[a.status].color }}>
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: badgeStyle[a.status].color }} />{t.badge[a.status]}
+                  </span>
                 </div>
-                <h3 className="mt-5 text-[16px] font-semibold text-[#37352f]">
-                  {a.title}{a.beta && <span className="ml-1.5 text-[13px] font-semibold text-[#d6409f]">| Beta</span>}
+                <h3 className="mt-4 text-[15.5px] font-semibold text-[#1d1d1f]">
+                  {a.title}{a.beta && <span className="ml-1.5 text-[12px] font-medium text-[#9b9a97]">Beta</span>}
                 </h3>
                 <p className="mt-1.5 flex-1 text-[13.5px] leading-relaxed text-[#787774]">{a.desc}</p>
                 {a.status !== 'soon' && (
-                  <span className="mt-5 self-start rounded-full border border-[#e3e2e0] px-4 py-1.5 text-[13.5px] font-semibold text-[#37352f] transition group-hover:bg-[#f7f7f5]">{t.view}</span>
+                  <span className="mt-4 self-start text-[13.5px] font-semibold text-[#1d1d1f] group-hover:underline">{t.view} →</span>
                 )}
               </>
             )
-            const cls = `group flex min-h-[230px] flex-col rounded-[22px] border border-[#ededec] bg-white p-5 text-left transition ${clickable ? 'hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.35)]' : 'opacity-70'}`
+            const cls = `group flex min-h-[200px] flex-col rounded-[12px] border border-[#ececea] bg-white p-5 text-left transition ${clickable ? 'hover:border-[#d4d4d2]' : 'opacity-70'}`
             if (a.href && a.status !== 'soon') return <Link key={a.id} href={a.href} className={cls}>{Inner}</Link>
             if (a.action) return <button key={a.id} onClick={a.action} className={cls}>{Inner}</button>
             return <div key={a.id} className={cls}>{Inner}</div>
@@ -211,7 +213,7 @@ export default function AddonsPage() {
             <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 34 }}
               onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-t-[24px] bg-white p-6 shadow-2xl sm:rounded-[24px]">
               <div className="flex items-start justify-between">
-                <span className="flex h-11 w-11 items-center justify-center rounded-[13px] text-white" style={{ background: G.orange }}><Star size={21} /></span>
+                <span className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#ececea] bg-[#f7f7f5] text-[#37352f]"><Star size={19} strokeWidth={1.75} /></span>
                 <button onClick={() => { setGoogleOpen(false); router.replace('/dashboard/addons') }} className="rounded-full p-1.5 text-[#787774] hover:bg-[#f1f1ef]" aria-label="Close"><X size={18} /></button>
               </div>
               <h3 className="mt-4 text-[19px] font-bold text-[#37352f]">{t.gTitle}</h3>
@@ -225,8 +227,8 @@ export default function AddonsPage() {
                   <p className="mt-2 text-[12.5px] text-[#9b9a97]">{t.gHow}</p>
                   {err && <p className="mt-2 text-[13.5px] font-medium text-[#e5484d]">{err}</p>}
                   <div className="mt-6 flex gap-3">
-                    {hasReview && <button onClick={() => saveReview('')} disabled={saving} className="flex-1 rounded-full border border-[#e9e9e7] px-4 py-2.5 font-semibold text-[#a8302a] hover:bg-[#fdf0f0]">{t.gRemove}</button>}
-                    <button onClick={() => saveReview(review)} disabled={saving} className="flex-1 rounded-full px-4 py-2.5 font-semibold text-white disabled:opacity-50" style={{ background: 'var(--accent)' }}>{saving ? t.saving : t.gSave}</button>
+                    {hasReview && <button onClick={() => saveReview('')} disabled={saving} className="flex-1 rounded-[10px] border border-[#e9e9e7] px-4 py-2.5 font-semibold text-[#a8302a] hover:bg-[#fdf0f0]">{t.gRemove}</button>}
+                    <button onClick={() => saveReview(review)} disabled={saving} className="flex-1 rounded-[10px] bg-[#1d1d1f] px-4 py-2.5 font-semibold text-white hover:bg-black disabled:opacity-50">{saving ? t.saving : t.gSave}</button>
                   </div>
                 </>
               )}
