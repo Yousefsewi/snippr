@@ -279,7 +279,7 @@ const LC: Record<Lng, {
   questions: string
   briefTitle: string; briefBody: string; briefPlaceholder: string; briefBtn: string
   trustTag: string; trustTitle: string; trustBody: string
-  stats: { name: string; value: string }[]
+  stats: { name: string; value: string; href: string }[]
   tagline: string; rights: string; builtWith: string
 }> = {
   en: {
@@ -312,9 +312,9 @@ const LC: Record<Lng, {
     trustTag: 'Built for the long view', trustTitle: 'Make room for the work that matters.',
     trustBody: 'Snippr keeps the details moving quietly in the background, so every appointment feels considered from first click to final look.',
     stats: [
-      { name: 'Free to start, no credit card', value: 'Free' },
-      { name: 'Set up in about 2 minutes', value: '2 min' },
-      { name: 'Customers book 24/7', value: '24/7' },
+      { name: 'Free trial, no credit card', value: `${TRIAL_DAYS} days`, href: '/pricing' },
+      { name: 'To set up your booking page', value: '2 min', href: '/register' },
+      { name: 'Customers book day and night', value: '24/7', href: '#how' },
     ],
     tagline: 'Helping barbers fill every chair, effortlessly.', rights: `© ${new Date().getFullYear()} Snippr. All rights reserved.`, builtWith: 'Built with',
   },
@@ -348,9 +348,9 @@ const LC: Record<Lng, {
     trustTag: 'Uzun vadeli düşünüldü', trustTitle: 'Önemli işe zaman ayır.',
     trustBody: 'Snippr detayları sessizce arka planda yürütür — her randevu ilk tıktan son ana kadar özenle planlanır.',
     stats: [
-      { name: 'Ücretsiz başla, kredi kartı yok', value: 'Ücretsiz' },
-      { name: 'Yaklaşık 2 dakikada kurulur', value: '2 dk' },
-      { name: 'Müşteriler 7/24 randevu alır', value: '7/24' },
+      { name: 'Ücretsiz deneme, kredi kartı yok', value: `${TRIAL_DAYS} gün`, href: '/pricing' },
+      { name: 'Randevu sayfan bu kadar sürede hazır', value: '2 dk', href: '/register' },
+      { name: 'Müşteriler gece gündüz randevu alır', value: '7/24', href: '#how' },
     ],
     tagline: 'Berberlerin her koltuğu zahmetsizce doldurmasına yardım ediyoruz.', rights: `© ${new Date().getFullYear()} Snippr. Tüm hakları saklıdır.`, builtWith: 'Şununla yapıldı:',
   },
@@ -486,19 +486,23 @@ function HowItWorksSection({ lng }: { lng: Lng }) {
   )
 }
 
-// quick facts: one thin line of plain text, no boxes
+// quick facts: three plain figures with thin dividers, each one a link
 function StatsSection({ lng }: { lng: Lng }) {
   const c = LC[lng]
   return (
-    <section className="py-6 px-6" style={{ background: 'transparent' }}>
-      <ul className="mx-auto flex max-w-4xl list-none flex-wrap items-center justify-center gap-x-6 gap-y-2 p-0 text-[14px] text-[#1d1d1f]/60">
+    <section className="px-6 py-14" style={{ background: 'transparent' }}>
+      <div className="mx-auto grid max-w-4xl grid-cols-1 border-y border-[#1d1d1f]/10 sm:grid-cols-3">
         {c.stats.map((stat, i) => (
-          <li key={stat.name} className="flex items-center gap-6">
-            {i > 0 && <span aria-hidden className="h-1 w-1 rounded-full bg-[#1d1d1f]/25" />}
-            <span>{stat.name}</span>
-          </li>
+          <Link key={stat.name} href={stat.href}
+            className={`group flex flex-col items-center px-6 py-8 text-center no-underline transition-colors hover:bg-white/40 ${i > 0 ? 'border-t border-[#1d1d1f]/10 sm:border-t-0 sm:border-l' : ''}`}>
+            <span className="text-[40px] leading-none font-semibold tracking-[-0.03em] text-[#1d1d1f] sm:text-[46px]">{stat.value}</span>
+            <span className="mt-3 text-[14.5px] text-[#1d1d1f]/60">{stat.name}</span>
+            <span aria-hidden className="mt-3 text-[13px] font-semibold text-[#1d1d1f] opacity-0 transition-opacity group-hover:opacity-100">
+              {stat.href === '/pricing' ? (lng === 'tr' ? 'Planları gör →' : 'See plans →') : stat.href === '/register' ? (lng === 'tr' ? 'Hemen başla →' : 'Get started →') : (lng === 'tr' ? 'Nasıl çalışır →' : 'How it works →')}
+            </span>
+          </Link>
         ))}
-      </ul>
+      </div>
     </section>
   )
 }
