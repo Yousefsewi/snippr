@@ -14,14 +14,17 @@ import { supabase } from '@/lib/supabase'
 import { SITE_URL } from '@/lib/site-url'
 import { DEFAULT_HOURS, type Day, type Hours } from '@/lib/hours'
 import { convertFromUSD, formatMoney, useCurrencyChoice, CURRENCIES } from '@/lib/currency'
-import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
+import { writeStored } from '@/lib/use-stored'
 import { SALON_STYLE_KEY } from '@/lib/glass'
 import { AddressAutocomplete } from '@/components/address-autocomplete'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
 import { markOnboarded } from '@/lib/onboarding'
 import { isPlan } from '@/lib/plan'
+import { useSiteLng } from '@/lib/use-site-lng'
+import type { SiteLng } from '@/lib/site-lang'
+import { TRIAL_DAYS } from '@/lib/legal'
 
-type Lng = 'en' | 'tr'
+type Lng = SiteLng
 type Kind = 'barber' | 'salon' | 'solo'
 type Where = 'shop' | 'mobile' | 'both'
 type Svc = { id: string; name: string; duration: number; price: string; on: boolean }
@@ -43,7 +46,7 @@ const T = {
     hours: { q: 'When are you open?', sub: 'Clients can only book inside these hours. Fine-tune each day later.', days: 'Open days', from: 'From', to: 'To', short: { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' } },
     services: { q: 'What do you offer?', sub: 'Pick your services and set a price. Clients choose from these when they book.', min: 'min', add: 'Add your own', custom: 'Service name', have: (n: number) => `You already have ${n} service${n === 1 ? '' : 's'}. Anything you pick here is added to them.` },
     photo: { q: 'Add a photo', sub: 'Your logo or a photo of you. Pages with a photo get more bookings.', pick: 'Choose photo', change: 'Change photo' },
-    done: { title: 'Your shop is ready!', sub: 'Snippr is free while you grow. Share your link and get your first booking.', copy: 'Copy', copied: 'Copied', whatsapp: 'Share on WhatsApp', view: 'View my page', go: 'Go to dashboard', msg: 'Book your appointment with me here:' },
+    done: { title: 'Your shop is ready!', sub: `Your ${TRIAL_DAYS}-day free trial has started. Share your link and get your first booking.`, copy: 'Copy', copied: 'Copied', whatsapp: 'Share on WhatsApp', view: 'View my page', go: 'Go to dashboard', msg: 'Book your appointment with me here:' },
     errName: 'Please enter a name.', errDays: 'Pick at least one day.', errSave: 'Could not save. Please try again.',
   },
   tr: {
@@ -57,27 +60,69 @@ const T = {
     hours: { q: 'Hangi gün ve saatlerde açıksın?', sub: 'Müşteriler sadece bu saatlerde randevu alabilir. Her günü sonra ayrı ayarlayabilirsin.', days: 'Açık günler', from: 'Açılış', to: 'Kapanış', short: { mon: 'Pzt', tue: 'Sal', wed: 'Çar', thu: 'Per', fri: 'Cum', sat: 'Cmt', sun: 'Paz' } },
     services: { q: 'Hangi hizmetleri veriyorsun?', sub: 'Hizmetlerini seç ve fiyat yaz. Müşteriler randevu alırken bunlardan seçecek.', min: 'dk', add: 'Kendi hizmetini ekle', custom: 'Hizmet adı', have: (n: number) => `Zaten ${n} hizmetin var. Burada seçtiklerin onlara eklenir.` },
     photo: { q: 'Bir fotoğraf ekle', sub: 'Logon ya da kendi fotoğrafın. Fotoğraflı sayfalar daha çok randevu alır.', pick: 'Fotoğraf seç', change: 'Fotoğrafı değiştir' },
-    done: { title: 'İşletmen hazır!', sub: 'Snippr büyürken ücretsiz. Linkini paylaş, ilk randevunu al.', copy: 'Kopyala', copied: 'Kopyalandı', whatsapp: 'WhatsApp’ta paylaş', view: 'Sayfamı gör', go: 'Panele git', msg: 'Randevunu buradan alabilirsin:' },
+    done: { title: 'İşletmen hazır!', sub: `${TRIAL_DAYS} günlük ücretsiz denemen başladı. Linkini paylaş, ilk randevunu al.`, copy: 'Kopyala', copied: 'Kopyalandı', whatsapp: 'WhatsApp’ta paylaş', view: 'Sayfamı gör', go: 'Panele git', msg: 'Randevunu buradan alabilirsin:' },
     errName: 'Lütfen bir ad yaz.', errDays: 'En az bir gün seç.', errSave: 'Kaydedilemedi. Lütfen tekrar dene.',
+  },
+  nl: {
+    setup: 'Account instellen', later: 'Later doen', back: 'Terug', next: 'Doorgaan', skip: 'Nu overslaan', finish: 'Instellen afronden', saving: 'Opslaan…',
+    name: { q: 'Hoe heet je zaak?', sub: 'Deze naam zien klanten op je boekingspagina.', ph: 'bijv. Kapsalon Yusuf', link: 'Je boekingslink' },
+    kind: { q: 'Wat voor zaak is het?', sub: 'We stellen behandelingen en een stijl voor die bij je passen.',
+      opts: { barber: ['Barbershop', 'Knippen, fades en baarden'], salon: ['Kapsalon', 'Knippen, kleuren en stylen'], solo: ['Zelfstandige kapper', 'Ik werk alleen, huur een stoel of werk als zzp’er'] } },
+    where: { q: 'Waar help je je klanten?', sub: 'Je kunt dit later wijzigen.',
+      opts: { shop: ['In mijn zaak', 'Klanten komen naar mij'], mobile: ['Bij de klant thuis', 'Ik ga naar hen toe'], both: ['Allebei', 'In de zaak en onderweg'] } },
+    address: { qShop: 'Waar is je zaak?', qMobile: 'In welk gebied werk je?', sub: 'Staat op je boekingspagina zodat klanten je kunnen vinden.', label: 'Adres', labelMobile: 'Stad of gebied', ph: 'Begin je adres te typen', phMobile: 'bijv. Assen, Drenthe' },
+    hours: { q: 'Wanneer ben je open?', sub: 'Klanten kunnen alleen binnen deze tijden boeken. Per dag fijnstellen kan later.', days: 'Open dagen', from: 'Van', to: 'Tot', short: { mon: 'ma', tue: 'di', wed: 'wo', thu: 'do', fri: 'vr', sat: 'za', sun: 'zo' } },
+    services: { q: 'Wat bied je aan?', sub: 'Kies je behandelingen en vul een prijs in. Klanten kiezen hieruit als ze boeken.', min: 'min', add: 'Eigen behandeling toevoegen', custom: 'Naam behandeling', have: (n: number) => `Je hebt al ${n} behandeling${n === 1 ? '' : 'en'}. Wat je hier kiest, komt erbij.` },
+    photo: { q: 'Voeg een foto toe', sub: 'Je logo of een foto van jezelf. Pagina’s met een foto krijgen meer afspraken.', pick: 'Foto kiezen', change: 'Foto wijzigen' },
+    done: { title: 'Je zaak staat klaar!', sub: `Je proefperiode van ${TRIAL_DAYS} dagen is begonnen. Deel je link en krijg je eerste afspraak.`, copy: 'Kopiëren', copied: 'Gekopieerd', whatsapp: 'Delen via WhatsApp', view: 'Mijn pagina bekijken', go: 'Naar dashboard', msg: 'Boek hier je afspraak bij mij:' },
+    errName: 'Vul een naam in.', errDays: 'Kies minstens één dag.', errSave: 'Opslaan is niet gelukt. Probeer het opnieuw.',
+  },
+  de: {
+    setup: 'Konto einrichten', later: 'Später erledigen', back: 'Zurück', next: 'Weiter', skip: 'Jetzt überspringen', finish: 'Einrichtung abschließen', saving: 'Wird gespeichert…',
+    name: { q: 'Wie heißt dein Laden?', sub: 'Diesen Namen sehen Kunden auf deiner Buchungsseite.', ph: 'z. B. Yusufs Barbershop', link: 'Dein Buchungslink' },
+    kind: { q: 'Was für ein Laden ist es?', sub: 'Wir schlagen dir passende Leistungen und einen passenden Look vor.',
+      opts: { barber: ['Barbershop', 'Schnitte, Fades und Bärte'], salon: ['Friseursalon', 'Schnitte, Farbe und Styling'], solo: ['Selbstständiger Barbier', 'Ich arbeite allein, miete einen Stuhl oder bin freiberuflich'] } },
+    where: { q: 'Wo bedienst du deine Kunden?', sub: 'Du kannst das später ändern.',
+      opts: { shop: ['In meinem Laden', 'Kunden kommen zu mir'], mobile: ['Beim Kunden', 'Ich fahre zu ihnen'], both: ['Beides', 'Im Laden und unterwegs'] } },
+    address: { qShop: 'Wo ist dein Laden?', qMobile: 'Welches Gebiet deckst du ab?', sub: 'Steht auf deiner Buchungsseite, damit Kunden dich finden.', label: 'Adresse', labelMobile: 'Stadt oder Gebiet', ph: 'Fang an, deine Adresse zu tippen', phMobile: 'z. B. Kreuzberg, Berlin' },
+    hours: { q: 'Wann hast du geöffnet?', sub: 'Kunden können nur in diesen Zeiten buchen. Jeden Tag kannst du später genauer einstellen.', days: 'Geöffnete Tage', from: 'Von', to: 'Bis', short: { mon: 'Mo', tue: 'Di', wed: 'Mi', thu: 'Do', fri: 'Fr', sat: 'Sa', sun: 'So' } },
+    services: { q: 'Was bietest du an?', sub: 'Wähle deine Leistungen und trag einen Preis ein. Kunden wählen beim Buchen daraus.', min: 'Min.', add: 'Eigene Leistung hinzufügen', custom: 'Name der Leistung', have: (n: number) => `Du hast schon ${n} Leistung${n === 1 ? '' : 'en'}. Was du hier wählst, kommt dazu.` },
+    photo: { q: 'Füge ein Foto hinzu', sub: 'Dein Logo oder ein Foto von dir. Seiten mit Foto bekommen mehr Buchungen.', pick: 'Foto wählen', change: 'Foto ändern' },
+    done: { title: 'Dein Laden ist bereit!', sub: `Deine ${TRIAL_DAYS}-tägige Testphase hat begonnen. Teile deinen Link und hol dir deine erste Buchung.`, copy: 'Kopieren', copied: 'Kopiert', whatsapp: 'Über WhatsApp teilen', view: 'Meine Seite ansehen', go: 'Zum Dashboard', msg: 'Buch deinen Termin bei mir hier:' },
+    errName: 'Bitte gib einen Namen ein.', errDays: 'Wähle mindestens einen Tag.', errSave: 'Speichern fehlgeschlagen. Bitte versuch es noch einmal.',
+  },
+  ar: {
+    setup: 'إعداد الحساب', later: 'لاحقًا', back: 'رجوع', next: 'متابعة', skip: 'تخطَّ الآن', finish: 'إنهاء الإعداد', saving: 'جارٍ الحفظ…',
+    name: { q: 'ما اسم محلك؟', sub: 'هذا الاسم يراه العملاء في صفحة الحجز.', ph: 'مثلًا: حلاقة يوسف', link: 'رابط الحجز' },
+    kind: { q: 'ما نوع نشاطك؟', sub: 'سنقترح خدمات ومظهرًا يناسبانك.',
+      opts: { barber: ['محل حلاقة', 'قص وتدريج ولحى'], salon: ['صالون شعر', 'قص وصبغ وتصفيف'], solo: ['حلاق مستقل', 'أعمل وحدي أو أستأجر كرسيًا أو أعمل لحسابي'] } },
+    where: { q: 'أين تخدم عملاءك؟', sub: 'يمكنك تغيير ذلك لاحقًا.',
+      opts: { shop: ['في محلي', 'العملاء يأتون إلي'], mobile: ['عند العميل', 'أذهب إليهم'], both: ['الاثنان', 'في المحل وخارجه'] } },
+    address: { qShop: 'أين محلك؟', qMobile: 'ما المنطقة التي تغطيها؟', sub: 'يظهر في صفحة الحجز ليجدك العملاء.', label: 'العنوان', labelMobile: 'المدينة أو المنطقة', ph: 'ابدأ بكتابة عنوانك', phMobile: 'مثلًا: روتردام' },
+    hours: { q: 'متى تكون مفتوحًا؟', sub: 'لا يمكن للعملاء الحجز إلا ضمن هذه الساعات. يمكنك ضبط كل يوم لاحقًا.', days: 'أيام العمل', from: 'من', to: 'إلى', short: { mon: 'إث', tue: 'ثل', wed: 'أر', thu: 'خم', fri: 'جم', sat: 'سب', sun: 'أح' } },
+    services: { q: 'ماذا تقدم؟', sub: 'اختر خدماتك وحدد سعرًا. يختار العملاء منها عند الحجز.', min: 'د', add: 'أضف خدمتك الخاصة', custom: 'اسم الخدمة', have: (n: number) => `لديك ${n} خدمة بالفعل. ما تختاره هنا يُضاف إليها.` },
+    photo: { q: 'أضف صورة', sub: 'شعارك أو صورتك. الصفحات التي فيها صورة تحصل على حجوزات أكثر.', pick: 'اختر صورة', change: 'غيّر الصورة' },
+    done: { title: 'محلك جاهز!', sub: `بدأت تجربتك المجانية لمدة ${TRIAL_DAYS} يومًا. شارك رابطك واحصل على أول حجز.`, copy: 'نسخ', copied: 'تم النسخ', whatsapp: 'شارك عبر واتساب', view: 'اعرض صفحتي', go: 'إلى اللوحة', msg: 'احجز موعدك معي من هنا:' },
+    errName: 'يرجى إدخال اسم.', errDays: 'اختر يومًا واحدًا على الأقل.', errSave: 'تعذر الحفظ. يرجى المحاولة مرة أخرى.',
   },
 }
 
 // starting services per business type (price in USD, converted to the chosen currency)
-const PRESETS: Record<'barber' | 'salon', { en: string; tr: string; min: number; usd: number }[]> = {
+const PRESETS: Record<'barber' | 'salon', (Record<SiteLng, string> & { min: number; usd: number })[]> = {
   barber: [
-    { en: 'Haircut', tr: 'Saç kesimi', min: 30, usd: 15 },
-    { en: 'Beard trim', tr: 'Sakal tıraşı', min: 20, usd: 10 },
-    { en: 'Haircut + beard', tr: 'Saç + sakal', min: 45, usd: 22 },
-    { en: 'Kids haircut', tr: 'Çocuk saç kesimi', min: 25, usd: 12 },
-    { en: 'Wash & style', tr: 'Yıkama ve fön', min: 20, usd: 10 },
-    { en: 'Facial', tr: 'Cilt bakımı', min: 30, usd: 18 },
+    { en: 'Haircut', tr: 'Saç kesimi', nl: 'Knippen', de: 'Haarschnitt', ar: 'قص الشعر', min: 30, usd: 15 },
+    { en: 'Beard trim', tr: 'Sakal tıraşı', nl: 'Baard trimmen', de: 'Bart trimmen', ar: 'تهذيب اللحية', min: 20, usd: 10 },
+    { en: 'Haircut + beard', tr: 'Saç + sakal', nl: 'Knippen + baard', de: 'Haarschnitt + Bart', ar: 'قص الشعر + اللحية', min: 45, usd: 22 },
+    { en: 'Kids haircut', tr: 'Çocuk saç kesimi', nl: 'Kinderknipbeurt', de: 'Kinderhaarschnitt', ar: 'قص شعر الأطفال', min: 25, usd: 12 },
+    { en: 'Wash & style', tr: 'Yıkama ve fön', nl: 'Wassen en stylen', de: 'Waschen und Styling', ar: 'غسل وتصفيف', min: 20, usd: 10 },
+    { en: 'Facial', tr: 'Cilt bakımı', nl: 'Gezichtsbehandeling', de: 'Gesichtsbehandlung', ar: 'عناية بالبشرة', min: 30, usd: 18 },
   ],
   salon: [
-    { en: 'Haircut', tr: 'Saç kesimi', min: 45, usd: 25 },
-    { en: 'Blow-dry', tr: 'Fön', min: 30, usd: 15 },
-    { en: 'Colour', tr: 'Boya', min: 90, usd: 55 },
-    { en: 'Highlights', tr: 'Röfle', min: 120, usd: 75 },
-    { en: 'Hair treatment', tr: 'Saç bakımı', min: 40, usd: 25 },
+    { en: 'Haircut', tr: 'Saç kesimi', nl: 'Knippen', de: 'Haarschnitt', ar: 'قص الشعر', min: 45, usd: 25 },
+    { en: 'Blow-dry', tr: 'Fön', nl: 'Föhnen', de: 'Föhnen', ar: 'تجفيف بالسشوار', min: 30, usd: 15 },
+    { en: 'Colour', tr: 'Boya', nl: 'Kleuren', de: 'Färben', ar: 'صبغ', min: 90, usd: 55 },
+    { en: 'Highlights', tr: 'Röfle', nl: 'Highlights', de: 'Strähnchen', ar: 'خصلات (هايلايت)', min: 120, usd: 75 },
+    { en: 'Hair treatment', tr: 'Saç bakımı', nl: 'Haarbehandeling', de: 'Haarpflege', ar: 'علاج الشعر', min: 40, usd: 25 },
   ],
 }
 
@@ -134,9 +179,7 @@ const field = 'w-full rounded-[14px] bg-white px-4 py-3.5 text-[16px] text-[#1c1
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const savedLng = useStored('snippr-lang')
-  const navTr = useClientValue(() => (navigator.language || '').toLowerCase().startsWith('tr'), false)
-  const lng: Lng = savedLng === 'tr' ? 'tr' : savedLng === 'en' ? 'en' : navTr ? 'tr' : 'en'
+  const lng: Lng = useSiteLng()
   const t = T[lng]
   const [cur] = useCurrencyChoice()
   const curSymbol = formatMoney(0, cur).replace(/[\d.,\s]/g, '') || (CURRENCIES.find(c => c.code === cur)?.symbol ?? '')
