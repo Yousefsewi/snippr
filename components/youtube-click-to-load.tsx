@@ -6,9 +6,9 @@ import { useState } from 'react'
 // from YouTube (not even the thumbnail), so no IP address goes to Google without a choice.
 export default function YoutubeClickToLoad({ id, title, lang }: { id: string; title?: string; lang?: string }) {
   const [on, setOn] = useState(false)
-  const tr = lang === 'tr', nl = lang === 'nl', ar = lang === 'ar'
-  const play = tr ? 'Videoyu oynat' : nl ? 'Video afspelen' : ar ? 'تشغيل الفيديو' : 'Play video'
-  const note = tr ? 'Video YouTube’dan yüklenir.' : nl ? 'De video wordt geladen vanaf YouTube.' : ar ? 'يتم تحميل الفيديو من يوتيوب.' : 'The video loads from YouTube.'
+  const tr = lang === 'tr', nl = lang === 'nl', ar = lang === 'ar', de = lang === 'de'
+  const play = tr ? 'Videoyu oynat' : nl ? 'Video afspelen' : ar ? 'تشغيل الفيديو' : de ? 'Video abspielen' : 'Play video'
+  const note = tr ? 'Video YouTube’dan yüklenir.' : nl ? 'De video wordt geladen vanaf YouTube.' : ar ? 'يتم تحميل الفيديو من يوتيوب.' : de ? 'Das Video wird von YouTube geladen.' : 'The video loads from YouTube.'
 
   if (on) {
     return (

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useClientValue } from '@/lib/use-stored'
+import { useLang, type Lang } from '@/lib/i18n'
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -11,7 +12,16 @@ function urlBase64ToUint8Array(base64String: string) {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)))
 }
 
+const COPY: Record<Lang, { title: string; sub: string; on: string; close: string }> = {
+  en: { title: 'Turn on booking notifications', sub: 'We’ll tell your phone right away when a new booking comes in.', on: 'Turn on', close: 'Close' },
+  nl: { title: 'Meldingen voor afspraken aanzetten', sub: 'We laten je telefoon meteen weten als er een nieuwe afspraak binnenkomt.', on: 'Aanzetten', close: 'Sluiten' },
+  de: { title: 'Terminbenachrichtigungen einschalten', sub: 'Wir sagen deinem Handy sofort Bescheid, wenn eine neue Buchung eingeht.', on: 'Einschalten', close: 'Schließen' },
+  tr: { title: 'Randevu bildirimlerini aç', sub: 'Yeni randevu gelince telefonuna anında haber verelim.', on: 'Aç', close: 'Kapat' },
+  ar: { title: 'فعّل إشعارات الحجز', sub: 'سنخبر هاتفك فورًا عند وصول حجز جديد.', on: 'تفعيل', close: 'إغلاق' },
+}
+
 export default function NotificationOptIn() {
+  const c = COPY[useLang().lang]
   // Only offer push when the browser supports it and the user hasn't decided yet.
   const canAsk = useClientValue(
     () => 'serviceWorker' in navigator && 'PushManager' in window && Notification.permission === 'default',
@@ -55,8 +65,8 @@ export default function NotificationOptIn() {
       style={{ background: '#1b1b1d', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)', maxWidth: 320 }}
     >
       <div style={{ flex: 1 }}>
-        <p className="text-white text-[13.5px] font-semibold leading-tight">Randevu bildirimlerini aç</p>
-        <p className="text-[12px] mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Yeni randevu gelince telefonuna anında haber verelim.</p>
+        <p className="text-white text-[13.5px] font-semibold leading-tight">{c.title}</p>
+        <p className="text-[12px] mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>{c.sub}</p>
       </div>
       <button
         onClick={enable}
@@ -64,11 +74,11 @@ export default function NotificationOptIn() {
         className="flex-shrink-0 rounded-full px-3.5 py-2 text-[12px] font-semibold"
         style={{ background: '#a8a8a8', color: '#0a0a0a', opacity: busy ? 0.6 : 1 }}
       >
-        {busy ? '…' : 'Aç'}
+        {busy ? '…' : c.on}
       </button>
       <button
         onClick={() => setVisible(false)}
-        aria-label="Kapat"
+        aria-label={c.close}
         className="flex-shrink-0"
         style={{ color: 'rgba(255,255,255,0.4)' }}
       >
