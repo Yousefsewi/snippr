@@ -233,8 +233,8 @@ export default function MessagesPage() {
     ] },
   ]
 
-  // emails exist in tr/nl/en/ar; German previews show the English email for now
-  const sample = (k: MsgKind) => messageHtml(k, (lng === 'de' ? 'en' : lng) as ClientLang, {
+
+  const sample = (k: MsgKind) => messageHtml(k, lng, {
     client: lng === 'tr' ? 'Ahmet Yılmaz' : 'Alex Morgan', barber: barber?.name || 'Snippr', service: lng === 'tr' ? 'Saç kesimi' : 'Haircut',
     date: new Date(2026, 10, 14).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' }), time: '14:30',
     bookUrl: '#', reviewUrl: review, tip: '50',

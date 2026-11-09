@@ -6,10 +6,10 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 
-type Lang = 'tr' | 'nl' | 'en' | 'ar'
+type Lang = 'tr' | 'nl' | 'en' | 'ar' | 'de'
 type Appt = { client: string; barber: string; service: string | null; start: string; end: string; status: string; bookUrl: string | null; canCancel: boolean; past: boolean }
 
-const LOCALE: Record<Lang, string> = { tr: 'tr-TR', nl: 'nl-NL', en: 'en-GB', ar: 'ar-u-nu-latn' }
+const LOCALE: Record<Lang, string> = { tr: 'tr-TR', nl: 'nl-NL', en: 'en-GB', ar: 'ar-u-nu-latn', de: 'de-DE' }
 
 const COPY: Record<Lang, Record<string, string>> = {
   tr: {
@@ -33,6 +33,13 @@ const COPY: Record<Lang, Record<string, string>> = {
     already: 'This appointment was cancelled.', past: 'This appointment has started or passed and can’t be cancelled anymore.', closed: 'This appointment can’t be changed anymore.',
     newTime: 'Book a new time', bad: 'This link doesn’t work. Use the link from your booking email.', err: 'Something went wrong. Please try again in a moment.', loading: 'Loading…',
   },
+  de: {
+    title: 'Dein Termin', with: 'Barbier', service: 'Leistung', date: 'Datum', time: 'Uhrzeit',
+    cancel: 'Termin absagen', sure: 'Bist du sicher? Der Termin wird abgesagt und die Zeit wird für jemand anderen frei.', yes: 'Ja, absagen', no: 'Zurück',
+    busy: 'Einen Moment…', done: 'Dein Termin ist abgesagt', doneSub: 'Wir haben deinem Barbier Bescheid gesagt. Du kannst jederzeit eine neue Zeit wählen.',
+    already: 'Dieser Termin wurde abgesagt.', past: 'Dieser Termin hat schon begonnen oder ist vorbei und kann nicht mehr abgesagt werden.', closed: 'Dieser Termin kann nicht mehr geändert werden.',
+    newTime: 'Neue Zeit wählen', bad: 'Dieser Link funktioniert nicht. Nutze den Link aus deiner Buchungsmail.', err: 'Etwas ist schiefgelaufen. Bitte versuch es gleich noch einmal.', loading: 'Wird geladen…',
+  },
   ar: {
     title: 'موعدك', with: 'الحلاق', service: 'الخدمة', date: 'التاريخ', time: 'الوقت',
     cancel: 'إلغاء موعدي', sure: 'هل أنت متأكد؟ سيتم إلغاء الموعد ويصبح الوقت متاحًا لشخص آخر.', yes: 'نعم، ألغِ', no: 'رجوع',
@@ -49,7 +56,7 @@ export default function ManageAppointment() {
   const q = new URLSearchParams(search)
   const id = q.get('id') ?? '', t = q.get('t') ?? ''
   const l = q.get('l')
-  const lang: Lang = l === 'tr' || l === 'nl' || l === 'ar' ? l : 'en'
+  const lang: Lang = l === 'tr' || l === 'nl' || l === 'ar' || l === 'de' ? l : 'en'
   const c = COPY[lang]
 
   const [appt, setAppt] = useState<Appt | null>(null)

@@ -118,10 +118,24 @@ const BT = {
     wlJoin: 'انضم إلى قائمة الانتظار', wlJoining: 'جارٍ الانضمام…', wlDone: '✓ أنت الآن في قائمة الانتظار — سيتواصل معك الحلاق إذا توفّر موعد.',
     wlNeedName: 'يرجى إدخال اسمك.', wlNeedContact: 'أضف رقم هاتف أو بريدًا إلكترونيًا ليتمكن الحلاق من التواصل معك.', wlFail: 'تعذّر الانضمام إلى قائمة الانتظار. يرجى المحاولة مرة أخرى.',
   },
+  de: {
+    taken: 'Diese Zeit wurde gerade vergeben, wähle eine andere.', couldNot: 'Buchung fehlgeschlagen. Bitte versuch es noch einmal.',
+    notAvailable: 'Diese Seite ist nicht verfügbar', notAvailableSub: 'Der Link ist vielleicht falsch oder der Barbier ist umgezogen.',
+    openToday: (a: string, b: string) => `Heute geöffnet ${a}–${b}`, closedToday: 'Heute geschlossen', firstOff: (n: number) => `🎁 ${n} % Rabatt beim ersten Besuch`,
+    requested: 'Buchung angefragt!', at: 'um', willConfirm: (n: string) => `${n} bestätigt gleich.`, another: 'Noch einen Termin buchen',
+    details: 'Buchungsdetails', service: 'Leistung', optional: 'Optional', date: 'Datum', time: 'Uhrzeit', choose: 'Wählen', pickDate: 'Wähle zuerst ein Datum', min: 'Min.',
+    closedDay: 'An diesem Tag geschlossen, wähle ein anderes Datum.', footnote: 'Zeiten in deiner Ortszeit. Du bezahlst im Laden, online wird nichts abgebucht.',
+    yourDetails: 'Deine Angaben', name: 'Name', required: 'Pflichtfeld', email: 'E-Mail', forConfirm: 'Für die Bestätigung', phone: 'Telefon',
+    payment: 'Zahlungsdetails', total: 'Gesamt', booking: 'Wird gebucht…', book: 'Buchen', enterName: 'Gib deinen Namen ein, um zu buchen', ageOk: 'Ich bin 16 oder älter, oder ich buche als Elternteil oder Erziehungsberechtigter für mein Kind.', ageHint: 'Bitte bestätige das Alterskästchen, um zu buchen', privacy: 'Datenschutz', powered: 'Bereitgestellt von',
+    wlFull: '⏳ Ausgebucht — auf die Warteliste', wlAsk: 'Keine passende Zeit? Auf die Warteliste', wlFor: (d: string) => `Auf die Warteliste für ${d}.`,
+    wlName: 'Dein Name', wlPhone: 'Telefon', wlEmail: 'E-Mail (optional)', wlPrefs: ['Jederzeit', 'Morgens', 'Nachmittags', 'Abends'],
+    wlJoin: 'Auf die Warteliste', wlJoining: 'Wird eingetragen…', wlDone: '✓ Du stehst auf der Warteliste. Der Barbier meldet sich, wenn ein Platz frei wird.',
+    wlNeedName: 'Bitte gib deinen Namen ein.', wlNeedContact: 'Füge eine Telefonnummer oder E-Mail hinzu, damit der Barbier dich erreicht.', wlFail: 'Eintragen fehlgeschlagen. Bitte versuch es noch einmal.',
+  },
 }
 // names shown in the language switch, each in its own language
-const LANG_NAMES: Record<'tr' | 'en' | 'nl' | 'ar', string> = { tr: 'Türkçe', en: 'English', nl: 'Nederlands', ar: 'العربية' }
-const LOCALES: Record<'tr' | 'en' | 'nl' | 'ar', string> = { tr: 'tr-TR', en: 'en-GB', nl: 'nl-NL', ar: 'ar-u-nu-latn' }
+const LANG_NAMES: Record<BLang, string> = { tr: 'Türkçe', en: 'English', nl: 'Nederlands', ar: 'العربية', de: 'Deutsch' }
+const LOCALES: Record<BLang, string> = { tr: 'tr-TR', en: 'en-GB', nl: 'nl-NL', ar: 'ar-u-nu-latn', de: 'de-DE' }
 type BLang = keyof typeof BT
 type BWords = (typeof BT)['en']
 
@@ -156,9 +170,9 @@ export default function BookingPage() {
   const inPreview = useClientValue(() => new URLSearchParams(window.location.search).has('preview'), false)
   // the client's language: their own pick, else their phone's language
   const autoLang = useClientValue<BLang>(() => {
-    try { const s = localStorage.getItem('snippr-lang'); if (s === 'tr' || s === 'en' || s === 'nl' || s === 'ar') return s } catch { /* storage blocked */ }
+    try { const s = localStorage.getItem('snippr-lang'); if (s === 'tr' || s === 'en' || s === 'nl' || s === 'ar' || s === 'de') return s } catch { /* storage blocked */ }
     const nav = (navigator.language || '').toLowerCase()
-    return nav.startsWith('tr') ? 'tr' : nav.startsWith('nl') ? 'nl' : nav.startsWith('ar') ? 'ar' : 'en'
+    return nav.startsWith('tr') ? 'tr' : nav.startsWith('nl') ? 'nl' : nav.startsWith('ar') ? 'ar' : nav.startsWith('de') ? 'de' : 'en'
   }, 'en')
   const [langPick, setLangPick] = useState<BLang | null>(null)
   const lang: BLang = langPick ?? autoLang
@@ -288,6 +302,9 @@ export default function BookingPage() {
     let { error: err } = await supabase.from('appointments').insert({ ...row, ...client, age_confirmed_at: new Date().toISOString() })
     if (missingColumn(err)) ({ error: err } = await supabase.from('appointments').insert({ ...row, ...client }))
     if (missingColumn(err)) ({ error: err } = await supabase.from('appointments').insert(row))
+    // a language the database doesn't accept yet (supabase/languages.sql not run): store English,
+    // the confirmation email still goes out in the language picked on the page
+    if (err?.code === '23514' && /client_lang/.test(err.message)) ({ error: err } = await supabase.from('appointments').insert({ ...row, ...client, client_lang: 'en', age_confirmed_at: new Date().toISOString() }))
     // 23P01 = the database's no-overlap rule: someone booked this slot a moment ago
     if (err?.code === '23P01') { slotTaken(); return }
     if (err) { setError(t.couldNot); setSubmitting(false); return }
@@ -651,7 +668,7 @@ export default function BookingPage() {
           {t.powered} <Link href="/" style={{ color: 'var(--fg)', fontWeight: 700, textDecoration: 'none' }}>Snippr</Link>
         </p>
         <div lang="mul" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 10 }}>
-          {(['tr', 'nl', 'en', 'ar'] as BLang[]).map(l => (
+          {(['nl', 'de', 'en', 'tr', 'ar'] as BLang[]).map(l => (
             <button key={l} onClick={() => switchLang(l)} aria-pressed={lang === l}
               style={{ ...GLASS_CHIP, padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', color: 'var(--chip-fg)', opacity: lang === l ? 1 : 0.55 }}>
               {LANG_NAMES[l]}
