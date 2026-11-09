@@ -169,3 +169,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 }
 
 export const useLang = () => useContext(Ctx)
+
+/** Page-level translations keyed by the English text: tx('Save') → 'Opslaan' in Dutch.
+ *  Missing languages fall back to the English text, so nothing ever shows up empty. */
+export type TxDict = Record<string, Partial<Record<Lang, string>>>
+export function useTx(dict: TxDict) {
+  const { lang } = useContext(Ctx)
+  return (en: string) => dict[en]?.[lang] ?? en
+}

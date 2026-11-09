@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useCurrency } from '@/lib/currency'
+import { useTx } from '@/lib/i18n'
+import { DICT } from './copy'
 
 type Service = {
   id: string
@@ -14,6 +16,7 @@ type Service = {
 }
 
 export default function ServicesPage() {
+  const tx = useTx(DICT)
   const router = useRouter()
   const { format } = useCurrency()
   const [barberId, setBarberId]     = useState<string | null>(null)
@@ -90,15 +93,15 @@ export default function ServicesPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', margin: 0, color: '#37352f' }}>Services</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', margin: 0, color: '#37352f' }}>{tx('Services')}</h1>
           <p style={{ color: '#9b9a97', fontSize: 14, marginTop: 5, marginBottom: 0 }}>
-            {services.length === 0 ? 'No services yet' : `${services.length} service${services.length !== 1 ? 's' : ''}`}
+            {services.length === 0 ? tx('No services yet') : `${services.length} ${tx(services.length === 1 ? 'service' : 'services')}`}
           </p>
         </div>
         {!showForm && (
           <button onClick={() => setShowForm(true)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#37352f', border: 'none', borderRadius: 12, color: '#fff', fontSize: 14.5, fontWeight: 600, padding: '10px 18px', cursor: 'pointer' }}>
-            <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Add service
+            <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> {tx('Add service')}
           </button>
         )}
       </div>
@@ -107,14 +110,14 @@ export default function ServicesPage() {
       {showForm && (
         <div style={{ background: '#fff', border: '1px solid #e9e9e7', borderRadius: 20, padding: 22, marginBottom: 20, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#9b9a97', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 18px' }}>
-            {editing ? 'Edit service' : 'New service'}
+            {editing ? tx('Edit service') : tx('New service')}
           </p>
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
               {[
-                { key: 'name',         label: 'Service name',   type: 'text',   placeholder: 'e.g. Haircut & Fade' },
-                { key: 'duration_min', label: 'Duration (min)', type: 'number', placeholder: '30' },
-                { key: 'price',        label: 'Price',          type: 'number', placeholder: '0.00' },
+                { key: 'name',         label: tx('Service name'),   type: 'text',   placeholder: tx('e.g. Haircut & Fade') },
+                { key: 'duration_min', label: tx('Duration (min)'), type: 'number', placeholder: '30' },
+                { key: 'price',        label: tx('Price'),          type: 'number', placeholder: '0.00' },
               ].map(({ key, label, type, placeholder }) => (
                 <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#9b9a97', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>
@@ -128,11 +131,11 @@ export default function ServicesPage() {
             <div style={{ display: 'flex', gap: 8 }}>
               <button type="submit" disabled={saving}
                 style={{ padding: '10px 20px', borderRadius: 10, background: '#37352f', color: '#fff', border: 'none', fontSize: 14.5, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}>
-                {saving ? 'Saving…' : editing ? 'Save changes' : 'Add service'}
+                {saving ? tx('Saving…') : editing ? tx('Save changes') : tx('Add service')}
               </button>
               <button type="button" onClick={cancel}
                 style={{ padding: '10px 20px', borderRadius: 10, background: '#f7f7f5', color: '#37352f', border: '1px solid #e9e9e7', fontSize: 14.5, cursor: 'pointer' }}>
-                Cancel
+                {tx('Cancel')}
               </button>
             </div>
           </form>
@@ -142,8 +145,8 @@ export default function ServicesPage() {
       {/* Empty state */}
       {services.length === 0 && !showForm && (
         <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fafafa', borderRadius: 20, border: '1.5px dashed #e9e9e7' }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: '#37352f', margin: '0 0 6px' }}>No services yet</p>
-          <p style={{ fontSize: 14, color: '#9b9a97', margin: '0 0 20px' }}>Add your first service to start taking bookings</p>
+          <p style={{ fontSize: 15, fontWeight: 600, color: '#37352f', margin: '0 0 6px' }}>{tx('No services yet')}</p>
+          <p style={{ fontSize: 14, color: '#9b9a97', margin: '0 0 20px' }}>{tx('Add your first service to start taking bookings')}</p>
           <button onClick={() => setShowForm(true)}
             style={{ padding: '10px 22px', borderRadius: 12, background: '#37352f', color: '#fff', border: 'none', fontSize: 14.5, fontWeight: 600, cursor: 'pointer' }}>
             + Add service
@@ -180,11 +183,11 @@ export default function ServicesPage() {
               <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                 <button onClick={() => startEdit(s)}
                   style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #e9e9e7', background: '#fff', color: '#37352f', fontSize: 13.5, fontWeight: 500, cursor: 'pointer' }}>
-                  Edit
+                  {tx('Edit')}
                 </button>
                 <button onClick={() => handleDelete(s.id)} disabled={deletingId === s.id}
                   style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #f5d0ca', background: '#ffe2dd', color: '#5d1715', fontSize: 13.5, fontWeight: 500, cursor: deletingId === s.id ? 'not-allowed' : 'pointer', opacity: deletingId === s.id ? 0.5 : 1 }}>
-                  {deletingId === s.id ? '…' : 'Delete'}
+                  {deletingId === s.id ? '…' : tx('Delete')}
                 </button>
               </div>
             </div>

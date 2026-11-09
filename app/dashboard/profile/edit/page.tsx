@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { isPwnedPassword, PWNED_MESSAGE } from '@/lib/pwned'
 import { AddressAutocomplete } from '@/components/address-autocomplete'
+import { useLang, useTx } from '@/lib/i18n'
+import { DICT } from './copy'
 
 // Read an image File, downscale it on a canvas, return a JPEG data URL
 function fileToDataUrl(file: File, maxSize: number): Promise<string> {
@@ -52,6 +54,8 @@ const DAYS: { key: Day; label: string }[] = [
 ]
 
 export default function EditProfilePage() {
+  const tx = useTx(DICT)
+  const { lang } = useLang()
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -106,7 +110,7 @@ export default function EditProfilePage() {
   async function handleSave() {
     setSaving(true); setError(''); setSaved(false)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setError('Not signed in'); setSaving(false); return }
+    if (!user) { setError(tx('Not signed in')); setSaving(false); return }
 
     // 1) barber profile
     const { error: bErr } = await supabase.from('barbers')
@@ -122,7 +126,7 @@ export default function EditProfilePage() {
     const authPatch: { email?: string; password?: string } = {}
     if (email && email !== origEmail) authPatch.email = email
     if (password) {
-      if (await isPwnedPassword(password)) { setError(PWNED_MESSAGE.en); setSaving(false); return }
+      if (await isPwnedPassword(password)) { setError(lang === 'tr' ? PWNED_MESSAGE.tr : PWNED_MESSAGE.en); setSaving(false); return }
       authPatch.password = password
     }
     if (Object.keys(authPatch).length) {
@@ -156,15 +160,15 @@ export default function EditProfilePage() {
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#fff' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
-          Back
+          {tx('Back')}
         </button>
-        <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: '#37352f' }}>Edit profile</h1>
-        <p style={{ marginTop: 6, fontSize: 14, color: '#787774', margin: 0 }}>Update your photo, details and account.</p>
+        <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: '#37352f' }}>{tx('Edit profile')}</h1>
+        <p style={{ marginTop: 6, fontSize: 14, color: '#787774', margin: 0 }}>{tx('Update your photo, details and account.')}</p>
       </div>
 
       {/* Photo */}
       <section>
-        <p style={sectionLabel}>Photo</p>
+        <p style={sectionLabel}>{tx('Photo')}</p>
         <div style={{ ...card, flexDirection: 'row', alignItems: 'center', gap: 18 }}>
           <div style={{ width: 74, height: 74, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(135deg,#fca5a5,#c084fc)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {photo
@@ -173,11 +177,11 @@ export default function EditProfilePage() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => fileRef.current?.click()} style={{ padding: '9px 16px', borderRadius: 10, background: '#111827', color: '#fff', fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-              Change photo
+              {tx('Change photo')}
             </button>
             {photo && (
               <button onClick={() => setPhoto(null)} style={{ padding: '9px 16px', borderRadius: 10, background: '#fff', color: '#37352f', fontSize: 14, fontWeight: 500, border: '1px solid #e9e9e7', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Remove
+                {tx('Remove')}
               </button>
             )}
           </div>
@@ -186,22 +190,22 @@ export default function EditProfilePage() {
 
       {/* Profile details */}
       <section>
-        <p style={sectionLabel}>Profile</p>
+        <p style={sectionLabel}>{tx('Profile')}</p>
         <div style={card}>
           <div>
-            <label style={label}>Name</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={input} />
+            <label style={label}>{tx('Name')}</label>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder={tx('Your name')} style={input} />
           </div>
           <div>
-            <label style={label}>Shop address</label>
-            <AddressAutocomplete value={address} onChange={setAddress} placeholder="e.g. 12 Main St, Berlin" inputStyle={input} />
+            <label style={label}>{tx('Shop address')}</label>
+            <AddressAutocomplete value={address} onChange={setAddress} placeholder={tx('e.g. 12 Main St, Berlin')} inputStyle={input} />
           </div>
         </div>
       </section>
 
       {/* Working hours */}
       <section>
-        <p style={sectionLabel}>Working hours</p>
+        <p style={sectionLabel}>{tx('Working hours')}</p>
         <div style={card}>
           {DAYS.map(({ key, label: dl }) => {
             const d = hours[key]
@@ -214,7 +218,7 @@ export default function EditProfilePage() {
                 >
                   <span style={{ position: 'absolute', top: 3, left: d.open ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
                 </button>
-                <span style={{ width: 92, fontSize: 14, fontWeight: 500, color: '#37352f' }}>{dl}</span>
+                <span style={{ width: 92, fontSize: 14, fontWeight: 500, color: '#37352f' }}>{tx(dl)}</span>
                 {d.open ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <input type="time" value={d.start} onChange={e => setDay(key, { start: e.target.value })}
@@ -224,26 +228,26 @@ export default function EditProfilePage() {
                       style={{ padding: '7px 10px', borderRadius: 10, border: '1px solid #e9e9e7', background: '#fff', fontSize: 14, color: '#37352f', outline: 'none', fontFamily: 'inherit' }} />
                   </div>
                 ) : (
-                  <span style={{ fontSize: 14, color: '#9b9a97' }}>Closed</span>
+                  <span style={{ fontSize: 14, color: '#9b9a97' }}>{tx('Closed')}</span>
                 )}
               </div>
             )
           })}
-          <p style={{ fontSize: 12.5, color: '#9b9a97', margin: 0 }}>Customers can only book inside these hours. Don’t forget to Save.</p>
+          <p style={{ fontSize: 12.5, color: '#9b9a97', margin: 0 }}>{tx('Customers can only book inside these hours. Don’t forget to Save.')}</p>
         </div>
       </section>
 
       {/* Account */}
       <section>
-        <p style={sectionLabel}>Account</p>
+        <p style={sectionLabel}>{tx('Account')}</p>
         <div style={card}>
           <div>
-            <label style={label}>Email</label>
+            <label style={label}>{tx('Email')}</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" style={input} />
           </div>
           <div>
-            <label style={label}>New password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Leave blank to keep current" style={input} />
+            <label style={label}>{tx('New password')}</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={tx('Leave blank to keep current')} style={input} />
           </div>
         </div>
       </section>
@@ -255,9 +259,9 @@ export default function EditProfilePage() {
           disabled={saving}
           style={{ padding: '12px 26px', borderRadius: 12, background: '#111827', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1, fontFamily: 'inherit' }}
         >
-          {saving ? 'Saving…' : 'Save changes'}
+          {saving ? tx('Saving…') : tx('Save changes')}
         </button>
-        {saved && <span style={{ fontSize: 14, color: '#16a34a', fontWeight: 500 }}>✓ Saved</span>}
+        {saved && <span style={{ fontSize: 14, color: '#16a34a', fontWeight: 500 }}>✓ {tx('Saved')}</span>}
         {error && <span style={{ fontSize: 14, color: '#dc2626', fontWeight: 500 }}>{error}</span>}
       </div>
     </div>
