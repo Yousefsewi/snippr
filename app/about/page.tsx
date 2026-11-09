@@ -3,10 +3,13 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Heart, MessagesSquare, ShieldCheck, Zap, CalendarCheck, type LucideIcon } from 'lucide-react'
-import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
+import { writeStored } from '@/lib/use-stored'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
+import { useSiteLng } from '@/lib/use-site-lng'
+import type { SiteLng } from '@/lib/site-lang'
+import { TRIAL_DAYS } from '@/lib/legal'
 
-type Lng = 'en' | 'tr'
+type Lng = SiteLng
 
 const T = {
   en: {
@@ -29,8 +32,8 @@ const T = {
       ['Barbers first', 'Everything we build, we build for barbers — not for us.'],
       ['Built with you', 'We listen to the barbers using Snippr and build what they actually ask for.'],
     ],
-    stats: [['Free', 'to get started'], ['24/7', 'online booking'], ['0%', 'commission on bookings'], ['2 min', 'to set up']],
-    ctaTitle: 'Join Snippr', ctaSub: 'Start taking online bookings today. Free — no credit card needed.',
+    stats: [[`${TRIAL_DAYS} days`, 'free trial'], ['24/7', 'online booking'], ['0%', 'commission on bookings'], ['2 min', 'to set up']],
+    ctaTitle: 'Join Snippr', ctaSub: `Start taking online bookings today. ${TRIAL_DAYS} days free, no credit card needed.`,
     ctaStart: 'Get started free', ctaContact: 'Talk to us',
   },
   tr: {
@@ -53,9 +56,81 @@ const T = {
       ['Önce berber', 'Yaptığımız her şeyi kendimiz için değil, berberler için yapıyoruz.'],
       ['Seninle birlikte', 'Snippr kullanan berberleri dinliyor, gerçekten istediklerini yapıyoruz.'],
     ],
-    stats: [['Ücretsiz', 'başlamak için'], ['7/24', 'online randevu'], ['%0', 'randevu komisyonu'], ['2 dk', 'kurulum süresi']],
-    ctaTitle: 'Snippr’a katıl', ctaSub: 'Bugün online randevu almaya başla. Ücretsiz — kredi kartı gerekmez.',
+    stats: [[`${TRIAL_DAYS} gün`, 'ücretsiz deneme'], ['7/24', 'online randevu'], ['%0', 'randevu komisyonu'], ['2 dk', 'kurulum süresi']],
+    ctaTitle: 'Snippr’a katıl', ctaSub: `Bugün online randevu almaya başla. ${TRIAL_DAYS} gün ücretsiz, kredi kartı gerekmez.`,
     ctaStart: 'Ücretsiz başla', ctaContact: 'Bize yaz',
+  },
+  nl: {
+    back: 'Home', eyebrow: 'OVER SNIPPR',
+    h1a: 'Minder telefoontjes.', h1b: 'Meer knipbeurten.',
+    sub: 'We maken afspraken bij de kapper simpel, één afspraak tegelijk.',
+    storyTag: 'Ons verhaal',
+    story: [
+      'Snippr begon met een simpele observatie: kappers zijn meer tijd kwijt aan afspraken regelen dan aan knippen. Telefoontjes, WhatsApp-berichtjes, gemiste boekingen: het is chaos.',
+      'Dus bouwden we wat we zelf wilden hebben: een tool die simpel genoeg is voor een zelfstandige kapper om in 2 minuten in te stellen, en eerlijk over wat hij doet.',
+      'Snippr is nieuw en groeit. Elke kapper die nu meedoet, bepaalt mee wat we hierna bouwen. Vertel ons wat je nodig hebt, dan bouwen we het samen.',
+    ],
+    before: 'Vroeger', after: 'Met Snippr',
+    chat: ['Heb je morgen om 3 uur tijd?', 'Sorry, zag het te laat 🙏', 'En om 4 uur?', 'Hallo??'],
+    notifTitle: 'Nieuwe afspraak', notifBody: 'Knippen · Morgen 15:00', notifTime: 'nu',
+    valuesTag: 'Waar we in geloven',
+    values: [
+      ['Eenvoud', 'Tools moeten simpel zijn. Ingewikkelde software kost een kapper tijd.'],
+      ['Betrouwbaarheid', 'Kappers rekenen op ons voor hun inkomen. Dat nemen we serieus.'],
+      ['Kappers eerst', 'Alles wat we bouwen, bouwen we voor kappers, niet voor onszelf.'],
+      ['Samen met jou', 'We luisteren naar de kappers die Snippr gebruiken en bouwen wat zij echt vragen.'],
+    ],
+    stats: [[`${TRIAL_DAYS} dagen`, 'gratis proberen'], ['24/7', 'online boeken'], ['0%', 'commissie op afspraken'], ['2 min', 'om in te stellen']],
+    ctaTitle: 'Doe mee met Snippr', ctaSub: `Begin vandaag met online afspraken. ${TRIAL_DAYS} dagen gratis, geen creditcard nodig.`,
+    ctaStart: 'Gratis beginnen', ctaContact: 'Neem contact op',
+  },
+  de: {
+    back: 'Startseite', eyebrow: 'ÜBER SNIPPR',
+    h1a: 'Weniger Anrufe.', h1b: 'Mehr Haarschnitte.',
+    sub: 'Wir machen Termine beim Barbier einfach, einen Termin nach dem anderen.',
+    storyTag: 'Unsere Geschichte',
+    story: [
+      'Snippr begann mit einer einfachen Beobachtung: Barbiere verbringen mehr Zeit mit Terminen als mit Haareschneiden. Anrufe, WhatsApp-Nachrichten, verpasste Buchungen: das reinste Chaos.',
+      'Also haben wir gebaut, was wir uns selbst gewünscht hätten: ein Werkzeug, das ein Solo-Barbier in 2 Minuten einrichten kann, und das ehrlich sagt, was es kann.',
+      'Snippr ist neu und wächst. Jeder Barbier, der jetzt mitmacht, bestimmt mit, was wir als Nächstes bauen. Sag uns, was du brauchst, und wir bauen es mit dir.',
+    ],
+    before: 'Vorher', after: 'Mit Snippr',
+    chat: ['Hast du morgen um 3 Zeit?', 'Sorry, zu spät gesehen 🙏', 'Und um 4?', 'Hallo??'],
+    notifTitle: 'Neuer Termin', notifBody: 'Haarschnitt · Morgen 15:00', notifTime: 'jetzt',
+    valuesTag: 'Woran wir glauben',
+    values: [
+      ['Einfachheit', 'Werkzeuge sollen einfach sein. Komplizierte Software kostet Barbiere Zeit.'],
+      ['Zuverlässigkeit', 'Barbiere verlassen sich für ihr Einkommen auf uns. Das nehmen wir ernst.'],
+      ['Barbiere zuerst', 'Alles, was wir bauen, bauen wir für Barbiere, nicht für uns.'],
+      ['Gemeinsam mit dir', 'Wir hören den Barbieren zu, die Snippr nutzen, und bauen, was sie wirklich brauchen.'],
+    ],
+    stats: [[`${TRIAL_DAYS} Tage`, 'kostenlos testen'], ['24/7', 'Online-Buchung'], ['0 %', 'Provision auf Buchungen'], ['2 Min.', 'zum Einrichten']],
+    ctaTitle: 'Mach mit bei Snippr', ctaSub: `Nimm noch heute Online-Buchungen an. ${TRIAL_DAYS} Tage kostenlos, keine Kreditkarte nötig.`,
+    ctaStart: 'Kostenlos starten', ctaContact: 'Schreib uns',
+  },
+  ar: {
+    back: 'الرئيسية', eyebrow: 'عن SNIPPR',
+    h1a: 'مكالمات أقل.', h1b: 'قصّات أكثر.',
+    sub: 'نجعل حجز الحلاق بسيطًا، موعدًا تلو الآخر.',
+    storyTag: 'قصتنا',
+    story: [
+      'بدأ Snippr بملاحظة بسيطة: الحلاقون يقضون وقتًا في إدارة المواعيد أكثر من قص الشعر. مكالمات ورسائل واتساب وحجوزات ضائعة، فوضى حقيقية.',
+      'فبنينا ما تمنينا وجوده: أداة بسيطة يستطيع الحلاق المستقل إعدادها في دقيقتين، وصادقة فيما تقدمه.',
+      'Snippr جديد وينمو. كل حلاق ينضم الآن يساعد في تحديد ما نبنيه لاحقًا. أخبرنا بما تحتاجه وسنبنيه معك.',
+    ],
+    before: 'قبل', after: 'مع Snippr',
+    chat: ['هل أنت متاح غدًا الساعة 3؟', 'آسف، رأيتها متأخرًا 🙏', 'وماذا عن 4؟', 'مرحبًا؟؟'],
+    notifTitle: 'حجز جديد', notifBody: 'قص الشعر · غدًا 15:00', notifTime: 'الآن',
+    valuesTag: 'ما نؤمن به',
+    values: [
+      ['البساطة', 'يجب أن تكون الأدوات بسيطة. البرامج المعقدة تضيّع وقت الحلاق.'],
+      ['الموثوقية', 'يعتمد الحلاقون علينا في دخلهم، ونأخذ ذلك بجدية.'],
+      ['الحلاق أولًا', 'كل ما نبنيه نبنيه للحلاقين، لا لأنفسنا.'],
+      ['نبنيه معك', 'نستمع للحلاقين الذين يستخدمون Snippr ونبني ما يطلبونه فعلًا.'],
+    ],
+    stats: [[`${TRIAL_DAYS} يومًا`, 'تجربة مجانية'], ['24/7', 'حجز عبر الإنترنت'], ['0%', 'عمولة على الحجوزات'], ['دقيقتان', 'للإعداد']],
+    ctaTitle: 'انضم إلى Snippr', ctaSub: `ابدأ باستقبال الحجوزات عبر الإنترنت اليوم. ${TRIAL_DAYS} يومًا مجانًا بدون بطاقة ائتمان.`,
+    ctaStart: 'ابدأ مجانًا', ctaContact: 'تواصل معنا',
   },
 }
 
@@ -74,9 +149,7 @@ const enter = (d = 0) => ({ initial: { opacity: 0, y: 24 }, animate: { opacity: 
 const rise = (d = 0) => ({ initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-60px' }, transition: { duration: 0.6, delay: d, ease } })
 
 export default function AboutPage() {
-  const saved = useStored('snippr-lang')
-  const navTr = useClientValue(() => (navigator.language || '').toLowerCase().startsWith('tr'), false)
-  const lng: Lng = saved === 'tr' ? 'tr' : saved === 'en' ? 'en' : navTr ? 'tr' : 'en'
+  const lng: Lng = useSiteLng()
   const t = T[lng]
 
   return (

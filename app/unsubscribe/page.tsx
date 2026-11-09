@@ -8,13 +8,18 @@ import { useState, useSyncExternalStore } from 'react'
 const COPY = {
   en: { title: 'Stop these emails?', sub: 'You won’t get thank-you, tip or reminder emails from Snippr barbers at', btn: 'Unsubscribe', busy: 'One moment…', done: 'Done — you’re unsubscribed.', doneSub: 'You’ll still get the emails that belong to a booking you make (confirmation, changes, cancellation).', bad: 'This link doesn’t work. Use the link from the most recent email.', err: 'Something went wrong. Please try again in a moment.' },
   tr: { title: 'Bu e-postaları durduralım mı?', sub: 'Snippr berberlerinden teşekkür, bahşiş ve hatırlatma e-postası almayacaksın:', btn: 'Abonelikten çık', busy: 'Bir saniye…', done: 'Tamam — abonelikten çıktın.', doneSub: 'Aldığın bir randevuyla ilgili e-postalar (onay, değişiklik, iptal) yine gelir.', bad: 'Bu link çalışmıyor. En son gelen e-postadaki linki kullan.', err: 'Bir sorun oldu. Lütfen biraz sonra tekrar dene.' },
+  de: { title: 'Diese E-Mails stoppen?', sub: 'Du bekommst keine Dankes-, Trinkgeld- oder Erinnerungsmails mehr von Snippr-Barbieren an', btn: 'Abmelden', busy: 'Einen Moment…', done: 'Erledigt, du bist abgemeldet.', doneSub: 'E-Mails zu einem Termin, den du buchst (Bestätigung, Änderung, Absage), bekommst du weiterhin.', bad: 'Dieser Link funktioniert nicht. Nutze den Link aus der neuesten E-Mail.', err: 'Etwas ist schiefgelaufen. Bitte versuch es gleich noch einmal.' },
+  ar: { title: 'إيقاف هذه الرسائل؟', sub: 'لن تصلك رسائل الشكر أو الإكرامية أو التذكير من حلاقي Snippr على', btn: 'إلغاء الاشتراك', busy: 'لحظة…', done: 'تم، أُلغي اشتراكك.', doneSub: 'ستصلك الرسائل المتعلقة بحجز تقوم به (التأكيد والتغيير والإلغاء).', bad: 'هذا الرابط لا يعمل. استخدم الرابط من أحدث رسالة.', err: 'حدث خطأ. يرجى المحاولة بعد قليل.' },
   nl: { title: 'Deze e-mails stoppen?', sub: 'Je krijgt geen bedank-, fooi- of herinneringsmails meer van Snippr-kappers op', btn: 'Afmelden', busy: 'Even geduld…', done: 'Klaar — je bent afgemeld.', doneSub: 'E-mails over een afspraak die je maakt (bevestiging, wijziging, annulering) krijg je nog wel.', bad: 'Deze link werkt niet. Gebruik de link uit de nieuwste e-mail.', err: 'Er ging iets mis. Probeer het zo opnieuw.' },
 }
 
 export default function UnsubscribePage() {
   const lng = useSyncExternalStore(() => () => {}, () => {
     const l = (navigator.language || '').toLowerCase()
-    return l.startsWith('tr') ? 'tr' : l.startsWith('nl') ? 'nl' : 'en'
+    let saved: string | null = null
+    try { saved = localStorage.getItem('snippr-lang') } catch { /* blocked */ }
+    if (saved === 'tr' || saved === 'nl' || saved === 'de' || saved === 'ar' || saved === 'en') return saved
+    return l.startsWith('tr') ? 'tr' : l.startsWith('nl') ? 'nl' : l.startsWith('de') ? 'de' : l.startsWith('ar') ? 'ar' : 'en'
   }, () => 'en') as keyof typeof COPY
   const c = COPY[lng]
   const params = useSyncExternalStore(() => () => {}, () => window.location.search, () => '')
@@ -31,7 +36,7 @@ export default function UnsubscribePage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f4f4f5] px-5" style={{ colorScheme: 'light' }}>
+    <main dir={lng === 'ar' ? 'rtl' : 'ltr'} className="flex min-h-screen items-center justify-center bg-[#f4f4f5] px-5" style={{ colorScheme: 'light' }}>
       <div className="w-full max-w-[420px] rounded-[28px] border border-[#ececec] bg-white p-8 text-center shadow-[0_20px_50px_-30px_rgba(0,0,0,0.18)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="Snippr" className="mx-auto mb-7 h-7 w-auto" />

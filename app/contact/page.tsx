@@ -10,7 +10,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, HelpCircle, Mail, Send, S
 import { SUPPORT_EMAIL } from '@/lib/site'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
 
-type Lng = 'tr' | 'nl' | 'en' | 'ar'
+type Lng = 'tr' | 'nl' | 'en' | 'ar' | 'de'
 type Topic = 'account' | 'bookings' | 'billing' | 'idea' | 'other'
 
 const T = {
@@ -66,9 +66,22 @@ const T = {
     privacy: 'نستخدم بياناتك فقط للرد على رسالتك.', privacyLink: 'الخصوصية',
     ctaT: 'هل أنت حلاق؟', ctaD: 'أنشئ حسابًا مجانيًا واحصل على رابط الحجز الخاص بك خلال دقائق.', ctaB: 'ابدأ مجانًا',
   },
+  de: {
+    back: 'Startseite', h1a: 'Wir sind da.', h1b: 'Wie können wir helfen?',
+    sub: 'Fragen zu deinem Konto, deinen Terminen oder zu Snippr? Schreib uns eine Nachricht, wir antworten per E-Mail.',
+    emailT: 'E-Mail', emailD: 'Schreib uns direkt.', copy: 'Kopieren', copied: 'Kopiert', write: 'Schreiben',
+    helpT: 'Hilfe-Center', helpD: 'Anleitungen Schritt für Schritt und Tipps.', faqT: 'FAQ', faqD: 'Zahlungen, Tarife und mehr.', open: 'Öffnen',
+    formT: 'Schick uns eine Nachricht', formD: 'Füll das Formular aus, deine Nachricht geht direkt an unser Support-Team.',
+    name: 'Dein Name', email: 'Deine E-Mail', topic: 'Thema', message: 'Deine Nachricht', messagePh: 'Was ist passiert, und wie können wir helfen?',
+    topics: { account: 'Mein Konto', bookings: 'Termine', billing: 'Zahlungen und Tarife', idea: 'Idee', other: 'Sonstiges' } as Record<Topic, string>,
+    send: 'Senden', sending: 'Wird gesendet…', sentT: 'Nachricht gesendet!', sentD: 'Wir antworten so schnell wie möglich per E-Mail.', another: 'Noch eine schreiben',
+    err: { name: 'Bitte gib deinen Namen ein.', email: 'Bitte gib eine gültige E-Mail-Adresse ein.', message: 'Deine Nachricht braucht mindestens 10 Zeichen.', rate: 'Zu viele Nachrichten. Bitte versuch es in einer Stunde noch einmal.', server: 'Senden fehlgeschlagen. Versuch es noch einmal oder schreib uns eine E-Mail.' },
+    privacy: 'Wir nutzen deine Daten nur, um deine Nachricht zu beantworten.', privacyLink: 'Datenschutz',
+    ctaT: 'Bist du Barbier?', ctaD: 'Erstelle ein kostenloses Konto und hol dir in wenigen Minuten deinen eigenen Buchungslink.', ctaB: 'Kostenlos starten',
+  },
 }
 
-const LANG_NAMES: Record<Lng, string> = { tr: 'Türkçe', nl: 'Nederlands', en: 'English', ar: 'العربية' }
+const LANG_NAMES: Record<Lng, string> = { tr: 'Türkçe', nl: 'Nederlands', en: 'English', ar: 'العربية', de: 'Deutsch' }
 const FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif"
 const ease = [0.22, 1, 0.36, 1] as const
 const field = 'w-full rounded-[14px] bg-[#f2f2f7] px-4 py-3 text-[16px] text-[#1d1d1f] outline-none ring-1 ring-transparent transition placeholder:text-[#aeaeb2] focus:bg-white focus:ring-[#1d1d1f]/30'
@@ -93,9 +106,9 @@ export default function ContactPage() {
   const saved = useStored('snippr-lang')
   const navLang = useClientValue<Lng>(() => {
     const n = (navigator.language || '').toLowerCase()
-    return n.startsWith('tr') ? 'tr' : n.startsWith('nl') ? 'nl' : n.startsWith('ar') ? 'ar' : 'en'
+    return n.startsWith('tr') ? 'tr' : n.startsWith('nl') ? 'nl' : n.startsWith('ar') ? 'ar' : n.startsWith('de') ? 'de' : 'en'
   }, 'en')
-  const lng: Lng = saved === 'tr' || saved === 'nl' || saved === 'en' || saved === 'ar' ? saved : navLang
+  const lng: Lng = saved === 'tr' || saved === 'nl' || saved === 'en' || saved === 'ar' || saved === 'de' ? saved : navLang
   const t = T[lng]
   const dir = lng === 'ar' ? 'rtl' : 'ltr'
 
@@ -135,7 +148,7 @@ export default function ContactPage() {
             <ArrowLeft size={18} className="rtl:-scale-x-100" /> {t.back}
           </Link>
           <div lang="mul" className="flex flex-wrap gap-1 rounded-full bg-[#e3e3e8] p-[3px]">
-            {(['tr', 'nl', 'en', 'ar'] as Lng[]).map(l => (
+            {(['en', 'nl', 'de', 'tr', 'ar'] as Lng[]).map(l => (
               <button key={l} onClick={() => writeStored('snippr-lang', l)} className="relative rounded-full px-3 py-1 text-[13px] font-semibold" style={{ color: lng === l ? '#1c1c1e' : '#6e6e73' }}>
                 {lng === l && <motion.span layoutId="contact-lang" className="absolute inset-0 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.12)]" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
                 <span className="relative">{LANG_NAMES[l]}</span>
