@@ -15,6 +15,7 @@ import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
 import { SHOW_UNRELEASED } from '@/lib/legal'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 type Icon = React.ComponentType<{ size?: number; strokeWidth?: number }>
 
@@ -76,6 +77,87 @@ const COPY = {
     gSetup: 'Önce supabase/messages.sql dosyasını Supabase SQL Editor’da çalıştır.', saving: 'Kaydediliyor…',
     waMsg: 'Randevunu buradan alabilirsin:',
   },
+  nl: {
+    title: 'Snippr-add-ons', sub: 'Til je zaak naar een hoger niveau met Snippr-add-ons.', tabs: { addons: 'Add-ons', integrations: 'Koppelingen' },
+    view: 'Bekijken', badge: { active: 'Actief', free: 'Gratis', soon: 'Binnenkort', setup: 'Instellen' } as Record<Status, string>,
+    a: {
+      messages: ['Automatische berichten', 'Bevestigingen, annuleringen en bedankmails die vanzelf naar klanten gaan.'],
+      google: ['Meer Google-reviews', 'Vraag tevreden klanten direct na hun bezoek om een Google-review en word beter gevonden.'],
+      analytics: ['Omzetoverzichten', 'Omzet, betalingen en fooien per dag, week en maand, klaar om te exporteren.'],
+      waitlist: ['Wachtlijst', 'Klanten melden zich aan als je vol zit; boek ze met één tik als er plek vrijkomt.'],
+      export: ['Gegevens exporteren', 'Exporteer afspraken en omzet naar PDF, CSV of Excel voor je boekhouder.'],
+      site: ['Je boekingspagina', 'Je eigen pagina met foto, behandelingen, links en online boeken.'],
+      support: ['Support', 'Vragen? Schrijf ons en een echt mens antwoordt.'],
+      payments: ['Online betalen', 'Ontvang aanbetalingen en betalingen online als klanten boeken.'],
+      loyalty: ['Klantenbinding', 'Beloon vaste klanten met punten en aanbiedingen zodat ze terugkomen.'],
+      memberships: ['Lidmaatschappen', 'Maandabonnementen met voordelen voor je vaste klanten.'],
+      ai: ['AI-assistent', 'Beantwoordt vragen van klanten en neemt dag en nacht afspraken voor je aan.'],
+    },
+    i: {
+      social: ['Instagram en Facebook', 'Zet een knop “Nu boeken” op je Instagram- en Facebookpagina.'],
+      whatsapp: ['WhatsApp', 'Deel je boekingslink met één tik met klanten.'],
+      maps: ['Google Maps', 'Zet je boekingslink op je Google-bedrijfsprofiel.'],
+      gcal: ['Google Agenda', 'Zie je Snippr-afspraken in je Google Agenda.'],
+    },
+    gTitle: 'Google-reviewlink', gBody: 'Plak de reviewlink van je Google-bedrijfsprofiel. Hij komt in de e-mail “Bedankt voor je bezoek”.',
+    gHow: 'Waar vind ik hem? Google-bedrijfsprofiel → “Reviews vragen” → kopieer de link.', gPh: 'https://g.page/r/…/review', gSave: 'Opslaan', gRemove: 'Verwijderen', gBad: 'De link moet beginnen met https://',
+    gSetup: 'Voer eerst supabase/messages.sql uit in de Supabase SQL Editor.', saving: 'Opslaan…',
+    waMsg: 'Boek hier je afspraak bij mij:',
+  },
+  de: {
+    title: 'Snippr-Add-ons', sub: 'Bring deinen Laden mit Snippr-Add-ons aufs nächste Level.', tabs: { addons: 'Add-ons', integrations: 'Integrationen' },
+    view: 'Ansehen', badge: { active: 'Aktiv', free: 'Kostenlos', soon: 'Bald', setup: 'Einrichten' } as Record<Status, string>,
+    a: {
+      messages: ['Automatische Nachrichten', 'Bestätigungen, Absagen und Dankes-E-Mails, die von selbst an Kunden gehen.'],
+      google: ['Mehr Google-Bewertungen', 'Bitte zufriedene Kunden direkt nach dem Besuch um eine Google-Bewertung und werde öfter gefunden.'],
+      analytics: ['Umsatzberichte', 'Umsätze, Zahlungen und Trinkgeld pro Tag, Woche und Monat, fertig zum Export.'],
+      waitlist: ['Warteliste', 'Kunden tragen sich ein, wenn du voll bist; buch sie mit einem Tipp, wenn ein Platz frei wird.'],
+      export: ['Datenexport', 'Exportiere Termine und Umsätze als PDF, CSV oder Excel für deinen Steuerberater.'],
+      site: ['Deine Buchungsseite', 'Deine eigene Seite mit Foto, Leistungen, Links und Online-Buchung.'],
+      support: ['Support', 'Fragen? Schreib uns, ein echter Mensch antwortet.'],
+      payments: ['Online-Zahlungen', 'Nimm bei der Buchung Anzahlungen und Zahlungen online an.'],
+      loyalty: ['Kundenbindung', 'Belohne Stammkunden mit Punkten und Angeboten, damit sie wiederkommen.'],
+      memberships: ['Mitgliedschaften', 'Monatspakete mit Vorteilen für deine Stammkunden.'],
+      ai: ['KI-Assistent', 'Beantwortet Kundenfragen und nimmt Tag und Nacht Buchungen für dich an.'],
+    },
+    i: {
+      social: ['Instagram und Facebook', 'Füge deinen Instagram- und Facebook-Seiten einen „Jetzt buchen“-Knopf hinzu.'],
+      whatsapp: ['WhatsApp', 'Teile deinen Buchungslink mit einem Tipp mit Kunden.'],
+      maps: ['Google Maps', 'Setz deinen Buchungslink in dein Google-Unternehmensprofil.'],
+      gcal: ['Google Kalender', 'Sieh deine Snippr-Termine in deinem Google Kalender.'],
+    },
+    gTitle: 'Google-Bewertungslink', gBody: 'Füge den Bewertungslink aus deinem Google-Unternehmensprofil ein. Er kommt in die E-Mail „Danke für deinen Besuch“.',
+    gHow: 'Wo finde ich ihn? Google-Unternehmensprofil → „Nach Rezensionen fragen“ → Link kopieren.', gPh: 'https://g.page/r/…/review', gSave: 'Speichern', gRemove: 'Entfernen', gBad: 'Der Link muss mit https:// beginnen',
+    gSetup: 'Führe zuerst supabase/messages.sql im Supabase SQL Editor aus.', saving: 'Wird gespeichert…',
+    waMsg: 'Buch deinen Termin bei mir hier:',
+  },
+  ar: {
+    title: 'إضافات Snippr', sub: 'ارتقِ بعملك إلى مستوى أعلى مع إضافات Snippr.', tabs: { addons: 'الإضافات', integrations: 'التكاملات' },
+    view: 'عرض', badge: { active: 'مفعّل', free: 'مجاني', soon: 'قريبًا', setup: 'إعداد' } as Record<Status, string>,
+    a: {
+      messages: ['الرسائل التلقائية', 'رسائل التأكيد والإلغاء والشكر التي تصل للعملاء تلقائيًا.'],
+      google: ['تعزيز تقييمات Google', 'اطلب من العملاء الراضين تقييمًا على Google بعد زيارتهم مباشرة ليجدك المزيد.'],
+      analytics: ['تقارير المبيعات', 'المبيعات والمدفوعات والإكراميات يوميًا وأسبوعيًا وشهريًا، جاهزة للتصدير.'],
+      waitlist: ['قائمة الانتظار', 'ينضم العملاء عندما تكون ممتلئًا، واحجز لهم بلمسة عندما يتوفر مكان.'],
+      export: ['تصدير البيانات', 'صدّر المواعيد والمبيعات إلى PDF أو CSV أو Excel لمحاسبك.'],
+      site: ['صفحة الحجز', 'صفحتك الخاصة مع الصورة والخدمات والروابط والحجز عبر الإنترنت.'],
+      support: ['الدعم', 'أسئلة؟ راسلنا وسيرد عليك شخص حقيقي.'],
+      payments: ['الدفع عبر الإنترنت', 'استلم العربون والمدفوعات عبر الإنترنت عند الحجز.'],
+      loyalty: ['ولاء العملاء', 'كافئ العملاء الدائمين بالنقاط والعروض ليعودوا دائمًا.'],
+      memberships: ['العضويات', 'خطط شهرية بمزايا لعملائك الدائمين.'],
+      ai: ['مساعد ذكي', 'يجيب عن أسئلة العملاء ويستقبل الحجوزات نيابةً عنك ليلًا ونهارًا.'],
+    },
+    i: {
+      social: ['إنستغرام وفيسبوك', 'أضف زر "احجز الآن" إلى صفحاتك على إنستغرام وفيسبوك.'],
+      whatsapp: ['واتساب', 'شارك رابط الحجز مع العملاء بلمسة واحدة.'],
+      maps: ['خرائط Google', 'ضع رابط الحجز في ملفك التجاري على Google.'],
+      gcal: ['تقويم Google', 'شاهد مواعيد Snippr في تقويم Google.'],
+    },
+    gTitle: 'رابط تقييم Google', gBody: 'الصق رابط التقييم من ملفك التجاري على Google. سيُضاف إلى رسالة "شكرًا لزيارتك".',
+    gHow: 'أين أجده؟ ملف Google التجاري ← "طلب مراجعات" ← انسخ الرابط.', gPh: 'https://g.page/r/…/review', gSave: 'حفظ', gRemove: 'إزالة', gBad: 'يجب أن يبدأ الرابط بـ https://',
+    gSetup: 'شغّل أولًا supabase/messages.sql في محرر SQL في Supabase.', saving: 'جارٍ الحفظ…',
+    waMsg: 'احجز موعدك معي من هنا:',
+  },
 }
 
 const G = {
@@ -88,7 +170,7 @@ const G = {
 export default function AddonsPage() {
   const router = useRouter()
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
   const t = COPY[lng]
 
   const [tab, setTab] = useState<'addons' | 'integrations'>('addons')

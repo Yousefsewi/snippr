@@ -12,6 +12,7 @@ import { SITE_URL } from '@/lib/site-url'
 import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 type Tab = 'instagram' | 'facebook' | 'google' | 'whatsapp'
 
@@ -86,6 +87,111 @@ const COPY = {
     },
     tip: 'İpucu: QR kodunu indirip aynaya ya da kasaya koy — müşteriler okutup randevu alsın.',
   },
+  nl: {
+    back: 'Add-ons', label: 'Boekingen via Facebook en Instagram', h1: 'Ontvang boekingen via Instagram en Facebook',
+    sub: 'Zet je Snippr-boekingslink op je sociale pagina’s zodat volgers in een paar seconden boeken.',
+    b1: 'Online boeken voor nieuwe en vaste klanten', b2: 'Werkt met je bestaande Instagram- en Facebookpagina', b3: 'Deel hem ook in stories, posts en advertenties',
+    included: 'Inbegrepen in je abonnement', setup: 'Nu instellen', copy: 'Link kopiëren', copied: 'Gekopieerd!', yourLink: 'Je boekingslink', qr: 'QR-code',
+    book: 'Nu boeken', posts: 'berichten', followers: 'volgers', following: 'volgend', message: 'Bericht', open: 'Openen',
+    how: 'Zo stel je het in', tabs: { instagram: 'Instagram', facebook: 'Facebook', google: 'Google', whatsapp: 'WhatsApp' },
+    steps: {
+      instagram: [
+        ['Open je profiel', 'Ga in de Instagram-app naar je profiel en tik op “Profiel bewerken”.'],
+        ['Voeg je link toe', 'Tik op “Links” → “Externe link toevoegen”, plak je boekingslink en noem hem “Nu boeken”.'],
+        ['Gebruik hem in stories', 'Voeg in een story de sticker “Link” toe, plak dezelfde link en schrijf “Boek hier”.'],
+        ['Zet hem vast', 'Bewaar die story in een Highlight met de naam “Boeken”, zodat hij op je profiel blijft.'],
+      ],
+      facebook: [
+        ['Open je pagina', 'Ga naar je Facebook-bedrijfspagina.'],
+        ['Voeg een knop toe', 'Tik op “Knop toevoegen” (of “Knop bewerken”) onder je omslagfoto.'],
+        ['Kies “Nu boeken”', 'Kies “Nu boeken” en daarna “Link naar website”.'],
+        ['Plak je link', 'Plak je boekingslink en sla op. Test hem met “Knop testen”.'],
+      ],
+      google: [
+        ['Open je bedrijfsprofiel', 'Zoek de naam van je zaak op Google of open Google Bedrijfsprofiel.'],
+        ['Bewerk het profiel', 'Tik op “Profiel bewerken” → “Contact”.'],
+        ['Voeg een afsprakenlink toe', 'Plak bij “Links voor afspraken” je boekingslink en sla op.'],
+        ['Klaar', 'Na goedkeuring door Google verschijnt een knop “Boeken” in Zoeken en Maps.'],
+      ],
+      whatsapp: [
+        ['Open WhatsApp Business', 'Ga naar Instellingen → Zakelijke tools → Bedrijfsprofiel.'],
+        ['Voeg je link toe', 'Plak je boekingslink in het veld “Website”.'],
+        ['Afwezigheidsbericht', 'Zet bij “Afwezigheidsbericht”: “Boek hier wanneer je wilt:” en je link.'],
+        ['Deel hem', 'Stuur de link naar klanten of zet hem in je Status.'],
+      ],
+    },
+    tip: 'Tip: download je QR-code en hang hem bij de spiegel of de kassa. Klanten scannen hem en boeken.',
+  },
+  de: {
+    back: 'Add-ons', label: 'Buchungen über Facebook und Instagram', h1: 'Nimm Buchungen über Instagram und Facebook an',
+    sub: 'Setz deinen Snippr-Buchungslink auf deine Social-Media-Seiten, damit Follower in Sekunden buchen.',
+    b1: 'Online-Buchung für neue und Stammkunden', b2: 'Funktioniert mit deinen bestehenden Instagram- und Facebook-Seiten', b3: 'Teile ihn auch in Stories, Posts und Anzeigen',
+    included: 'In deinem Tarif enthalten', setup: 'Jetzt einrichten', copy: 'Link kopieren', copied: 'Kopiert!', yourLink: 'Dein Buchungslink', qr: 'QR-Code',
+    book: 'Jetzt buchen', posts: 'Beiträge', followers: 'Follower', following: 'gefolgt', message: 'Nachricht', open: 'Öffnen',
+    how: 'So richtest du es ein', tabs: { instagram: 'Instagram', facebook: 'Facebook', google: 'Google', whatsapp: 'WhatsApp' },
+    steps: {
+      instagram: [
+        ['Öffne dein Profil', 'Geh in der Instagram-App zu deinem Profil und tippe auf „Profil bearbeiten“.'],
+        ['Füge deinen Link hinzu', 'Tippe auf „Links“ → „Externen Link hinzufügen“, füge deinen Buchungslink ein und nenne ihn „Jetzt buchen“.'],
+        ['Nutze ihn in Stories', 'Füge in einer Story den Sticker „Link“ hinzu, setz denselben Link ein und schreib „Hier buchen“.'],
+        ['Anheften', 'Speichere die Story in einem Highlight namens „Buchen“, damit sie auf deinem Profil bleibt.'],
+      ],
+      facebook: [
+        ['Öffne deine Seite', 'Geh zu deiner Facebook-Unternehmensseite.'],
+        ['Füge einen Button hinzu', 'Tippe unter deinem Titelbild auf „Button hinzufügen“ (oder „Button bearbeiten“).'],
+        ['Wähle „Jetzt buchen“', 'Wähle „Jetzt buchen“, dann „Link zur Website“.'],
+        ['Füge deinen Link ein', 'Füge deinen Buchungslink ein und speichere. Teste ihn mit „Button testen“.'],
+      ],
+      google: [
+        ['Öffne dein Unternehmensprofil', 'Such deinen Ladennamen bei Google oder öffne das Google-Unternehmensprofil.'],
+        ['Profil bearbeiten', 'Tippe auf „Profil bearbeiten“ → „Kontakt“.'],
+        ['Terminlink hinzufügen', 'Füge unter „Links für Termine“ deinen Buchungslink ein und speichere.'],
+        ['Fertig', 'Sobald Google ihn freigibt, erscheint ein „Buchen“-Button in der Suche und in Maps.'],
+      ],
+      whatsapp: [
+        ['Öffne WhatsApp Business', 'Geh zu Einstellungen → Unternehmenstools → Unternehmensprofil.'],
+        ['Füge deinen Link hinzu', 'Füge deinen Buchungslink im Feld „Website“ ein.'],
+        ['Abwesenheitsnachricht', 'Schreib bei „Abwesenheitsnachricht“: „Hier jederzeit buchen:“ und deinen Link.'],
+        ['Teile ihn', 'Schick den Link an Kunden oder poste ihn in deinem Status.'],
+      ],
+    },
+    tip: 'Tipp: Lade deinen QR-Code herunter und häng ihn an den Spiegel oder die Kasse. Kunden scannen und buchen.',
+  },
+  ar: {
+    back: 'الإضافات', label: 'الحجوزات عبر فيسبوك وإنستغرام', h1: 'استقبل الحجوزات عبر إنستغرام وفيسبوك',
+    sub: 'ضع رابط حجز Snippr على صفحاتك الاجتماعية ليحجز متابعوك في ثوانٍ.',
+    b1: 'حجز عبر الإنترنت للعملاء الجدد والدائمين', b2: 'يعمل مع صفحاتك الحالية على إنستغرام وفيسبوك', b3: 'شاركه أيضًا في القصص والمنشورات والإعلانات',
+    included: 'مشمول في خطتك', setup: 'أعدّه الآن', copy: 'انسخ الرابط', copied: 'تم النسخ!', yourLink: 'رابط الحجز', qr: 'رمز QR',
+    book: 'احجز الآن', posts: 'منشورات', followers: 'متابِعون', following: 'يتابع', message: 'رسالة', open: 'فتح',
+    how: 'كيفية الإعداد', tabs: { instagram: 'إنستغرام', facebook: 'فيسبوك', google: 'Google', whatsapp: 'واتساب' },
+    steps: {
+      instagram: [
+        ['افتح ملفك', 'في تطبيق إنستغرام، اذهب إلى ملفك واضغط "تعديل الملف الشخصي".'],
+        ['أضف رابطك', 'اضغط "الروابط" ← "إضافة رابط خارجي"، والصق رابط الحجز وسمّه "احجز الآن".'],
+        ['استخدمه في القصص', 'في قصة، أضف ملصق "الرابط"، والصق الرابط نفسه واكتب "احجز من هنا".'],
+        ['ثبّته', 'احفظ تلك القصة في "أبرز القصص" باسم "حجز" لتبقى على ملفك.'],
+      ],
+      facebook: [
+        ['افتح صفحتك', 'اذهب إلى صفحة نشاطك التجاري على فيسبوك.'],
+        ['أضف زرًا', 'اضغط "إضافة زر" (أو "تعديل الزر") أسفل صورة الغلاف.'],
+        ['اختر "احجز الآن"', 'اختر "احجز الآن"، ثم "رابط إلى موقع".'],
+        ['الصق رابطك', 'الصق رابط الحجز واحفظ. جرّبه عبر "اختبار الزر".'],
+      ],
+      google: [
+        ['افتح ملفك التجاري', 'ابحث عن اسم محلك على Google أو افتح ملف Google التجاري.'],
+        ['عدّل الملف', 'اضغط "تعديل الملف" ← "التواصل".'],
+        ['أضف رابط مواعيد', 'تحت "روابط المواعيد"، الصق رابط الحجز واحفظ.'],
+        ['تم', 'يظهر زر "حجز" في بحث Google والخرائط بعد موافقة Google.'],
+      ],
+      whatsapp: [
+        ['افتح واتساب للأعمال', 'اذهب إلى الإعدادات ← أدوات الأعمال ← الملف التجاري.'],
+        ['أضف رابطك', 'الصق رابط الحجز في خانة "الموقع الإلكتروني".'],
+        ['رسالة الغياب', 'في "رسالة الغياب" أضف: "احجز من هنا في أي وقت:" ورابطك.'],
+        ['شاركه', 'أرسل الرابط للعملاء أو انشره في الحالة.'],
+      ],
+    },
+    tip: 'نصيحة: نزّل رمز QR وضعه على المرآة أو عند الكاشير، فيمسحه العملاء ويحجزون.',
+  },
 }
 
 const TAB_STYLE: Record<Tab, { grad: string; Icon: React.ComponentType<{ size?: number }> }> = {
@@ -97,7 +203,7 @@ const TAB_STYLE: Record<Tab, { grad: string; Icon: React.ComponentType<{ size?: 
 
 export default function SocialPage() {
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
   const t = COPY[lng]
   const origin = SITE_URL
   const startTab = useClientValue<Tab>(() => (window.location.hash === '#google' ? 'google' : 'instagram'), 'instagram')
