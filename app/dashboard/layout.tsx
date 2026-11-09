@@ -9,33 +9,19 @@ import Link from 'next/link'
 import { LanguageProvider, useLang } from '@/lib/i18n'
 import { CurrencyProvider } from '@/lib/currency'
 import { ThemeProvider, useTheme } from '@/lib/theme'
-import { Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, PanelLeftClose, PanelLeftOpen, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, Clock, type LucideIcon } from 'lucide-react'
+import { Bell, Home, Calendar, Hourglass, Receipt, ListChecks, Blocks, PanelLeftClose, PanelLeftOpen, Scissors, User, CreditCard, Settings, HelpCircle, LogOut, Search, LifeBuoy, MoreHorizontal, Link2, type LucideIcon } from 'lucide-react'
 import NotificationOptIn from '@/components/notification-opt-in'
 import MobileTabBar from '@/components/mobile-tab-bar'
-import { useStored } from '@/lib/use-stored'
+import { useStored, writeStored } from '@/lib/use-stored'
 import { glass, glassHover, GLASS_WASH, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
 import { isPlan, PLAN_NAMES, trialDaysLeft, trialCopy, type PlanId } from '@/lib/plan'
+import { ANNOUNCEMENTS, NEWS_READ_KEY, newsDate, newsLang, parseRead, txt } from '@/lib/announcements'
 
 const navIcons: Record<string, LucideIcon> = {
   overview: Home, calendar: Calendar, waitlist: Hourglass, sales: Receipt, appointmentsNav: ListChecks, addons: Blocks, services: Scissors, profile: User,
 }
 const footerIcons: Record<string, LucideIcon> = {
   plansBilling: CreditCard, settings: Settings, help: HelpCircle,
-}
-
-type Notif = { id: string | number; text: string; textTr?: string; type?: string; read: boolean; created_at: string; href?: string }
-
-// Relative time, supports both past ("2h ago") and future ("in 2h")
-const relTime = (iso: string, tr = false) => {
-  const diff = new Date(iso).getTime() - Date.now()
-  const s = Math.abs(diff) / 1000
-  if (s < 60) return tr ? 'az önce' : 'just now'
-  let label: string
-  if (s < 3600) label = `${Math.floor(s / 60)}m`
-  else if (s < 86400) label = `${Math.floor(s / 3600)}h`
-  else label = `${Math.floor(s / 86400)}d`
-  if (tr) label = label.replace('m', ' dk').replace('h', ' sa').replace('d', ' gün')
-  return diff > 0 ? (tr ? `${label} sonra` : `in ${label}`) : (tr ? `${label} önce` : `${label} ago`)
 }
 
 const navItems = [
@@ -50,15 +36,6 @@ const navItems = [
 
 const footerItems = [
   { href: '/dashboard/plans',    key: 'plansBilling' as const },
-]
-
-// Getting-started tips. Only real, working features — no made-up promotions.
-// Clicking a notification navigates to its `href`.
-const ANNOUNCEMENTS: Notif[] = [
-  { id: 'n1', text: '✂️ Add your services and prices so clients can pick what they want.', textTr: '✂️ Hizmetlerini ve fiyatlarını ekle, müşteriler istediğini seçsin.',            read: false, created_at: new Date(Date.now() - 1 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/services' },
-  { id: 'n2', text: '🕘 Set your working hours — clients can only book when you are open.', textTr: '🕘 Çalışma saatlerini ayarla — müşteriler sadece açık olduğun saatlerde randevu alabilir.',           read: false, created_at: new Date(Date.now() - 2 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/profile/edit' },
-  { id: 'n3', text: '📣 Share your booking link on Instagram & WhatsApp to get your first bookings.', textTr: '📣 İlk randevuların için linkini Instagram ve WhatsApp’ta paylaş.', read: false, created_at: new Date(Date.now() - 3 * 3600000).toISOString(),  type: 'promo',   href: '/dashboard/link' },
-  { id: 'n4', text: '📅 Your calendar is live — new bookings appear instantly.', textTr: '📅 Takvimin canlı — yeni randevular anında görünür.',                      read: true,  created_at: new Date(Date.now() - 4 * 3600000).toISOString(),  type: 'feature', href: '/dashboard/calendar' },
 ]
 
 
@@ -86,7 +63,9 @@ function Chrome({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [showNotif, setShowNotif] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const [notifs, setNotifs] = useState<Notif[]>(ANNOUNCEMENTS)
+  // announcements (lib/announcements.ts); read ids are kept in this browser
+  const newsRead = parseRead(useStored(NEWS_READ_KEY))
+  const nl = newsLang(lang)
   const [me, setMe] = useState<{ name: string; email: string; photo: string | null }>({ name: '', email: '', photo: null })
   const [trial, setTrial] = useState<{ plan: string; left: number } | null>(null)
   // Services visibility is controlled from Settings (persisted in localStorage)
@@ -138,7 +117,8 @@ function Chrome({ children }: { children: ReactNode }) {
     return () => { active = false }
   }, [router])
 
-  const markAllRead = () => setNotifs(prev => prev.map(n => ({ ...n, read: true })))
+  const markRead = (ids: string[]) => { try { writeStored(NEWS_READ_KEY, JSON.stringify([...new Set([...newsRead, ...ids])])) } catch { /* storage blocked */ } }
+  const markAllRead = () => markRead(ANNOUNCEMENTS.map(a => a.id))
 
   const handleLogout = async () => {
     setLoggingOut(true)
@@ -146,7 +126,7 @@ function Chrome({ children }: { children: ReactNode }) {
     router.push('/login')
   }
 
-  const unreadCount = notifs.filter(n => !n.read).length
+  const unreadCount = ANNOUNCEMENTS.filter(a => !newsRead.includes(a.id)).length
   const today = new Date()
 
   // shared styles
@@ -286,44 +266,56 @@ function Chrome({ children }: { children: ReactNode }) {
             <>
             {/* click-away overlay */}
             <div onClick={() => setShowNotif(false)} style={{ position: 'fixed', inset: 0, zIndex: 39 }} />
-            <div style={{ position: 'fixed', right: collapsed ? 'calc(100vw - 56px - 320px - 8px)' : 'calc(100vw - 250px - 320px - 8px)', top: '130px', width: '320px', background: '#ffffff', border: '1px solid #e9e9e7', borderRadius: 16, overflow: 'hidden', boxShadow: '0 12px 32px -12px rgba(0,0,0,0.18)', zIndex: 41 }}>
+            <div style={{ position: 'fixed', right: collapsed ? 'calc(100vw - 56px - 360px - 8px)' : 'calc(100vw - 250px - 360px - 8px)', top: '130px', width: '360px', background: '#ffffff', border: '1px solid #e9e9e7', borderRadius: 16, overflow: 'hidden', boxShadow: '0 12px 32px -12px rgba(0,0,0,0.18)', zIndex: 41 }}>
               {/* header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px 10px', borderBottom: '1px solid #f1f1ef' }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#37352f' }}>{t.notifications}</span>
-                {notifs.some(n => !n.read) && (
+                {unreadCount > 0 && (
                   <button onClick={markAllRead} style={{ background: 'none', border: 'none', padding: 0, color: '#787774', fontSize: 12.5, cursor: 'pointer', fontFamily: 'inherit' }}>
                     {t.markAllRead}
                   </button>
                 )}
               </div>
-              <div style={{ maxHeight: 360, overflowY: 'auto' }}>
-              {notifs.length === 0 ? (
-                <p style={{ fontSize: 13, color: '#9b9a97', textAlign: 'center', padding: '20px 10px', margin: 0 }}>{t.noNotifications}</p>
-              ) : notifs.map(n => {
-                // plain rows: a grey icon for the topic, a small dot while unread, no emoji or colours
-                const NIcon = n.href?.includes('services') ? Scissors : n.href?.includes('link') ? Link2 : n.href?.includes('calendar') ? Calendar : n.href?.includes('profile') ? Clock : Calendar
-                const text = (tr && n.textTr ? n.textTr : n.text).replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, '')
+              <div style={{ maxHeight: 420, overflowY: 'auto' }}>
+              {ANNOUNCEMENTS.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '28px 20px 30px' }}>
+                  <span style={{ width: 40, height: 40, borderRadius: 11, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7f7f5', border: '1px solid #ededec', color: '#9b9a97' }}>
+                    <Bell size={19} strokeWidth={1.75} />
+                  </span>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#37352f', margin: '12px 0 0' }}>{t.noNotifications}</p>
+                  <p style={{ fontSize: 12.5, color: '#9b9a97', margin: '4px 0 0', lineHeight: 1.45 }}>
+                    {nl === 'tr' ? 'Yeni özellikler ve duyurular burada görünecek.' : nl === 'nl' ? 'Nieuwe functies en aankondigingen verschijnen hier.' : 'New features and announcements will show up here.'}
+                  </p>
+                </div>
+              ) : ANNOUNCEMENTS.map(a => {
+                const unread = !newsRead.includes(a.id)
                 return (
                   <Link
-                    key={n.id}
-                    href={n.href ?? '#'}
-                    onClick={() => { setShowNotif(false); setNotifs(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x)) }}
-                    style={{ display: 'flex', alignItems: 'flex-start', gap: 11, padding: '11px 14px', borderBottom: '1px solid #f7f7f5', background: '#ffffff', textDecoration: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+                    key={a.id}
+                    href={`/dashboard/news/${a.id}`}
+                    onClick={() => { setShowNotif(false); markRead([a.id]) }}
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', borderBottom: '1px solid #f7f7f5', background: '#ffffff', textDecoration: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f7f7f5' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#ffffff' }}
                   >
-                    <span style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7f7f5', border: '1px solid #ededec', color: '#787774' }}>
-                      <NIcon size={15} strokeWidth={1.75} />
-                    </span>
+                    {a.cover
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={a.cover} alt="" style={{ width: 64, height: 48, borderRadius: 8, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
+                      : <span style={{ width: 64, height: 48, borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7f7f5', border: '1px solid #ededec', color: '#9b9a97' }}><Bell size={17} strokeWidth={1.75} /></span>}
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ fontSize: 13.5, color: n.read ? '#787774' : '#37352f', margin: 0, lineHeight: 1.4, fontWeight: n.read ? 400 : 500 }}>{text}</p>
-                      <p style={{ fontSize: 11.5, color: '#9b9a97', margin: '3px 0 0' }}>{relTime(n.created_at, tr)}</p>
+                      <p style={{ fontSize: 13.5, color: '#1d1d1f', margin: 0, lineHeight: 1.35, fontWeight: unread ? 600 : 500 }}>{txt(a.title, nl)}</p>
+                      <p style={{ fontSize: 12.5, color: '#787774', margin: '3px 0 0', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{txt(a.summary, nl)}</p>
+                      <p style={{ fontSize: 11.5, color: '#9b9a97', margin: '4px 0 0' }}>{newsDate(a.date, nl)}</p>
                     </div>
-                    {!n.read && <span style={{ width: 7, height: 7, borderRadius: '50%', marginTop: 6, flexShrink: 0, background: '#37352f' }} />}
+                    {unread && <span style={{ width: 7, height: 7, borderRadius: '50%', marginTop: 6, flexShrink: 0, background: '#1d1d1f' }} />}
                   </Link>
                 )
               })}
               </div>
+              <Link href="/dashboard/news" onClick={() => setShowNotif(false)}
+                style={{ display: 'block', textAlign: 'center', padding: '11px 14px', borderTop: '1px solid #f1f1ef', fontSize: 13, fontWeight: 600, color: '#37352f', textDecoration: 'none' }}>
+                {nl === 'tr' ? 'Tüm duyurular' : nl === 'nl' ? 'Alle aankondigingen' : 'All announcements'}
+              </Link>
             </div>
             </>
           )}
