@@ -8,6 +8,7 @@
 // DRAFT: to be checked by a lawyer.
 
 import Link from 'next/link'
+import type { SiteLng } from '@/lib/site-lang'
 import { PLAN_PRICES_EUR, VISIBLE_PLANS, VAT_RATE, TRIAL_DAYS, FOUNDER_DISCOUNT, FOUNDER_SPOTS } from '@/lib/legal'
 
 const eur = (n: number) => `€${n.toFixed(2).replace('.', ',')}`
@@ -54,9 +55,66 @@ const COPY = {
     ] as [string, React.ReactNode][],
     terms: <>Tüm kurallar: <Link href="/terms">Kullanım Şartları</Link> ve <Link href="/dpa">Veri İşleme Sözleşmesi</Link>.</>,
   },
+  nl: {
+    title: 'Voordat je een abonnement neemt',
+    sub: 'Betalingen zijn nog niet open; tijdens de lancering is Snippr gratis. Als betaalde abonnementen starten, gelden deze voorwaarden en mailen we je eerst.',
+    names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
+    per: (m: string, y: string, mi: string, yi: string) => `${m}/maand of ${y}/jaar excl. ${vat}% btw (${mi} of ${yi} incl. btw)`,
+    proNote: ' — vanafprijs; de uiteindelijke prijs spreken we met je af',
+    rows: [
+      ['Verkoper', <>Snippr, Nederland — bedrijfsgegevens op de <Link href="/imprint">impressumpagina</Link>.</>],
+      ['Prijs', null],
+      ['Gratis proef', `${TRIAL_DAYS} dagen, geen kaart nodig. Kies je aan het eind geen abonnement, dan wordt er niets afgeschreven.`],
+      ['Oprichtersaanbod', `De eerste ${FOUNDER_SPOTS} zaken die een abonnement nemen krijgen ${FOUNDER_DISCOUNT}% korting, zolang ze het zonder onderbreking houden.`],
+      ['Facturering', 'Vooraf, in euro, per maand of per jaar (het jaarabonnement kost ongeveer 10 maanden).'],
+      ['Verlenging', 'Je abonnement wordt automatisch verlengd met dezelfde periode tot je opzegt. We mailen je voordat een jaarabonnement wordt verlengd.'],
+      ['Opzeggen', 'Altijd, via Dashboard → Abonnementen. Je abonnement blijft actief tot het einde van de betaalde periode; er wordt niets meer afgeschreven. Je kunt je gegevens altijd downloaden.'],
+      ['Terugbetaling', 'Betaalde abonnementen zijn voor bedrijven, dus het herroepingsrecht van 14 dagen voor consumenten geldt niet. Betaalde periodes worden niet terugbetaald, behalve waar de wet dat vereist.'],
+      ['Betaling', 'Met kaart of iDEAL via een betaalprovider. Snippr ziet of bewaart je kaartgegevens nooit.'],
+    ] as [string, React.ReactNode][],
+    terms: <>Alle regels: <Link href="/terms">Algemene voorwaarden</Link> en <Link href="/dpa">Verwerkersovereenkomst</Link> (in het Engels).</>,
+  },
+  de: {
+    title: 'Bevor du ein Abo abschließt',
+    sub: 'Zahlungen sind noch nicht geöffnet; während des Starts ist Snippr kostenlos. Wenn bezahlte Tarife starten, gelten diese Bedingungen und wir schreiben dir vorher eine E-Mail.',
+    names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
+    per: (m: string, y: string, mi: string, yi: string) => `${m}/Monat oder ${y}/Jahr zzgl. ${vat} % MwSt. (${mi} oder ${yi} inkl. MwSt.)`,
+    proNote: ' — Einstiegspreis; den endgültigen Preis vereinbaren wir mit dir',
+    rows: [
+      ['Verkäufer', <>Snippr, Niederlande — Firmendaten im <Link href="/imprint">Impressum</Link>.</>],
+      ['Preis', null],
+      ['Kostenloser Test', `${TRIAL_DAYS} Tage, keine Karte nötig. Wählst du am Ende keinen Tarif, wird nichts abgebucht.`],
+      ['Gründerangebot', `Die ersten ${FOUNDER_SPOTS} Läden, die ein Abo abschließen, bekommen ${FOUNDER_DISCOUNT} % Rabatt, solange sie es ohne Unterbrechung behalten.`],
+      ['Abrechnung', 'Im Voraus, in Euro, monatlich oder jährlich (der Jahrestarif kostet etwa 10 Monate).'],
+      ['Verlängerung', 'Dein Tarif verlängert sich automatisch um denselben Zeitraum, bis du kündigst. Vor der Verlängerung eines Jahrestarifs schreiben wir dir.'],
+      ['Kündigen', 'Jederzeit unter Dashboard → Tarife. Dein Tarif bleibt bis zum Ende des bezahlten Zeitraums aktiv; danach wird nichts mehr abgebucht. Du kannst deine Daten jederzeit herunterladen.'],
+      ['Erstattung', 'Bezahlte Tarife sind für Unternehmen, daher gilt das 14-tägige Widerrufsrecht für Verbraucher nicht. Bezahlte Zeiträume werden nicht erstattet, außer wenn das Gesetz es verlangt.'],
+      ['Zahlung', 'Per Karte oder iDEAL über einen Zahlungsanbieter. Snippr sieht oder speichert deine Kartendaten nie.'],
+    ] as [string, React.ReactNode][],
+    terms: <>Alle Regeln: <Link href="/terms">Nutzungsbedingungen</Link> und <Link href="/dpa">Auftragsverarbeitungsvertrag</Link> (auf Englisch).</>,
+  },
+  ar: {
+    title: 'قبل أن تشترك',
+    sub: 'الدفع غير متاح بعد، وخلال الإطلاق Snippr مجاني. عند بدء الخطط المدفوعة تسري هذه الشروط ونراسلك أولًا.',
+    names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
+    per: (m: string, y: string, mi: string, yi: string) => `${m} شهريًا أو ${y} سنويًا بدون ضريبة ${vat}% (${mi} أو ${yi} شاملة الضريبة)`,
+    proNote: ' — سعر مبدئي، ونتفق معك على السعر النهائي',
+    rows: [
+      ['البائع', <>Snippr، هولندا — بيانات الشركة في <Link href="/imprint">صفحة البيانات القانونية</Link>.</>],
+      ['السعر', null],
+      ['تجربة مجانية', `${TRIAL_DAYS} يومًا بدون بطاقة. إذا لم تختر خطة في النهاية فلن يُخصم شيء.`],
+      ['عرض المؤسسين', `أول ${FOUNDER_SPOTS} محلًا تشترك تحصل على خصم ${FOUNDER_DISCOUNT}% طالما استمرت دون انقطاع.`],
+      ['الفوترة', 'مقدمًا، باليورو، شهريًا أو سنويًا (الخطة السنوية تكلف نحو 10 أشهر).'],
+      ['التجديد', 'تتجدد خطتك تلقائيًا للمدة نفسها حتى تلغيها. نراسلك قبل تجديد الخطة السنوية.'],
+      ['الإلغاء', 'في أي وقت من اللوحة ← الخطط. تبقى خطتك فعّالة حتى نهاية الفترة المدفوعة ولا يُخصم شيء بعدها. يمكنك تنزيل بياناتك في أي وقت.'],
+      ['الاسترداد', 'الخطط المدفوعة مخصصة للشركات، لذا لا ينطبق حق الانسحاب للمستهلكين لمدة 14 يومًا. لا تُسترد الفترات المدفوعة إلا حيث يفرض القانون ذلك.'],
+      ['الدفع', 'بالبطاقة أو iDEAL عبر مزود دفع. لا يرى Snippr بيانات بطاقتك ولا يحفظها أبدًا.'],
+    ] as [string, React.ReactNode][],
+    terms: <>القواعد الكاملة: <Link href="/terms">شروط الخدمة</Link> و<Link href="/dpa">اتفاقية معالجة البيانات</Link> (بالإنجليزية).</>,
+  },
 }
 
-export default function SubscriptionTerms({ lng }: { lng: 'en' | 'tr' }) {
+export default function SubscriptionTerms({ lng }: { lng: SiteLng }) {
   const c = COPY[lng] ?? COPY.en
   const line = (k: PlanKey) => { const p = PLAN_PRICES_EUR[k]; return c.per(eur(p.monthly), eur(p.yearly), incl(p.monthly), incl(p.yearly)) + (k === 'pro' ? c.proNote : '') }
   return (

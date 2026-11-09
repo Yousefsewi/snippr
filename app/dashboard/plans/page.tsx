@@ -5,6 +5,7 @@
 import PricingPlans from '@/components/pricing-plans'
 import { useCurrency } from '@/lib/currency'
 import { useLang } from '@/lib/i18n'
+import type { SiteLng } from '@/lib/site-lang'
 
 const T = {
   en: {
@@ -15,12 +16,24 @@ const T = {
     title: 'Planlar ve fatura', sub: 'İşletmene uyan planı seç.',
     noteStrong: 'Lansman: Bütün planları ücretsiz deneyebilirsin.', note: 'Kart gerekmez. Ödemeler açılmadan önce sana e-postayla haber veririz ve tüm verilerin seninle kalır. Onayın olmadan asla ödeme alınmaz.',
   },
+  nl: {
+    title: 'Abonnementen en facturen', sub: 'Kies het abonnement dat bij je zaak past.',
+    noteStrong: 'Lancering: elk abonnement kun je gratis proberen.', note: 'Geen kaart nodig. Voordat betalingen starten mailen we je eerst, en al je gegevens blijven van jou. Er wordt nooit iets afgeschreven zonder jouw akkoord.',
+  },
+  de: {
+    title: 'Tarife und Abrechnung', sub: 'Wähle den Tarif, der zu deinem Laden passt.',
+    noteStrong: 'Start: Jeden Tarif kannst du kostenlos testen.', note: 'Keine Karte nötig. Bevor Zahlungen starten, schreiben wir dir zuerst, und alle deine Daten bleiben deine. Ohne dein Okay wird nie etwas abgebucht.',
+  },
+  ar: {
+    title: 'الخطط والفواتير', sub: 'اختر الخطة المناسبة لمحلك.',
+    noteStrong: 'إطلاق: يمكنك تجربة كل الخطط مجانًا.', note: 'لا حاجة لبطاقة. قبل بدء الدفع نراسلك أولًا، وتبقى كل بياناتك ملكك. لا يُخصم أي مبلغ دون موافقتك.',
+  },
 }
 
 export default function PlansPage() {
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
-  const t = T[lng]
+  const lng = (['en', 'tr', 'nl', 'de', 'ar'].includes(lang) ? lang : 'en') as SiteLng
+  const t = T[lng] ?? T.en
   const { currency } = useCurrency()
 
   return (

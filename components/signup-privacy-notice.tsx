@@ -5,7 +5,7 @@
 // plus the required "I accept the Terms" box. The checkbox id is read by app/register.
 // Text follows app/privacy — keep the two in step. DRAFT: to be checked by a lawyer.
 
-import { useSyncExternalStore } from 'react'
+import { useSiteLng } from '@/lib/use-site-lng'
 
 const COPY = {
   en: {
@@ -34,19 +34,52 @@ const COPY = {
       ['Hakların', 'Erişme, düzeltme, indirme, silme, itiraz — ve Hollanda Veri Koruma Kurumu’na (Autoriteit Persoonsgegevens) şikâyet.'],
     ],
   },
+  nl: {
+    accept: ['Ik heb de ', 'Gebruiksvoorwaarden', ' en de ', 'Verwerkersovereenkomst', ' gelezen en ga ermee akkoord.'],
+    notice: ['We gebruiken je naam, e-mail, geboortedatum en zaakgegevens om je account en boekingspagina aan te maken en te laten werken. Meer in ons ', 'Privacybeleid', '.'],
+    more: 'Hoe we je gegevens gebruiken',
+    rows: [
+      ['Wie', 'Snippr (Nederland) is verantwoordelijk voor je accountgegevens.'],
+      ['Wat', 'Naam, e-mail, geboortedatum (om te controleren dat je 18+ bent), wachtwoord (alleen versleuteld opgeslagen) en de zaakgegevens die je toevoegt.'],
+      ['Waarom', 'Om je account en boekingspagina aan te maken en accountmails te sturen. Grondslag: onze overeenkomst met jou (AVG art. 6(1)(b)); de leeftijdscheck rust ook op ons gerechtvaardigd belang.'],
+      ['Gedeeld met', 'Alleen de partijen die Snippr laten draaien: Supabase (database, EU), Vercel (hosting) en Google (e-mails). We verkopen je gegevens nooit en gebruiken ze niet voor advertenties.'],
+      ['Hoe lang', 'Tot je je account verwijdert (Instellingen → Account verwijderen).'],
+      ['Je rechten', 'Inzien, verbeteren, downloaden, verwijderen, bezwaar maken, en klagen bij de Autoriteit Persoonsgegevens.'],
+    ],
+  },
+  de: {
+    accept: ['Ich habe die ', 'Nutzungsbedingungen', ' und den ', 'Auftragsverarbeitungsvertrag', ' gelesen und akzeptiere sie.'],
+    notice: ['Wir nutzen deinen Namen, deine E-Mail, dein Geburtsdatum und deine Ladendaten, um dein Konto und deine Buchungsseite zu erstellen und zu betreiben. Mehr in unserer ', 'Datenschutzerklärung', '.'],
+    more: 'Wie wir deine Daten nutzen',
+    rows: [
+      ['Wer', 'Snippr (Niederlande) ist für deine Kontodaten verantwortlich.'],
+      ['Was', 'Name, E-Mail, Geburtsdatum (um zu prüfen, dass du 18+ bist), Passwort (nur verschlüsselt gespeichert) und die Ladendaten, die du einträgst.'],
+      ['Warum', 'Um dein Konto und deine Buchungsseite zu erstellen und Konto-E-Mails zu senden. Grundlage: unser Vertrag mit dir (DSGVO Art. 6 Abs. 1 lit. b); die Altersprüfung stützt sich auch auf unser berechtigtes Interesse.'],
+      ['Geteilt mit', 'Nur den Anbietern, die Snippr betreiben: Supabase (Datenbank, EU), Vercel (Hosting) und Google (E-Mails). Wir verkaufen deine Daten nie und nutzen sie nicht für Werbung.'],
+      ['Wie lange', 'Bis du dein Konto löschst (Einstellungen → Konto löschen).'],
+      ['Deine Rechte', 'Auskunft, Berichtigung, Export, Löschung, Widerspruch und Beschwerde bei der niederländischen Datenschutzbehörde (Autoriteit Persoonsgegevens).'],
+    ],
+  },
+  ar: {
+    accept: ['قرأت ', 'شروط الخدمة', ' و', 'اتفاقية معالجة البيانات', ' وأوافق عليها.'],
+    notice: ['نستخدم اسمك وبريدك وتاريخ ميلادك وبيانات محلك لإنشاء حسابك وصفحة الحجز وتشغيلهما. المزيد في ', 'سياسة الخصوصية', '.'],
+    more: 'كيف نستخدم بياناتك',
+    rows: [
+      ['من', 'Snippr (هولندا) مسؤولة عن بيانات حسابك.'],
+      ['ماذا', 'الاسم والبريد وتاريخ الميلاد (للتحقق من أن عمرك 18+) وكلمة المرور (تُحفظ مشفّرة فقط) وبيانات المحل التي تضيفها.'],
+      ['لماذا', 'لإنشاء حسابك وصفحة الحجز وإرسال رسائل الحساب. الأساس: عقدنا معك (المادة 6(1)(ب) من اللائحة العامة لحماية البيانات)، والتحقق من العمر يستند أيضًا إلى مصلحتنا المشروعة.'],
+      ['مع من نشاركها', 'فقط مع مزودي الخدمة الذين يشغّلون Snippr: Supabase (قاعدة بيانات، الاتحاد الأوروبي) وVercel (استضافة) وGoogle (البريد). لا نبيع بياناتك ولا نستخدمها للإعلانات أبدًا.'],
+      ['إلى متى', 'حتى تحذف حسابك (الإعدادات ← حذف الحساب).'],
+      ['حقوقك', 'الاطلاع والتصحيح والتنزيل والحذف والاعتراض، والشكوى لدى هيئة حماية البيانات الهولندية (Autoriteit Persoonsgegevens).'],
+    ],
+  },
 }
 
 const a = 'font-medium text-[#111] underline underline-offset-2'
 
 export default function SignupPrivacyNotice() {
   // page language: the one picked on the site, otherwise the browser language
-  const lng = useSyncExternalStore(() => () => {}, () => {
-    let saved: string | null = null
-    try { saved = localStorage.getItem('snippr-lang') } catch { /* blocked */ }
-    if (saved) return saved.includes('tr') ? 'tr' : 'en'
-    return (navigator.language || '').toLowerCase().startsWith('tr') ? 'tr' : 'en'
-  }, () => 'en') as 'en' | 'tr'
-  const c = COPY[lng]
+  const c = COPY[useSiteLng()]
 
   return (
     <div className="space-y-3 text-[12px] leading-snug text-[#6e6e73] 2xl:text-[13.5px]">

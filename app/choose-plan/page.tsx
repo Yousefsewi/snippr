@@ -36,6 +36,20 @@ const COPY = {
     points: ['Boekingspagina, link en QR-code', 'Live agenda en e-mailherinneringen', 'Klanten kunnen zelf annuleren'],
     start: (p: string) => `Gratis starten met ${p}`, busy: 'Even geduld…', change: 'Je kunt je abonnement altijd wijzigen.', err: 'Er ging iets mis. Probeer het opnieuw.',
   },
+  de: {
+    badge: 'Start', title: 'Wähle deinen Tarif', sub: `Jeder Tarif ist ${TRIAL_DAYS} Tage kostenlos. Keine Karte nötig, und nach dem Test wird nichts abgebucht.`,
+    perMonth: '/Monat', exVat: 'zzgl. MwSt., nach dem Test', from: 'ab ',
+    who: { solo: 'Für einen Barbier oder Stylisten', salon: 'Für einen Laden mit 2–5 Personen', pro: 'Für größere Läden und Ketten' } as Record<PlanId, string>,
+    points: ['Buchungsseite, Link und QR-Code', 'Live-Kalender und E-Mail-Erinnerungen', 'Kunden können selbst absagen'],
+    start: (p: string) => `Kostenlos mit ${p} starten`, busy: 'Einen Moment…', change: 'Du kannst deinen Tarif jederzeit ändern.', err: 'Etwas ist schiefgelaufen. Bitte versuch es noch einmal.',
+  },
+  ar: {
+    badge: 'إطلاق', title: 'اختر خطتك', sub: `كل الخطط مجانية لمدة ${TRIAL_DAYS} يومًا. لا حاجة لبطاقة، ولا يُخصم شيء عند انتهاء التجربة.`,
+    perMonth: '/شهر', exVat: 'بدون ضريبة، بعد التجربة', from: 'من ',
+    who: { solo: 'لحلاق أو مصفف واحد', salon: 'لمحل فيه 2–5 أشخاص', pro: 'للمحلات الكبيرة والسلاسل' } as Record<PlanId, string>,
+    points: ['صفحة حجز ورابط ورمز QR', 'تقويم مباشر وتذكيرات بالبريد', 'يمكن للعملاء الإلغاء بأنفسهم'],
+    start: (p: string) => `ابدأ مجانًا مع ${p}`, busy: 'لحظة…', change: 'يمكنك تغيير خطتك في أي وقت.', err: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+  },
 }
 
 const noop = () => () => {}

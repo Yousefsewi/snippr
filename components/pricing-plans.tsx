@@ -9,13 +9,14 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { isPlan } from '@/lib/plan'
+import { L, type SiteLng } from '@/lib/site-lang'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Clock, Minus, MessageSquareText, Mail, Sparkles } from 'lucide-react'
 import SubscriptionTerms from '@/components/subscription-terms'
 import { PLAN_PRICES_EUR, FOUNDER_DISCOUNT, FOUNDER_SPOTS, TRIAL_DAYS, SMS_PACK, SHOW_UNRELEASED, VISIBLE_PLANS } from '@/lib/legal'
 
-export type Lng = 'en' | 'tr'
+export type Lng = SiteLng
 type PlanId = 'solo' | 'salon' | 'pro'
 type Item = [string, boolean?] // label, coming soon?
 
@@ -100,6 +101,123 @@ const T = {
       ['Randevulardan komisyon', '%0', '%0', '%0'],
     ] as (string | boolean)[][],
     vatNote: 'Tüm fiyatlar euro, %21 KDV (BTW) hariç.',
+  },
+  nl: {
+    monthly: 'Maandelijks', yearly: 'Jaarlijks', save: '2 maanden gratis',
+    perMonth: '/mnd', exVat: 'excl. btw', billedYearly: (n: string) => `${n} per jaar`, billedMonthly: 'per maand gefactureerd',
+    soonTag: 'binnenkort', popular: 'Meest gekozen', everythingSolo: 'Alles uit Solo',
+    founderTitle: `Oprichtersaanbod: levenslang ${FOUNDER_DISCOUNT}% korting`,
+    founderBody: `Voor de eerste ${FOUNDER_SPOTS} zaken die meedoen. Solo voor ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/mnd, zolang je blijft.`,
+    early: `Lancering: elk abonnement is ${TRIAL_DAYS} dagen gratis. Geen kaart nodig, en er wordt niets afgeschreven als de proef afloopt.`, yourPlan: 'Jouw abonnement',
+    plans: {
+      solo: { name: 'Solo', who: 'Voor één kapper of stylist', cta: `${TRIAL_DAYS} dagen gratis proberen`, ctaDash: 'Overstappen naar dit abonnement' },
+      salon: { name: 'Salon', who: 'Voor een zaak met 2–5 mensen', cta: `${TRIAL_DAYS} dagen gratis proberen`, ctaDash: 'Overstappen naar dit abonnement' },
+      pro: { name: 'Pro', who: 'Voor grotere zaken en ketens', cta: `${TRIAL_DAYS} dagen gratis proberen`, ctaDash: 'Overstappen naar dit abonnement' },
+    } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
+    lists: {
+      solo: [['Je eigen boekingspagina, link en QR-code'], ['Live agenda: dag, week, maand, slepen om te verplaatsen'], ['Onbeperkt afspraken en klanten'], ['Bevestigingen en herinneringen per e-mail'], ['Wachtlijst'], ['Omzet- en fooienoverzicht, PDF/Excel-export'], ['Boekingspagina in 4 talen'], ['Geen commissie op afspraken']],
+      salon: [['Alles uit Solo'], ['Tot 5 medewerkers, één vaste prijs', true], ['Een agenda per medewerker', true], ['Teamoverzicht van de hele dag', true], ['Overzichten per medewerker', true]],
+      pro: [['Alles uit Salon'], ['Onbeperkt medewerkers en vestigingen', true], ['Hulp bij overstappen van je oude systeem'], ['Voorrang bij support']],
+    } as Record<PlanId, Item[]>,
+    foot: { solo: 'Geen kaart nodig', salon: 'Geen prijs per extra medewerker', pro: 'Prijs op aanvraag' } as Record<PlanId, string>,
+    addonsTitle: 'Extra’s',
+    addons: [
+      [Mail, 'Herinneringen per e-mail', 'Onbeperkt, bij elk abonnement inbegrepen', 'Inbegrepen'],
+      [MessageSquareText, 'Sms-herinneringen', `Pakket van ${SMS_PACK.count} sms’jes`, `${eur0(SMS_PACK.price)} · binnenkort`],
+    ] as [typeof Mail, string, string, string][],
+    compareTitle: 'Abonnementen vergelijken',
+    rows: [
+      ['Mensen in de zaak', '1', '2–5', 'Onbeperkt'],
+      ['Boekingspagina, link en QR-code', true, true, true],
+      ['Live agenda en slepen om te verplaatsen', true, true, true],
+      ['Bevestigingen en herinneringen per e-mail', true, true, true],
+      ['Wachtlijst', true, true, true],
+      ['Omzetoverzicht en export', true, true, true],
+      ['Agenda per medewerker', false, 'soon', 'soon'],
+      ['Overzichten per medewerker', false, 'soon', 'soon'],
+      ['Meerdere vestigingen', false, false, 'soon'],
+      ['Sms-herinneringen', 'add-on', 'add-on', 'add-on'],
+      ['Commissie op afspraken', '0%', '0%', '0%'],
+    ] as (string | boolean)[][],
+    vatNote: 'Alle prijzen in euro, exclusief 21% btw.',
+  },
+  de: {
+    monthly: 'Monatlich', yearly: 'Jährlich', save: '2 Monate gratis',
+    perMonth: '/Monat', exVat: 'zzgl. MwSt.', billedYearly: (n: string) => `${n} pro Jahr`, billedMonthly: 'monatliche Abrechnung',
+    soonTag: 'bald', popular: 'Am häufigsten gewählt', everythingSolo: 'Alles aus Solo',
+    founderTitle: `Gründerangebot: ${FOUNDER_DISCOUNT} % Rabatt auf Lebenszeit`,
+    founderBody: `Für die ersten ${FOUNDER_SPOTS} Läden, die mitmachen. Solo für ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/Monat, solange du dabei bleibst.`,
+    early: `Start: Jeder Tarif ist ${TRIAL_DAYS} Tage kostenlos. Keine Karte nötig, und nach dem Test wird nichts abgebucht.`, yourPlan: 'Dein Tarif',
+    plans: {
+      solo: { name: 'Solo', who: 'Für einen Barbier oder Stylisten', cta: `${TRIAL_DAYS} Tage kostenlos testen`, ctaDash: 'Zu diesem Tarif wechseln' },
+      salon: { name: 'Salon', who: 'Für einen Laden mit 2–5 Personen', cta: `${TRIAL_DAYS} Tage kostenlos testen`, ctaDash: 'Zu diesem Tarif wechseln' },
+      pro: { name: 'Pro', who: 'Für größere Läden und Ketten', cta: `${TRIAL_DAYS} Tage kostenlos testen`, ctaDash: 'Zu diesem Tarif wechseln' },
+    } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
+    lists: {
+      solo: [['Deine eigene Buchungsseite, Link und QR-Code'], ['Live-Kalender: Tag, Woche, Monat, per Ziehen verschieben'], ['Unbegrenzt Termine und Kunden'], ['Bestätigungen und Erinnerungen per E-Mail'], ['Warteliste'], ['Umsatz- und Trinkgeldberichte, PDF/Excel-Export'], ['Buchungsseite in 4 Sprachen'], ['Keine Provision auf Buchungen']],
+      salon: [['Alles aus Solo'], ['Bis zu 5 Mitarbeiter, ein fester Preis', true], ['Ein Kalender pro Mitarbeiter', true], ['Teamansicht des ganzen Tages', true], ['Berichte pro Mitarbeiter', true]],
+      pro: [['Alles aus Salon'], ['Unbegrenzt Mitarbeiter und Standorte', true], ['Hilfe beim Umzug aus deinem alten System'], ['Bevorzugter Support']],
+    } as Record<PlanId, Item[]>,
+    foot: { solo: 'Keine Karte nötig', salon: 'Kein Preis pro zusätzlichem Mitarbeiter', pro: 'Preis auf Anfrage' } as Record<PlanId, string>,
+    addonsTitle: 'Extras',
+    addons: [
+      [Mail, 'E-Mail-Erinnerungen', 'Unbegrenzt, in jedem Tarif enthalten', 'Inklusive'],
+      [MessageSquareText, 'SMS-Erinnerungen', `Paket mit ${SMS_PACK.count} SMS`, `${eur0(SMS_PACK.price)} · bald`],
+    ] as [typeof Mail, string, string, string][],
+    compareTitle: 'Tarife vergleichen',
+    rows: [
+      ['Personen im Laden', '1', '2–5', 'Unbegrenzt'],
+      ['Buchungsseite, Link und QR-Code', true, true, true],
+      ['Live-Kalender und Verschieben per Ziehen', true, true, true],
+      ['Bestätigungen und Erinnerungen per E-Mail', true, true, true],
+      ['Warteliste', true, true, true],
+      ['Umsatzberichte und Export', true, true, true],
+      ['Kalender pro Mitarbeiter', false, 'soon', 'soon'],
+      ['Berichte pro Mitarbeiter', false, 'soon', 'soon'],
+      ['Mehrere Standorte', false, false, 'soon'],
+      ['SMS-Erinnerungen', 'add-on', 'add-on', 'add-on'],
+      ['Provision auf Buchungen', '0 %', '0 %', '0 %'],
+    ] as (string | boolean)[][],
+    vatNote: 'Alle Preise in Euro, zzgl. 21 % niederländischer MwSt. (BTW).',
+  },
+  ar: {
+    monthly: 'شهري', yearly: 'سنوي', save: 'شهران مجانًا',
+    perMonth: '/شهر', exVat: 'بدون ضريبة القيمة المضافة', billedYearly: (n: string) => `${n} سنويًا`, billedMonthly: 'يُدفع شهريًا',
+    soonTag: 'قريبًا', popular: 'الأكثر اختيارًا', everythingSolo: 'كل ما في Solo',
+    founderTitle: `عرض المؤسسين: خصم ${FOUNDER_DISCOUNT}% مدى الحياة`,
+    founderBody: `لأول ${FOUNDER_SPOTS} محلًا تنضم. Solo مقابل ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))} شهريًا طالما بقيت معنا.`,
+    early: `إطلاق: كل الخطط مجانية لمدة ${TRIAL_DAYS} يومًا. لا حاجة لبطاقة، ولا يُخصم شيء عند انتهاء التجربة.`, yourPlan: 'خطتك',
+    plans: {
+      solo: { name: 'Solo', who: 'لحلاق أو مصفف واحد', cta: `جرّب ${TRIAL_DAYS} يومًا مجانًا`, ctaDash: 'انتقل إلى هذه الخطة' },
+      salon: { name: 'Salon', who: 'لمحل فيه 2–5 أشخاص', cta: `جرّب ${TRIAL_DAYS} يومًا مجانًا`, ctaDash: 'انتقل إلى هذه الخطة' },
+      pro: { name: 'Pro', who: 'للمحلات الكبيرة والسلاسل', cta: `جرّب ${TRIAL_DAYS} يومًا مجانًا`, ctaDash: 'انتقل إلى هذه الخطة' },
+    } as Record<PlanId, { name: string; who: string; cta: string; ctaDash: string }>,
+    lists: {
+      solo: [['صفحة حجز خاصة بك مع رابط ورمز QR'], ['تقويم مباشر: يوم، أسبوع، شهر، اسحب لنقل المواعيد'], ['مواعيد وعملاء بلا حدود'], ['تأكيدات وتذكيرات بالبريد الإلكتروني'], ['قائمة انتظار'], ['تقارير المبيعات والإكراميات، تصدير PDF/Excel'], ['صفحة حجز بـ 4 لغات'], ['بدون عمولة على الحجوزات']],
+      salon: [['كل ما في Solo'], ['حتى 5 موظفين بسعر ثابت', true], ['تقويم لكل موظف', true], ['عرض الفريق ليوم كامل', true], ['تقارير لكل موظف', true]],
+      pro: [['كل ما في Salon'], ['موظفون وفروع بلا حدود', true], ['مساعدة في الانتقال من نظامك القديم'], ['دعم بأولوية']],
+    } as Record<PlanId, Item[]>,
+    foot: { solo: 'لا حاجة لبطاقة', salon: 'لا سعر إضافي لكل موظف', pro: 'السعر عند الطلب' } as Record<PlanId, string>,
+    addonsTitle: 'إضافات',
+    addons: [
+      [Mail, 'تذكيرات بالبريد الإلكتروني', 'بلا حدود، ضمن كل الخطط', 'مشمول'],
+      [MessageSquareText, 'تذكيرات SMS', `باقة ${SMS_PACK.count} رسالة`, `${eur0(SMS_PACK.price)} · قريبًا`],
+    ] as [typeof Mail, string, string, string][],
+    compareTitle: 'قارن الخطط',
+    rows: [
+      ['عدد الأشخاص في المحل', '1', '2–5', 'بلا حدود'],
+      ['صفحة حجز ورابط ورمز QR', true, true, true],
+      ['تقويم مباشر والسحب لنقل المواعيد', true, true, true],
+      ['تأكيدات وتذكيرات بالبريد', true, true, true],
+      ['قائمة انتظار', true, true, true],
+      ['تقارير المبيعات والتصدير', true, true, true],
+      ['تقويم لكل موظف', false, 'soon', 'soon'],
+      ['تقارير لكل موظف', false, 'soon', 'soon'],
+      ['فروع متعددة', false, false, 'soon'],
+      ['تذكيرات SMS', 'add-on', 'add-on', 'add-on'],
+      ['العمولة على الحجوزات', '0%', '0%', '0%'],
+    ] as (string | boolean)[][],
+    vatNote: 'جميع الأسعار باليورو، بدون ضريبة القيمة المضافة الهولندية 21%.',
   },
 }
 
@@ -192,7 +310,7 @@ export default function PricingPlans({ lng, mode = 'public' }: { lng: Lng; cur?:
               <p className={`mt-1 text-[15px] ${dark ? 'text-white/65' : 'text-[#6e6e73]'}`}>{p.who}</p>
 
               <div className="mt-7 flex items-end gap-1.5">
-                {id === 'pro' && <span className={`mb-1.5 text-[14px] ${dark ? 'text-white/60' : 'text-[#6e6e73]'}`}>{lng === 'tr' ? '' : 'from'}</span>}
+                {id === 'pro' && <span className={`mb-1.5 text-[14px] ${dark ? 'text-white/60' : 'text-[#6e6e73]'}`}>{L(lng, { en: 'from', nl: 'vanaf', de: 'ab', tr: '', ar: 'من' })}</span>}
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.span key={`${id}-${yearly}`} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}

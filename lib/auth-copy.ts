@@ -1,19 +1,19 @@
 'use client'
 
-// Texts for the login and sign-up screens in English, Turkish and Dutch.
+// Texts for the login and sign-up screens in English, Turkish, Dutch, German and Arabic.
 // Language: the one picked on the site (snippr-lang), otherwise the browser language.
 // Server errors from /api/register come with a `code`; errorText() turns it into this language.
 
 import { useSyncExternalStore } from 'react'
 
-export type AuthLng = 'en' | 'tr' | 'nl'
+export type AuthLng = 'en' | 'tr' | 'nl' | 'de' | 'ar'
 
 export function useAuthLng(): AuthLng {
   return useSyncExternalStore(() => () => {}, () => {
     let saved: string | null = null
     try { saved = localStorage.getItem('snippr-lang') } catch { /* blocked */ }
     const pick = (saved || navigator.language || '').toLowerCase()
-    return pick.startsWith('tr') ? 'tr' : pick.startsWith('nl') ? 'nl' : 'en'
+    return pick.startsWith('tr') ? 'tr' : pick.startsWith('nl') ? 'nl' : pick.startsWith('de') ? 'de' : pick.startsWith('ar') ? 'ar' : 'en'
   }, () => 'en') as AuthLng
 }
 
@@ -97,6 +97,60 @@ export const AUTH_COPY = {
       wrongPw: (e: string) => `Verkeerd e-mailadres of wachtwoord voor "${e}". Controleer de spelling of gebruik "Wachtwoord vergeten?". Nog geen account? Registreer eerst.`,
       wrongPwFixed: (f: string, e: string) => `Verkeerd wachtwoord voor "${f}" (we hebben "${e}" ook verbeterd). Probeer het opnieuw of gebruik "Wachtwoord vergeten?".`,
       notConfirmed: 'Dit e-mailadres is nog niet bevestigd. Open de link in de e-mail die we stuurden (kijk ook in spam), of stuur hem hieronder opnieuw.',
+    },
+  },
+  de: {
+    google: 'Weiter mit Google', or: 'oder', completeHeading: 'Konto fertigstellen', completeSub: 'Ein letzter Schritt vor dem Start: Wir brauchen dein Geburtsdatum und dein Okay zu unseren Bedingungen.', completeBtn: 'Weiter', saving: 'Wird gespeichert…', signOut: 'Abmelden',
+    firstName: 'Vorname', lastName: 'Nachname', birthDate: 'Geburtsdatum', email: 'E-Mail', password: 'Passwort',
+    showPw: 'Passwort anzeigen', hidePw: 'Passwort verbergen', remember: 'Angemeldet bleiben', forgot: 'Passwort vergessen?',
+    regHeading: 'Konto erstellen', regSub: 'Erstelle dein Barbier-Profil in Sekunden.', create: 'Konto erstellen', creating: 'Konto wird erstellt…',
+    haveAccount: 'Schon ein Konto?', logIn: 'Anmelden',
+    loginHeading: 'Willkommen zurück!', loginSub: 'Gib deine Daten ein', loggingIn: 'Anmeldung läuft…', noAccount: 'Noch kein Konto?', signUp: 'Registrieren',
+    resend: 'Bestätigungsmail erneut senden', resent: 'Gesendet! Schau in deinen Posteingang und Spam-Ordner.',
+    err: {
+      typo: (f: string) => `Meintest du ${f}? Korrigiere die E-Mail oder klick noch einmal auf "Konto erstellen", wenn sie stimmt.`,
+      confirmSent: (e: string) => `Fast geschafft! Wir haben einen Bestätigungslink an ${e} geschickt. Öffne ihn, um dein Konto zu aktivieren (schau auch im Spam-Ordner).`,
+      network: 'Server nicht erreichbar. Prüfe deine Verbindung und versuch es noch einmal.',
+      failed: 'Registrierung fehlgeschlagen. Bitte versuch es noch einmal.',
+      invalid_email: 'Bitte gib eine gültige E-Mail-Adresse ein.',
+      terms: 'Bitte akzeptiere die Nutzungsbedingungen und den Auftragsverarbeitungsvertrag, um ein Konto zu erstellen.',
+      dob_invalid: 'Bitte gib ein gültiges Geburtsdatum ein.',
+      too_young: 'Du musst mindestens 18 Jahre alt sein, um ein Snippr-Konto zu erstellen.',
+      pw_short: 'Das Passwort muss mindestens 6 Zeichen haben.',
+      pw_leaked: 'Dieses Passwort ist bei einem Datenleck aufgetaucht und daher nicht sicher. Bitte wähle ein anderes.',
+      too_many: 'Zu viele Registrierungen aus diesem Netzwerk. Bitte versuch es in einer Stunde noch einmal.',
+      exists: 'Mit dieser E-Mail gibt es schon ein Konto. Melde dich an oder nutze "Passwort vergessen?", wenn die Bestätigungsmail nie ankam.',
+      mail_failed: 'Wir konnten die Bestätigungsmail nicht senden. Bitte versuch es gleich noch einmal.',
+      wrongPw: (e: string) => `Falsche E-Mail oder falsches Passwort für "${e}". Prüfe die Schreibweise oder nutze "Passwort vergessen?". Noch kein Konto? Registriere dich zuerst.`,
+      wrongPwFixed: (f: string, e: string) => `Falsches Passwort für "${f}" (wir haben auch "${e}" korrigiert). Versuch es noch einmal oder nutze "Passwort vergessen?".`,
+      notConfirmed: 'Diese E-Mail ist noch nicht bestätigt. Öffne den Link in der E-Mail, die wir dir geschickt haben (schau auch im Spam), oder sende sie unten erneut.',
+    },
+  },
+  ar: {
+    google: 'المتابعة باستخدام Google', or: 'أو', completeHeading: 'أكمل حسابك', completeSub: 'خطوة أخيرة قبل البدء: نحتاج تاريخ ميلادك وموافقتك على شروطنا.', completeBtn: 'متابعة', saving: 'جارٍ الحفظ…', signOut: 'تسجيل الخروج',
+    firstName: 'الاسم الأول', lastName: 'اسم العائلة', birthDate: 'تاريخ الميلاد', email: 'البريد الإلكتروني', password: 'كلمة المرور',
+    showPw: 'إظهار كلمة المرور', hidePw: 'إخفاء كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟',
+    regHeading: 'أنشئ حسابك', regSub: 'أنشئ ملفك كحلاق في ثوانٍ.', create: 'إنشاء حساب', creating: 'جارٍ إنشاء الحساب…',
+    haveAccount: 'لديك حساب بالفعل؟', logIn: 'تسجيل الدخول',
+    loginHeading: 'مرحبًا بعودتك!', loginSub: 'أدخل بياناتك', loggingIn: 'جارٍ تسجيل الدخول…', noAccount: 'ليس لديك حساب؟', signUp: 'إنشاء حساب',
+    resend: 'أرسل بريد التأكيد مرة أخرى', resent: 'تم الإرسال! تحقق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.',
+    err: {
+      typo: (f: string) => `هل تقصد ${f}؟ صحّح البريد، أو اضغط "إنشاء حساب" مرة أخرى إذا كان صحيحًا.`,
+      confirmSent: (e: string) => `اقتربت! أرسلنا رابط تأكيد إلى ${e}. افتحه لتفعيل حسابك (تحقق من مجلد الرسائل غير المرغوب فيها أيضًا).`,
+      network: 'تعذر الوصول إلى الخادم. تحقق من اتصالك وحاول مرة أخرى.',
+      failed: 'فشل التسجيل. يرجى المحاولة مرة أخرى.',
+      invalid_email: 'يرجى إدخال بريد إلكتروني صحيح.',
+      terms: 'يرجى قبول شروط الخدمة واتفاقية معالجة البيانات لإنشاء حساب.',
+      dob_invalid: 'يرجى إدخال تاريخ ميلاد صحيح.',
+      too_young: 'يجب أن يكون عمرك 18 عامًا على الأقل لإنشاء حساب Snippr.',
+      pw_short: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.',
+      pw_leaked: 'ظهرت كلمة المرور هذه في تسريب بيانات، لذا فهي غير آمنة. يرجى اختيار كلمة أخرى.',
+      too_many: 'عدد كبير من التسجيلات من هذه الشبكة. يرجى المحاولة بعد ساعة.',
+      exists: 'يوجد حساب بهذا البريد بالفعل. سجّل الدخول، أو استخدم "نسيت كلمة المرور؟" إذا لم يصلك بريد التأكيد.',
+      mail_failed: 'تعذر إرسال بريد التأكيد. يرجى المحاولة بعد قليل.',
+      wrongPw: (e: string) => `البريد أو كلمة المرور غير صحيحة لـ "${e}". تحقق من الكتابة أو استخدم "نسيت كلمة المرور؟". ليس لديك حساب؟ سجّل أولًا.`,
+      wrongPwFixed: (f: string, e: string) => `كلمة المرور غير صحيحة لـ "${f}" (صحّحنا أيضًا "${e}"). حاول مرة أخرى أو استخدم "نسيت كلمة المرور؟".`,
+      notConfirmed: 'لم يتم تأكيد هذا البريد بعد. افتح الرابط في الرسالة التي أرسلناها (تحقق من الرسائل غير المرغوب فيها أيضًا)، أو أعد إرسالها أدناه.',
     },
   },
 }

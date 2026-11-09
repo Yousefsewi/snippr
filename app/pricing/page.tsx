@@ -21,20 +21,35 @@ const T = {
     sub: 'Kaç randevu alırsan al, her ay aynı fiyatı ödersin. Snippr randevularından asla pay almaz.',
     faqTitle: 'Planlarla ilgili sorun mu var?', faqBody: 'Ödeme, plan değiştirme, verilerine ne olacağı.', faqLink: 'SSS’yi oku', back: 'Ana sayfa',
   },
+  nl: {
+    eyebrow: 'ABONNEMENTEN EN PRIJZEN', h1a: 'Vul elke stoel.', h1b: 'Eén vaste prijs. Geen commissie.',
+    sub: 'Je betaalt elke maand hetzelfde, hoeveel afspraken je ook krijgt. Snippr neemt nooit een deel van je boekingen.',
+    faqTitle: 'Vragen over abonnementen?', faqBody: 'Betalen, overstappen, wat er met je gegevens gebeurt.', faqLink: 'Lees de veelgestelde vragen', back: 'Home',
+  },
+  de: {
+    eyebrow: 'TARIFE UND PREISE', h1a: 'Füll jeden Stuhl.', h1b: 'Ein fester Preis. Keine Provision.',
+    sub: 'Du zahlst jeden Monat gleich viel, egal wie viele Buchungen du bekommst. Snippr nimmt nie einen Anteil an deinen Buchungen.',
+    faqTitle: 'Fragen zu den Tarifen?', faqBody: 'Zahlung, Tarif wechseln, was mit deinen Daten passiert.', faqLink: 'FAQ lesen', back: 'Startseite',
+  },
+  ar: {
+    eyebrow: 'الخطط والأسعار', h1a: 'املأ كل كرسي.', h1b: 'سعر ثابت. بدون عمولة.',
+    sub: 'تدفع المبلغ نفسه كل شهر مهما كان عدد الحجوزات. لا يأخذ Snippr أي نسبة من حجوزاتك.',
+    faqTitle: 'أسئلة عن الخطط؟', faqBody: 'الدفع وتغيير الخطة وما يحدث لبياناتك.', faqLink: 'اقرأ الأسئلة الشائعة', back: 'الرئيسية',
+  },
 }
 
 const FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif"
 
 export default function PricingPage() {
-  // the site language (5 languages); this page's texts exist in English and Turkish so far
+  // the site language (5 languages)
   const detected = useSyncExternalStore(() => () => {}, (): SiteLng => {
     try { const s = localStorage.getItem('snippr-lang'); if (isSiteLng(s)) return s } catch { /* blocked */ }
     return browserSiteLng()
   }, (): SiteLng => 'en')
   const [choice, setChoice] = useState<SiteLng | null>(null)
   const siteLng = choice ?? detected
-  const lng: Lng = siteLng === 'tr' ? 'tr' : 'en'
-  const t = T[lng]
+  const lng: Lng = siteLng
+  const t = T[lng] ?? T.en
   const [cur] = useCurrencyChoice()
   const chooseLng = (l: SiteLng) => { setChoice(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
 
