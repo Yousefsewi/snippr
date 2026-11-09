@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion'
 import { CalendarCheck, CalendarPlus, Check, Heart, Scissors, Star } from 'lucide-react'
+import type { SiteLng } from '@/lib/site-lang'
 
 const COPY = {
   en: {
@@ -25,13 +26,40 @@ const COPY = {
     n: [['Snippr', 'Yeni randevu', 'Saç kesimi · Yarın 14:30'], ['Snippr', 'Randevun onaylandı', 'Yarın 14:30’da görüşmek üzere'], ['Snippr', 'Geldiğin için teşekkürler!', 'Yorum bırakmak için dokun'], ['Snippr', 'Bahşişin için teşekkürler 💛', 'Bir dahaki sefere görüşmek üzere!']],
     float: ['Randevu onaylandı', 'Rezervasyonun için teşekkürler'],
   },
+  nl: {
+    included: 'Inbegrepen in je abonnement', h1: 'Blijf in contact met je klanten en houd ze op de hoogte',
+    sub: 'Automatische berichten zorgen voor trouwe klanten en minder no-shows. Elke e-mail die uitgaat, staat hieronder in je berichtengeschiedenis.',
+    b: ['Houd klanten op de hoogte als je bevestigt of annuleert, zodat niemand op het verkeerde moment komt', 'Bedank klanten na hun bezoek en verzamel meer Google-reviews', 'Snippr verstuurt het per e-mail, jij hoeft niets te typen'],
+    setup: 'Nu instellen', history: 'Berichtengeschiedenis',
+    date: 'dinsdag 14 november',
+    n: [['Snippr', 'Nieuwe afspraak', 'Knippen · Morgen 14:30'], ['Snippr', 'Afspraak bevestigd', 'Tot morgen om 14:30'], ['Snippr', 'Bedankt voor je bezoek!', 'Tik hier om een review te geven'], ['Snippr', 'Bedankt voor de fooi 💛', 'Tot de volgende keer!']],
+    float: ['Afspraak bevestigd', 'Bedankt voor je boeking'],
+  },
+  de: {
+    included: 'In deinem Tarif enthalten', h1: 'Bleib mit deinen Kunden in Kontakt und halte sie auf dem Laufenden',
+    sub: 'Automatische Nachrichten stärken die Kundenbindung und senken Ausfälle. Jede verschickte E-Mail erscheint unten im Nachrichtenverlauf.',
+    b: ['Halte Kunden auf dem Laufenden, wenn du bestätigst oder absagst, damit niemand zur falschen Zeit kommt', 'Bedank dich nach dem Besuch und sammle mehr Google-Bewertungen', 'Snippr verschickt alles per E-Mail, du musst nichts tippen'],
+    setup: 'Jetzt einrichten', history: 'Nachrichtenverlauf',
+    date: 'Dienstag, 14. November',
+    n: [['Snippr', 'Neuer Termin', 'Haarschnitt · Morgen 14:30'], ['Snippr', 'Termin bestätigt', 'Bis morgen um 14:30'], ['Snippr', 'Danke für deinen Besuch!', 'Tippe hier für eine Bewertung'], ['Snippr', 'Danke für das Trinkgeld 💛', 'Bis zum nächsten Mal!']],
+    float: ['Termin bestätigt', 'Danke für deine Buchung'],
+  },
+  ar: {
+    included: 'مشمول في خطتك', h1: 'ابقَ على تواصل مع عملائك وأبقِهم على اطلاع',
+    sub: 'الرسائل التلقائية تبني الولاء وتقلل حالات عدم الحضور. كل رسالة تُرسل تظهر في سجل الرسائل أدناه.',
+    b: ['أخبر العملاء عندما تؤكد أو تلغي، فلا يأتي أحد في الوقت الخطأ', 'اشكر العملاء بعد زيارتهم واجمع المزيد من تقييمات Google', 'يرسلها Snippr بالبريد، ولا تحتاج لكتابة أي شيء'],
+    setup: 'أعدّها الآن', history: 'سجل الرسائل',
+    date: 'الثلاثاء 14 نوفمبر',
+    n: [['Snippr', 'موعد جديد', 'قص الشعر · غدًا 14:30'], ['Snippr', 'تم تأكيد الموعد', 'نراك غدًا الساعة 14:30'], ['Snippr', 'شكرًا لزيارتك!', 'اضغط هنا لكتابة تقييم'], ['Snippr', 'شكرًا على الإكرامية 💛', 'نراك في المرة القادمة!']],
+    float: ['تم تأكيد الموعد', 'شكرًا على حجزك'],
+  },
 }
 
 const ICONS = [
   { Icon: CalendarPlus, bg: '#0a84ff' }, { Icon: CalendarCheck, bg: '#34c759' }, { Icon: Star, bg: '#ff9f0a' }, { Icon: Heart, bg: '#ff375f' },
 ]
 
-export default function MessagesHero({ lang }: { lang: 'en' | 'tr' }) {
+export default function MessagesHero({ lang }: { lang: SiteLng }) {
   const t = COPY[lang]
   return (
     <section className="relative overflow-hidden rounded-[28px] bg-[#141416] px-7 py-10 text-white sm:px-10">

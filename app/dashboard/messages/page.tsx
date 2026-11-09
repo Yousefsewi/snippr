@@ -12,8 +12,10 @@ import {
 import { supabase } from '@/lib/supabase'
 import { useLang } from '@/lib/i18n'
 import { isOn, messageHtml, type MsgKind, type MsgSettings } from '@/lib/messages'
+import type { ClientLang } from '@/lib/messages'
 import MessagesHero from '@/components/messages-hero'
 import { SHOW_UNRELEASED } from '@/lib/legal'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 type Channel = 'email' | 'push'
 type Card = { id: string; icon: LucideIcon; title: string; desc: string; channels: Channel[]; kind?: MsgKind; always?: boolean; soon?: boolean }
@@ -69,6 +71,81 @@ const COPY = {
     reviewHint: 'Google yorum linkini ekle', reviewSet: 'Google yorum linki eklendi',
     history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { remind1d: 'Hatırlatma (1 gün önce)', remind3d: 'Hatırlatma (3 gün önce)', new: 'Yeni randevu', confirmed: 'Randevu onaylandı', rescheduled: 'Randevu taşındı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
   },
+  nl: {
+    back: 'Add-ons', title: 'Automatische berichten', sub: 'E-mails die vanzelf naar je klanten gaan, zodat je niet iedereen hoeft te appen.',
+    on: 'Aan', off: 'Uit', soon: 'Binnenkort', always: 'Altijd aan', preview: 'Voorbeeld', close: 'Sluiten', subject: 'Onderwerp',
+    setup: 'Voer supabase/messages.sql één keer uit in de Supabase SQL Editor om deze schakelaars op te slaan.',
+    noEmail: 'E-mails gaan alleen naar klanten die bij het boeken een e-mailadres hebben achtergelaten.',
+    sections: { reminders: 'Herinneringen', updates: 'Updates over afspraken', waitlist: 'Wachtlijst', loyalty: 'Klantenbinding' },
+    cards: {
+      r3d: ['3 dagen vooraf', 'Herinnert klanten 3 dagen van tevoren aan hun afspraak (elke ochtend verstuurd).'],
+      r24: ['De dag ervoor', 'Herinnert klanten de dag ervoor aan hun afspraak (elke ochtend verstuurd).'],
+      r1h: ['1 uur vooraf', 'Een laatste herinnering een uur van tevoren.'],
+      newBooking: ['Nieuwe afspraak', 'Klanten krijgen een bevestiging en jij krijgt een melding.'],
+      confirmed: ['Afspraak bevestigd', 'Verstuurd als je een afspraak bevestigt.'],
+      rescheduled: ['Afspraak verplaatst', 'Verstuurd als je een afspraak in je agenda naar een andere tijd verplaatst.'],
+      cancelled: ['Afspraak geannuleerd', 'Verstuurd als je een afspraak annuleert, met een link om een nieuwe tijd te kiezen.'],
+      thanks: ['Bedankt voor je bezoek', 'Verstuurd als een afspraak is afgerond, met je Google-reviewlink als je die hebt toegevoegd.'],
+      tip: ['Bedankt voor de fooi', 'Verstuurd als je bij de kassa een fooi vastlegt.'],
+      wJoin: ['Aangemeld voor de wachtlijst', 'Bevestigt klanten dat ze op je wachtlijst staan.'],
+      wSlot: ['Er is een plek vrij', 'Laat wachtende klanten weten dat er een tijd vrijkomt.'],
+      points: ['Puntenoverzicht', 'Stuurt klanten een overzicht van hun gespaarde punten.'],
+      tier: ['Nieuw loyaliteitsniveau', 'Laat klanten weten dat ze een nieuw niveau hebben bereikt.'],
+      referral: ['Beloning voor doorverwijzen', 'Laat klanten weten dat een doorverwezen vriend heeft geboekt.'],
+    },
+    reviewHint: 'Voeg je Google-reviewlink toe', reviewSet: 'Google-reviewlink toegevoegd',
+    history: 'Berichtengeschiedenis', historySub: 'E-mails die Snippr naar je klanten heeft gestuurd.', historyEmpty: 'Nog geen berichten verstuurd', historyEmptySub: 'Als er een automatische e-mail uitgaat, verschijnt die hier.', kinds: { remind1d: 'Herinnering (1 dag vooraf)', remind3d: 'Herinnering (3 dagen vooraf)', new: 'Nieuwe afspraak', confirmed: 'Afspraak bevestigd', rescheduled: 'Afspraak verplaatst', cancelled: 'Afspraak geannuleerd', thanks: 'Bedankt voor je bezoek', tip: 'Bedankt voor de fooi' } as Record<string, string>, settingsTitle: 'Berichtinstellingen', apptOn: 'Afspraak',
+  },
+  de: {
+    back: 'Add-ons', title: 'Automatische Nachrichten', sub: 'E-Mails, die von selbst an deine Kunden gehen, damit du nicht jedem schreiben musst.',
+    on: 'An', off: 'Aus', soon: 'Bald', always: 'Immer an', preview: 'Vorschau', close: 'Schließen', subject: 'Betreff',
+    setup: 'Führe supabase/messages.sql einmal im Supabase SQL Editor aus, um diese Schalter zu speichern.',
+    noEmail: 'E-Mails gehen nur an Kunden, die beim Buchen eine E-Mail-Adresse angegeben haben.',
+    sections: { reminders: 'Erinnerungen', updates: 'Termin-Updates', waitlist: 'Warteliste', loyalty: 'Kundenbindung' },
+    cards: {
+      r3d: ['3 Tage vorher', 'Erinnert Kunden 3 Tage vorher an ihren Termin (jeden Morgen verschickt).'],
+      r24: ['Am Vortag', 'Erinnert Kunden am Vortag an ihren Termin (jeden Morgen verschickt).'],
+      r1h: ['1 Stunde vorher', 'Eine letzte Erinnerung eine Stunde vorher.'],
+      newBooking: ['Neuer Termin', 'Kunden bekommen eine Buchungsbestätigung, du eine Benachrichtigung.'],
+      confirmed: ['Termin bestätigt', 'Wird verschickt, wenn du eine Buchung bestätigst.'],
+      rescheduled: ['Termin verschoben', 'Wird verschickt, wenn du eine Buchung im Kalender auf eine andere Zeit verschiebst.'],
+      cancelled: ['Termin storniert', 'Wird verschickt, wenn du eine Buchung stornierst, mit einem Link für eine neue Zeit.'],
+      thanks: ['Danke für deinen Besuch', 'Wird verschickt, wenn ein Termin abgeschlossen ist, mit deinem Google-Bewertungslink, falls hinterlegt.'],
+      tip: ['Danke für das Trinkgeld', 'Wird verschickt, wenn du an der Kasse Trinkgeld erfasst.'],
+      wJoin: ['Auf der Warteliste', 'Bestätigt Kunden, dass sie auf deiner Warteliste stehen.'],
+      wSlot: ['Ein Platz ist frei', 'Sagt wartenden Kunden Bescheid, wenn eine Zeit frei wird.'],
+      points: ['Punkteübersicht', 'Schickt Kunden eine Übersicht ihrer gesammelten Punkte.'],
+      tier: ['Neue Treuestufe', 'Sagt Kunden Bescheid, wenn sie eine neue Stufe erreichen.'],
+      referral: ['Empfehlungsprämie', 'Sagt Kunden Bescheid, wenn ein empfohlener Freund bucht.'],
+    },
+    reviewHint: 'Google-Bewertungslink hinzufügen', reviewSet: 'Google-Bewertungslink hinzugefügt',
+    history: 'Nachrichtenverlauf', historySub: 'E-Mails, die Snippr an deine Kunden geschickt hat.', historyEmpty: 'Noch keine Nachrichten verschickt', historyEmptySub: 'Wenn eine automatische E-Mail rausgeht, erscheint sie hier.', kinds: { remind1d: 'Erinnerung (1 Tag vorher)', remind3d: 'Erinnerung (3 Tage vorher)', new: 'Neuer Termin', confirmed: 'Termin bestätigt', rescheduled: 'Termin verschoben', cancelled: 'Termin storniert', thanks: 'Danke für deinen Besuch', tip: 'Danke für das Trinkgeld' } as Record<string, string>, settingsTitle: 'Nachrichteneinstellungen', apptOn: 'Termin',
+  },
+  ar: {
+    back: 'الإضافات', title: 'الرسائل التلقائية', sub: 'رسائل بريد تصل لعملائك تلقائيًا، فلا تحتاج لمراسلة كل واحد.',
+    on: 'مفعّل', off: 'متوقف', soon: 'قريبًا', always: 'مفعّل دائمًا', preview: 'معاينة', close: 'إغلاق', subject: 'الموضوع',
+    setup: 'شغّل supabase/messages.sql مرة واحدة في محرر SQL في Supabase لحفظ هذه الإعدادات.',
+    noEmail: 'تُرسل الرسائل فقط للعملاء الذين تركوا بريدهم عند الحجز.',
+    sections: { reminders: 'التذكيرات', updates: 'تحديثات المواعيد', waitlist: 'قائمة الانتظار', loyalty: 'ولاء العملاء' },
+    cards: {
+      r3d: ['قبل 3 أيام', 'يذكّر العملاء بموعدهم قبل 3 أيام (يُرسل كل صباح).'],
+      r24: ['قبل يوم', 'يذكّر العملاء بموعدهم في اليوم السابق (يُرسل كل صباح).'],
+      r1h: ['قبل ساعة', 'تذكير أخير قبل ساعة.'],
+      newBooking: ['موعد جديد', 'يحصل العملاء على تأكيد الحجز ويصلك إشعار.'],
+      confirmed: ['تأكيد الموعد', 'يُرسل عندما تؤكد حجزًا.'],
+      rescheduled: ['نقل الموعد', 'يُرسل عندما تنقل حجزًا إلى وقت آخر في تقويمك.'],
+      cancelled: ['إلغاء الموعد', 'يُرسل عندما تلغي حجزًا، مع رابط لاختيار وقت جديد.'],
+      thanks: ['شكرًا لزيارتك', 'يُرسل عند اكتمال الموعد، مع رابط تقييم Google إن أضفته.'],
+      tip: ['شكرًا على الإكرامية', 'يُرسل عندما تسجل إكرامية في الصندوق.'],
+      wJoin: ['الانضمام لقائمة الانتظار', 'يؤكد للعملاء أنهم في قائمة انتظارك.'],
+      wSlot: ['توفر مكان', 'يخبر العملاء المنتظرين عندما يصبح وقت متاحًا.'],
+      points: ['ملخص النقاط', 'يرسل للعملاء ملخص النقاط التي جمعوها.'],
+      tier: ['مستوى ولاء جديد', 'يخبر العملاء عند وصولهم لمستوى جديد.'],
+      referral: ['مكافأة الإحالة', 'يخبر العملاء عندما يحجز صديق أحالوه.'],
+    },
+    reviewHint: 'أضف رابط تقييم Google', reviewSet: 'تمت إضافة رابط تقييم Google',
+    history: 'سجل الرسائل', historySub: 'الرسائل التي أرسلها Snippr لعملائك.', historyEmpty: 'لم تُرسل رسائل بعد', historyEmptySub: 'عند إرسال رسالة تلقائية تظهر هنا.', kinds: { remind1d: 'تذكير (قبل يوم)', remind3d: 'تذكير (قبل 3 أيام)', new: 'موعد جديد', confirmed: 'تأكيد الموعد', rescheduled: 'نقل الموعد', cancelled: 'إلغاء الموعد', thanks: 'شكرًا لزيارتك', tip: 'شكرًا على الإكرامية' } as Record<string, string>, settingsTitle: 'إعدادات الرسائل', apptOn: 'الموعد',
+  },
 }
 
 function Switch({ on, onChange, disabled }: { on: boolean; onChange: () => void; disabled?: boolean }) {
@@ -82,7 +159,8 @@ function Switch({ on, onChange, disabled }: { on: boolean; onChange: () => void;
 
 export default function MessagesPage() {
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
+  const locale = SITE_LOCALE[lng]
   const t = COPY[lng]
 
   const [barber, setBarber] = useState<{ id: string; name: string; slug: string } | null>(null)
@@ -155,9 +233,10 @@ export default function MessagesPage() {
     ] },
   ]
 
-  const sample = (k: MsgKind) => messageHtml(k, lng, {
+  // emails exist in tr/nl/en/ar; German previews show the English email for now
+  const sample = (k: MsgKind) => messageHtml(k, (lng === 'de' ? 'en' : lng) as ClientLang, {
     client: lng === 'tr' ? 'Ahmet Yılmaz' : 'Alex Morgan', barber: barber?.name || 'Snippr', service: lng === 'tr' ? 'Saç kesimi' : 'Haircut',
-    date: new Date(2026, 10, 14).toLocaleDateString(lng === 'tr' ? 'tr-TR' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' }), time: '14:30',
+    date: new Date(2026, 10, 14).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' }), time: '14:30',
     bookUrl: '#', reviewUrl: review, tip: '50',
   })
 
@@ -234,7 +313,7 @@ export default function MessagesPage() {
                 <p className="truncate text-[14.5px] font-semibold text-[#37352f]">{t.kinds[h.kind] ?? h.kind}</p>
                 <p className="truncate text-[13px] text-[#9b9a97]">{h.client} · {h.email}</p>
               </div>
-              <p className="text-right text-[12.5px] whitespace-nowrap text-[#9b9a97]">{t.apptOn}<br />{new Date(h.date).toLocaleDateString(lng === 'tr' ? 'tr-TR' : 'en-GB', { day: 'numeric', month: 'short' })}</p>
+              <p className="text-right text-[12.5px] whitespace-nowrap text-[#9b9a97]">{t.apptOn}<br />{new Date(h.date).toLocaleDateString(locale, { day: 'numeric', month: 'short' })}</p>
             </div>
           ))}
         </div>

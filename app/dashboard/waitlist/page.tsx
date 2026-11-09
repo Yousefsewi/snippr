@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase'
 import { useLang } from '@/lib/i18n'
 import { useCurrency } from '@/lib/currency'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 type TimePref = 'any' | 'morning' | 'afternoon' | 'evening'
 interface Entry {
@@ -61,6 +62,60 @@ const COPY = {
     rTitle: 'Bekleme listesi raporu', rTotal: 'Tüm istekler', rWaiting: 'Şu an bekleyen', rBooked: 'Randevu verilen', rRate: 'Randevuya dönüşme', rFromPage: 'Sayfandan katılan', rTopService: 'En çok istenen hizmet', rNone: '—',
     sTitle: 'Bekleme listesi ayarları', sToggle: 'Müşteriler randevu sayfamdan katılabilsin', sHelp: 'Bir gün dolu olduğunda randevu sayfanda “Bekleme listesine katıl” butonu çıkar.', done: 'Tamam',
     msg: (n: string) => `Merhaba ${n}, bir yer açıldı! Randevu almak ister misin?`,
+  },
+  nl: {
+    title: 'Wachtlijst', add: 'Toevoegen', reports: 'Rapport bekijken', settings: 'Instellingen',
+    ranges: { future: 'Alle komende datums', today: 'Vandaag', tomorrow: 'Morgen', week: 'Komende 7 dagen', month: 'Komende 30 dagen', all: 'Alle datums' },
+    sorts: { oldest: 'Aangemaakt (oudste eerst)', newest: 'Aangemaakt (nieuwste eerst)', date: 'Gewenste datum' },
+    tabs: { waiting: 'Wachtend', expired: 'Verlopen', booked: 'Geboekt' },
+    empty: { waiting: ['Geen wachtlijst', 'Er staan geen klanten op je wachtlijst.'], expired: ['Niets verlopen', 'Verzoeken waarvan de datum voorbij is, verschijnen hier.'], booked: ['Nog niets geboekt', 'Klanten die je vanaf de wachtlijst boekt, verschijnen hier.'] },
+    prefs: { any: 'Elk moment', morning: 'Ochtend', afternoon: 'Middag', evening: 'Avond' },
+    fromClient: 'Via je pagina aangemeld', addedByYou: 'Door jou toegevoegd', created: 'Toegevoegd',
+    book: 'Boeken', remove: 'Verwijderen', whatsapp: 'WhatsApp', call: 'Bellen', email: 'E-mail',
+    sheetAdd: 'Toevoegen aan wachtlijst', sheetBook: 'Afspraak boeken', name: 'Naam klant', phone: 'Telefoon', mail: 'E-mail (optioneel)', service: 'Behandeling', anyService: 'Elke behandeling',
+    date: 'Gewenste datum', when: 'Gewenste tijd', note: 'Notitie (optioneel)', time: 'Tijd', bookDate: 'Datum',
+    cancel: 'Annuleren', save: 'Opslaan', saving: 'Opslaan…', confirmRemove: 'Deze klant van de wachtlijst verwijderen?',
+    errName: 'Vul de naam van de klant in.', errContact: 'Voeg een telefoonnummer of e-mail toe.', errPast: 'Je kunt geen tijd in het verleden boeken.', errOverlap: 'Er staat al een afspraak op deze tijd.', errGeneric: 'Opslaan is niet gelukt. Probeer het opnieuw.',
+    setupTitle: 'Nog één stap om de wachtlijst aan te zetten', setupBody: 'Voer supabase/waitlist.sql één keer uit in de Supabase SQL Editor en vernieuw deze pagina.',
+    rTitle: 'Wachtlijstrapport', rTotal: 'Alle verzoeken', rWaiting: 'Nu wachtend', rBooked: 'Geboekt', rRate: 'Geboekt vanaf wachtlijst', rFromPage: 'Via je pagina aangemeld', rTopService: 'Meest gevraagde behandeling', rNone: '—',
+    sTitle: 'Wachtlijstinstellingen', sToggle: 'Klanten kunnen zich via mijn boekingspagina aanmelden', sHelp: 'Als een dag vol is, toont je boekingspagina een knop “Op de wachtlijst”.', done: 'Klaar',
+    msg: (n: string) => `Hoi ${n}, er is net een plekje vrijgekomen! Wil je het boeken?`,
+  },
+  de: {
+    title: 'Warteliste', add: 'Hinzufügen', reports: 'Bericht ansehen', settings: 'Einstellungen',
+    ranges: { future: 'Alle kommenden Daten', today: 'Heute', tomorrow: 'Morgen', week: 'Nächste 7 Tage', month: 'Nächste 30 Tage', all: 'Alle Daten' },
+    sorts: { oldest: 'Erstellt (älteste zuerst)', newest: 'Erstellt (neueste zuerst)', date: 'Gewünschtes Datum' },
+    tabs: { waiting: 'Wartend', expired: 'Abgelaufen', booked: 'Gebucht' },
+    empty: { waiting: ['Keine Einträge', 'Auf deiner Warteliste stehen keine Kunden.'], expired: ['Nichts abgelaufen', 'Anfragen, deren Datum vorbei ist, erscheinen hier.'], booked: ['Noch nichts gebucht', 'Kunden, die du von der Warteliste buchst, erscheinen hier.'] },
+    prefs: { any: 'Jederzeit', morning: 'Morgens', afternoon: 'Nachmittags', evening: 'Abends' },
+    fromClient: 'Über deine Seite eingetragen', addedByYou: 'Von dir hinzugefügt', created: 'Hinzugefügt',
+    book: 'Buchen', remove: 'Entfernen', whatsapp: 'WhatsApp', call: 'Anrufen', email: 'E-Mail',
+    sheetAdd: 'Zur Warteliste hinzufügen', sheetBook: 'Termin buchen', name: 'Name des Kunden', phone: 'Telefon', mail: 'E-Mail (optional)', service: 'Leistung', anyService: 'Beliebige Leistung',
+    date: 'Wunschdatum', when: 'Wunschzeit', note: 'Notiz (optional)', time: 'Uhrzeit', bookDate: 'Datum',
+    cancel: 'Abbrechen', save: 'Speichern', saving: 'Wird gespeichert…', confirmRemove: 'Diesen Kunden von der Warteliste entfernen?',
+    errName: 'Bitte gib den Namen des Kunden ein.', errContact: 'Füge eine Telefonnummer oder E-Mail hinzu.', errPast: 'Du kannst keine Zeit in der Vergangenheit buchen.', errOverlap: 'Zu dieser Zeit gibt es schon einen Termin.', errGeneric: 'Speichern fehlgeschlagen. Bitte versuch es noch einmal.',
+    setupTitle: 'Ein Schritt, um die Warteliste einzuschalten', setupBody: 'Führe supabase/waitlist.sql einmal im Supabase SQL Editor aus und lade die Seite neu.',
+    rTitle: 'Wartelisten-Bericht', rTotal: 'Alle Anfragen', rWaiting: 'Jetzt wartend', rBooked: 'Gebucht', rRate: 'Von der Warteliste gebucht', rFromPage: 'Über deine Seite eingetragen', rTopService: 'Gefragteste Leistung', rNone: '—',
+    sTitle: 'Wartelisten-Einstellungen', sToggle: 'Kunden können sich über meine Buchungsseite eintragen', sHelp: 'Ist ein Tag voll, zeigt deine Buchungsseite einen Knopf „Auf die Warteliste“.', done: 'Fertig',
+    msg: (n: string) => `Hallo ${n}, gerade ist ein Platz frei geworden! Möchtest du ihn buchen?`,
+  },
+  ar: {
+    title: 'قائمة الانتظار', add: 'إضافة', reports: 'عرض التقرير', settings: 'الإعدادات',
+    ranges: { future: 'كل التواريخ القادمة', today: 'اليوم', tomorrow: 'غدًا', week: 'الأيام السبعة القادمة', month: 'الثلاثون يومًا القادمة', all: 'كل التواريخ' },
+    sorts: { oldest: 'تاريخ الإضافة (الأقدم أولًا)', newest: 'تاريخ الإضافة (الأحدث أولًا)', date: 'التاريخ المطلوب' },
+    tabs: { waiting: 'في الانتظار', expired: 'منتهية', booked: 'محجوزة' },
+    empty: { waiting: ['لا أحد في قائمة الانتظار', 'لا يوجد عملاء في قائمة انتظارك.'], expired: ['لا شيء منتهٍ', 'تظهر هنا الطلبات التي مضى تاريخها.'], booked: ['لا حجوزات بعد', 'يظهر هنا العملاء الذين تحجز لهم من قائمة الانتظار.'] },
+    prefs: { any: 'أي وقت', morning: 'صباحًا', afternoon: 'بعد الظهر', evening: 'مساءً' },
+    fromClient: 'انضم من صفحتك', addedByYou: 'أضفته أنت', created: 'أُضيف',
+    book: 'احجز', remove: 'إزالة', whatsapp: 'واتساب', call: 'اتصال', email: 'البريد',
+    sheetAdd: 'إضافة إلى قائمة الانتظار', sheetBook: 'حجز موعد', name: 'اسم العميل', phone: 'الهاتف', mail: 'البريد (اختياري)', service: 'الخدمة', anyService: 'أي خدمة',
+    date: 'التاريخ المفضل', when: 'الوقت المفضل', note: 'ملاحظة (اختياري)', time: 'الوقت', bookDate: 'التاريخ',
+    cancel: 'إلغاء', save: 'حفظ', saving: 'جارٍ الحفظ…', confirmRemove: 'إزالة هذا العميل من قائمة الانتظار؟',
+    errName: 'يرجى إدخال اسم العميل.', errContact: 'أضف رقم هاتف أو بريدًا إلكترونيًا.', errPast: 'لا يمكنك حجز وقت في الماضي.', errOverlap: 'يوجد موعد بالفعل في هذا الوقت.', errGeneric: 'تعذر الحفظ. يرجى المحاولة مرة أخرى.',
+    setupTitle: 'خطوة واحدة لتشغيل قائمة الانتظار', setupBody: 'شغّل supabase/waitlist.sql مرة واحدة في محرر SQL في Supabase ثم حدّث الصفحة.',
+    rTitle: 'تقرير قائمة الانتظار', rTotal: 'كل الطلبات', rWaiting: 'في الانتظار الآن', rBooked: 'محجوزة', rRate: 'حُجزت من قائمة الانتظار', rFromPage: 'انضموا من صفحتك', rTopService: 'الخدمة الأكثر طلبًا', rNone: '—',
+    sTitle: 'إعدادات قائمة الانتظار', sToggle: 'يمكن للعملاء الانضمام من صفحة الحجز', sHelp: 'عندما يمتلئ يوم، تعرض صفحة الحجز زر "انضم إلى قائمة الانتظار".', done: 'تم',
+    msg: (n: string) => `مرحبًا ${n}، توفر مكان للتو! هل تريد حجزه؟`,
   },
 }
 
@@ -130,9 +185,9 @@ const Label = ({ children }: { children: React.ReactNode }) => <span className="
 
 export default function WaitlistPage() {
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
   const t = COPY[lng]
-  const locale = lng === 'tr' ? 'tr-TR' : 'en-US'
+  const locale = SITE_LOCALE[lng]
   const { format } = useCurrency()
 
   const [barberId, setBarberId] = useState<string | null>(null)
