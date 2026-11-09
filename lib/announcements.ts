@@ -3,11 +3,12 @@
 //
 // To publish one: add it to the TOP of ANNOUNCEMENTS and deploy. Put its photos and videos in
 // public/news/ (e.g. public/news/2026-12-sms/cover.jpg → src: '/news/2026-12-sms/cover.jpg').
-// Texts: Turkish (tr) is required; English (en) and Dutch (nl) are shown when present.
+// Texts: Turkish (tr) is required; English, Dutch, German and Arabic are shown when present
+// (a missing language falls back to English, then Turkish).
 // Whether a barber has read it is kept in their own browser (localStorage).
 
-export type NewsLang = 'tr' | 'en' | 'nl'
-export type Txt = { tr: string; en?: string; nl?: string }
+export type NewsLang = 'tr' | 'en' | 'nl' | 'de' | 'ar'
+export type Txt = { tr: string; en?: string; nl?: string; de?: string; ar?: string }
 
 export type NewsBlock =
   | { type: 'p'; text: Txt }
@@ -53,7 +54,7 @@ export const EXAMPLE: Announcement = {
 }
 
 export const findAnnouncement = (id: string) => ANNOUNCEMENTS.find(a => a.id === id) ?? (id === EXAMPLE.id ? EXAMPLE : undefined)
-export const newsLang = (lang: string): NewsLang => (lang === 'tr' || lang === 'nl' ? lang : 'en')
+export const newsLang = (lang: string): NewsLang => (['tr', 'nl', 'de', 'ar'].includes(lang) ? (lang as NewsLang) : 'en')
 export const txt = (t: Txt | undefined, l: NewsLang) => (t ? t[l] ?? t.en ?? t.tr : '')
 
 /** read ids, kept in this browser */
@@ -61,4 +62,4 @@ export const NEWS_READ_KEY = 'snippr:news-read'
 export const parseRead = (raw: string | null): string[] => { try { const v = JSON.parse(raw ?? '[]'); return Array.isArray(v) ? v : [] } catch { return [] } }
 
 export const newsDate = (iso: string, l: NewsLang) =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString(l === 'tr' ? 'tr-TR' : l === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  new Date(`${iso}T12:00:00`).toLocaleDateString({ tr: 'tr-TR', nl: 'nl-NL', en: 'en-GB', de: 'de-DE', ar: 'ar-u-nu-latn' }[l], { day: 'numeric', month: 'long', year: 'numeric' })

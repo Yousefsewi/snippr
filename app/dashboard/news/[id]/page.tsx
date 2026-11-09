@@ -25,8 +25,8 @@ export default function NewsItemPage() {
 
   if (!a) return (
     <div className="mx-auto max-w-[720px] py-16 text-center text-[#6e6e73]">
-      <p className="text-[17px] font-semibold text-[#1d1d1f]">{l === 'tr' ? 'Bu duyuru bulunamadı.' : l === 'nl' ? 'Deze aankondiging is niet gevonden.' : 'This announcement was not found.'}</p>
-      <Link href="/dashboard/news" className="mt-4 inline-block font-semibold text-[#1d1d1f] underline">{l === 'tr' ? 'Tüm duyurular' : l === 'nl' ? 'Alle aankondigingen' : 'All announcements'}</Link>
+      <p className="text-[17px] font-semibold text-[#1d1d1f]">{({ tr: 'Bu duyuru bulunamadı.', nl: 'Deze aankondiging is niet gevonden.', en: 'This announcement was not found.', de: 'Diese Ankündigung wurde nicht gefunden.', ar: 'لم يُعثر على هذا الإعلان.' })[l]}</p>
+      <Link href="/dashboard/news" className="mt-4 inline-block font-semibold text-[#1d1d1f] underline">{({ tr: 'Tüm duyurular', nl: 'Alle aankondigingen', en: 'All announcements', de: 'Alle Ankündigungen', ar: 'كل الإعلانات' })[l]}</Link>
     </div>
   )
   return <NewsArticle a={a} l={l} />

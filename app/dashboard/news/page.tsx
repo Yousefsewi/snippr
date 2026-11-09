@@ -10,6 +10,8 @@ import { ANNOUNCEMENTS, NEWS_READ_KEY, newsDate, newsLang, parseRead, txt } from
 const T = {
   tr: { title: 'Duyurular', sub: 'Yeni özellikler ve Snippr’dan haberler.', empty: 'Henüz duyuru yok', emptySub: 'Yeni özellikler ve haberler çıktığında burada ve bildirimlerinde görünecek.', unread: 'Yeni' },
   en: { title: 'Announcements', sub: 'New features and news from Snippr.', empty: 'No announcements yet', emptySub: 'New features and news will show up here and in your notifications.', unread: 'New' },
+  de: { title: 'Ankündigungen', sub: 'Neue Funktionen und Neuigkeiten von Snippr.', empty: 'Noch keine Ankündigungen', emptySub: 'Neue Funktionen und Neuigkeiten erscheinen hier und in deinen Benachrichtigungen.', unread: 'Neu' },
+  ar: { title: 'الإعلانات', sub: 'ميزات جديدة وأخبار من Snippr.', empty: 'لا إعلانات بعد', emptySub: 'ستظهر الميزات الجديدة والأخبار هنا وفي إشعاراتك.', unread: 'جديد' },
   nl: { title: 'Aankondigingen', sub: 'Nieuwe functies en nieuws van Snippr.', empty: 'Nog geen aankondigingen', emptySub: 'Nieuwe functies en nieuws verschijnen hier en bij je meldingen.', unread: 'Nieuw' },
 }
 

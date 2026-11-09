@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import YoutubeClickToLoad from '@/components/youtube-click-to-load'
 import { type Announcement, type NewsLang, newsDate, txt } from '@/lib/announcements'
 
-const BACK: Record<NewsLang, string> = { tr: 'Tüm duyurular', en: 'All announcements', nl: 'Alle aankondigingen' }
+const BACK: Record<NewsLang, string> = { tr: 'Tüm duyurular', en: 'All announcements', nl: 'Alle aankondigingen', de: 'Alle Ankündigungen', ar: 'كل الإعلانات' }
 
 export default function NewsArticle({ a, l }: { a: Announcement; l: NewsLang }) {
   return (
