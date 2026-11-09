@@ -1,6 +1,6 @@
 // Where barbers and customers can reach us (help, contact, FAQ, terms, privacy pages).
 // Change it here and every page follows.
-export const SUPPORT_EMAIL = 'seviyusuf6@gmail.com'
+export const SUPPORT_EMAIL = 'snipprcalendar@gmail.com'
 
 
 // Company details for the imprint page (/imprint), privacy policy and terms.
