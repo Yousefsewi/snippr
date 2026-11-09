@@ -10,6 +10,8 @@ import { supabase } from '@/lib/supabase'
 import { downloadMyData } from '@/lib/export-data'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { glass, SALON_STYLES, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
+import { useTx } from '@/lib/i18n'
+import { DICT } from './copy'
 
 const text = 'text-[#37352f]'
 const muted = 'text-[#9b9a97]'
@@ -19,6 +21,7 @@ const DATA_T = {
   en: { title: 'Your data', btn: 'Download my data', sub: 'Your profile, services, appointments and waiting list as one file (JSON).', action: 'Download', err: 'Download failed. Please try again.' },
   tr: { title: 'Verilerin', btn: 'Verilerimi indir', sub: 'Profilin, hizmetlerin, randevuların ve bekleme listen tek dosyada (JSON).', action: 'İndir', err: 'İndirilemedi. Lütfen tekrar dene.' },
   nl: { title: 'Jouw gegevens', btn: 'Mijn gegevens downloaden', sub: 'Je profiel, diensten, afspraken en wachtlijst in één bestand (JSON).', action: 'Downloaden', err: 'Downloaden mislukt. Probeer het opnieuw.' },
+  de: { title: 'Deine Daten', btn: 'Meine Daten herunterladen', sub: 'Dein Profil, deine Leistungen, Termine und Warteliste als eine Datei (JSON).', action: 'Herunterladen', err: 'Download fehlgeschlagen. Bitte versuch es noch einmal.' },
   ar: { title: 'بياناتك', btn: 'تنزيل بياناتي', sub: 'ملفك الشخصي وخدماتك ومواعيدك وقائمة الانتظار في ملف واحد (JSON).', action: 'تنزيل', err: 'فشل التنزيل. حاول مرة أخرى.' },
 }
 
@@ -38,6 +41,7 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
 }
 
 export default function SettingsPage() {
+  const tx = useTx(DICT)
   const router = useRouter()
   const { t, lang, setLang, isRTL } = useLang()
   const { currency, setCurrency } = useCurrency()
@@ -102,12 +106,12 @@ export default function SettingsPage() {
         headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
       })
       if (!res.ok) {
-        setDeleteError((await res.json().catch(() => ({}))).error || 'Could not delete the account.')
+        setDeleteError((await res.json().catch(() => ({}))).error || tx('Could not delete the account.'))
         setDeleting(false)
         return
       }
     } catch {
-      setDeleteError('Could not reach the server. Please try again.')
+      setDeleteError(tx('Could not reach the server. Please try again.'))
       setDeleting(false)
       return
     }
@@ -130,7 +134,7 @@ export default function SettingsPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M11 18l-6-6 6-6" />
           </svg>
-          Back
+          {tx('Back')}
         </button>
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: '#37352f' }}>{t.setTitle}</h1>
         <p style={{ marginTop: 6, fontSize: 14, color: '#787774', margin: 0 }}>{t.setSub}</p>
@@ -244,7 +248,7 @@ export default function SettingsPage() {
 
       {/* Salon style */}
       <section>
-        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>Salon style</p>
+        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{tx('Salon style')}</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
           {SALON_STYLES.map(s => {
             const selected = s.key === salonStyle.key
@@ -268,8 +272,8 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex items-center justify-between px-4 py-3">
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#37352f', margin: 0 }}>{s.label}</p>
-                    <p className={`text-xs ${muted}`} style={{ margin: 0 }}>{s.sub}</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: '#37352f', margin: 0 }}>{tx(s.label)}</p>
+                    <p className={`text-xs ${muted}`} style={{ margin: 0 }}>{tx(s.sub)}</p>
                   </div>
                   {selected && <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', background: s.accent, borderRadius: 999, width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>✓</span>}
                 </div>
@@ -282,13 +286,13 @@ export default function SettingsPage() {
       {/* First-visit discount (hidden until first-visit-discount.sql has been run) */}
       {FIRST_VISIT_DISCOUNT && discount !== null && (
         <section>
-          <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>First-visit discount</p>
+          <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{tx('First-visit discount')}</p>
           <div className={`rounded-2xl border ${border} bg-[#ffffff] px-4 py-3.5`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div style={{ maxWidth: 420 }}>
                 <p style={{ fontSize: 14, color: '#37352f' }}>🎁 New customers get {discount}% off their first appointment</p>
                 <p className={`text-xs ${muted}`}>
-                  Shown on your booking page and applied automatically. Only once per customer (checked by phone number or email); a cancelled booking doesn&apos;t count. You give the discount in your shop when they pay.
+                  {tx('FIRST_VISIT_HELP')}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -296,7 +300,7 @@ export default function SettingsPage() {
                   className={`rounded-md border ${border} bg-[#ffffff] px-3 py-1.5 text-sm ${text}`}>
                   {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map(v => <option key={v} value={v}>{v}%</option>)}
                 </select>
-                {discountSaved && <span className="text-xs text-[#1c3829]">Saved ✓</span>}
+                {discountSaved && <span className="text-xs text-[#1c3829]">{tx('Saved ✓')}</span>}
               </div>
             </div>
           </div>
@@ -305,12 +309,12 @@ export default function SettingsPage() {
 
       {/* Features */}
       <section>
-        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>Features</p>
+        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{tx('Features')}</p>
         <div className={`rounded-2xl border ${border} bg-[#ffffff] divide-y divide-[#e9e9e7]`}>
           <div className="flex items-center justify-between px-4 py-3.5">
             <div>
-              <p style={{ fontSize: 14, color: '#37352f' }}>Services</p>
-              <p className={`text-xs ${muted}`}>Show the Services section in the sidebar</p>
+              <p style={{ fontSize: 14, color: '#37352f' }}>{tx('Services')}</p>
+              <p className={`text-xs ${muted}`}>{tx('Show the Services section in the sidebar')}</p>
             </div>
             <Toggle on={servicesOn} onClick={toggleServices} />
           </div>
@@ -353,19 +357,18 @@ export default function SettingsPage() {
           {confirmingDelete && (
             <div className="mt-4 flex flex-col gap-2 border-t border-[#f5d0ca] pt-4">
               <p className="text-xs text-[#5d1715]">
-                This permanently deletes your account, booking page, services and all appointments. It can&apos;t be undone.
-                Type <strong>DELETE</strong> to confirm.
+                {tx('DELETE_HELP')}
               </p>
               <div className="flex flex-wrap items-center gap-2">
                 <input value={deleteText} onChange={e => setDeleteText(e.target.value)} placeholder="DELETE" autoFocus
                   className="rounded-md border border-[#f5d0ca] bg-white px-3 py-1.5 text-sm text-[#37352f] outline-none focus:border-[#eb5757]" />
                 <button onClick={deleteAccount} disabled={deleteText !== 'DELETE' || deleting}
                   className="rounded-md bg-[#eb5757] px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40">
-                  {deleting ? 'Deleting…' : 'Delete my account forever'}
+                  {deleting ? tx('Deleting…') : tx('Delete my account forever')}
                 </button>
                 <button onClick={() => { setConfirmingDelete(false); setDeleteText('') }} disabled={deleting}
                   className={`rounded-md px-3 py-1.5 text-xs font-medium ${muted} hover:text-[#37352f]`}>
-                  Cancel
+                  {tx('Cancel')}
                 </button>
               </div>
               {deleteError && <p className="text-xs font-medium text-[#eb5757]">{deleteError}</p>}
