@@ -7,6 +7,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { BarChart3, CalendarClock, LineChart, Users } from 'lucide-react'
 import { glass } from '@/lib/glass'
+import { SITE_LOCALE } from '@/lib/site-lang'
 
 export interface WAppt {
   id: string
@@ -19,7 +20,7 @@ export interface WAppt {
   discount_percent?: number
 }
 
-type Lng = 'en' | 'tr'
+type Lng = 'en' | 'tr' | 'nl' | 'de' | 'ar'
 
 const COPY = {
   en: {
@@ -45,6 +46,42 @@ const COPY = {
     noServices: 'Bu ay randevu yok', noServicesSub: 'En çok tercih edilen hizmetlerin burada görünür.',
     topClients: 'En iyi müşteriler', client: 'Müşteri', noClients: 'Henüz müşteri yok', noClientsSub: 'Düzenli müşterilerin burada görünür.',
     min: 'dk', with: '',
+  },
+  nl: {
+    sales: 'Recente omzet', last7: 'Afgelopen 7 dagen', appts: 'Afspraken', apptValue: 'Waarde afspraken',
+    salesS: 'Omzet', bookedS: 'Geboekte waarde', salesNote: 'Omzet = afgeronde afspraken.',
+    upcoming: 'Komende afspraken', next7: 'Komende 7 dagen', booked: (n: number) => `${n} geboekt`,
+    emptyUp: 'Je agenda is leeg', emptyUpSub: 'Deel je boekingslink om je week te vullen.', shareLink: 'Mijn link delen',
+    activity: 'Activiteit', noActivity: 'Nog geen afspraken', noActivitySub: 'Nieuwe boekingen verschijnen hier zodra ze binnenkomen.',
+    today: 'Volgende afspraken vandaag', noToday: 'Vandaag niets meer', noTodaySub: 'Geniet van je pauze, of open je agenda.', openCal: 'Agenda openen',
+    topServices: 'Populairste behandelingen', service: 'Behandeling', thisMonth: 'Deze maand', lastMonth: 'Vorige maand',
+    noServices: 'Deze maand geen afspraken', noServicesSub: 'Je meest geboekte behandelingen verschijnen hier.',
+    topClients: 'Beste klanten', client: 'Klant', noClients: 'Nog geen klanten', noClientsSub: 'Je vaste klanten verschijnen hier.',
+    min: 'min', with: 'met',
+  },
+  de: {
+    sales: 'Letzte Umsätze', last7: 'Letzte 7 Tage', appts: 'Termine', apptValue: 'Terminwert',
+    salesS: 'Umsatz', bookedS: 'Gebuchter Wert', salesNote: 'Umsatz = abgeschlossene Termine.',
+    upcoming: 'Kommende Termine', next7: 'Nächste 7 Tage', booked: (n: number) => `${n} gebucht`,
+    emptyUp: 'Dein Kalender ist leer', emptyUpSub: 'Teile deinen Buchungslink, um deine Woche zu füllen.', shareLink: 'Meinen Link teilen',
+    activity: 'Aktivität', noActivity: 'Noch keine Termine', noActivitySub: 'Neue Buchungen erscheinen hier, sobald sie eingehen.',
+    today: 'Nächste Termine heute', noToday: 'Heute nichts mehr', noTodaySub: 'Genieß die Pause, oder öffne deinen Kalender.', openCal: 'Kalender öffnen',
+    topServices: 'Beliebteste Leistungen', service: 'Leistung', thisMonth: 'Dieser Monat', lastMonth: 'Letzter Monat',
+    noServices: 'Diesen Monat keine Buchungen', noServicesSub: 'Deine meistgebuchten Leistungen erscheinen hier.',
+    topClients: 'Top-Kunden', client: 'Kunde', noClients: 'Noch keine Kunden', noClientsSub: 'Deine Stammkunden erscheinen hier.',
+    min: 'Min.', with: 'mit',
+  },
+  ar: {
+    sales: 'المبيعات الأخيرة', last7: 'آخر 7 أيام', appts: 'المواعيد', apptValue: 'قيمة المواعيد',
+    salesS: 'المبيعات', bookedS: 'القيمة المحجوزة', salesNote: 'المبيعات = المواعيد المكتملة.',
+    upcoming: 'المواعيد القادمة', next7: 'الأيام السبعة القادمة', booked: (n: number) => `${n} محجوز`,
+    emptyUp: 'جدولك فارغ', emptyUpSub: 'شارك رابط الحجز لتملأ أسبوعك.', shareLink: 'شارك رابطي',
+    activity: 'نشاط المواعيد', noActivity: 'لا مواعيد بعد', noActivitySub: 'تظهر الحجوزات الجديدة هنا فور وصولها.',
+    today: 'مواعيد اليوم التالية', noToday: 'لا شيء آخر اليوم', noTodaySub: 'استمتع بالاستراحة، أو افتح تقويمك.', openCal: 'افتح التقويم',
+    topServices: 'أكثر الخدمات طلبًا', service: 'الخدمة', thisMonth: 'هذا الشهر', lastMonth: 'الشهر الماضي',
+    noServices: 'لا حجوزات هذا الشهر', noServicesSub: 'تظهر هنا خدماتك الأكثر حجزًا.',
+    topClients: 'أفضل العملاء', client: 'العميل', noClients: 'لا عملاء بعد', noClientsSub: 'يظهر عملاؤك الدائمون هنا.',
+    min: 'د', with: 'مع',
   },
 }
 
@@ -253,9 +290,9 @@ function RankTable({ head, rows, empty }: { head: [string, string, string]; rows
 export default function DashboardWidgets({ appts, lang, format, statusLabel, applyDiscount }: {
   appts: WAppt[]; lang: string; format: (n: number) => string; statusLabel: Record<string, string>; applyDiscount: boolean
 }) {
-  const lng: Lng = lang === 'tr' ? 'tr' : 'en'
+  const lng: Lng = (['en', 'tr', 'nl', 'de', 'ar'] as const).includes(lang as Lng) ? (lang as Lng) : 'en'
   const t = COPY[lng]
-  const locale = lng === 'tr' ? 'tr-TR' : 'en-US'
+  const locale = SITE_LOCALE[lng]
   const now = new Date()
   const today = dayStart(now)
   const live = appts.filter(a => a.status !== 'cancelled')

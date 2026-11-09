@@ -10,6 +10,7 @@ import { glass, GLASS_PAGE_WASH as PAGE_WASH } from '@/lib/glass'
 import DashboardWidgets from '@/components/dashboard-widgets'
 import { isBlock } from '@/lib/blocks'
 import { kindForStatus, notifyStatus } from '@/lib/notify-status'
+import { L, SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 interface Barber {
   id: string; name: string; slug: string; photo_url: string | null
@@ -86,9 +87,9 @@ export default function DashboardPage() {
     if (kind) notifyStatus(id, kind)
   }
 
-  const fmt     = (iso: string) => new Date(iso).toLocaleString('tr-TR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })
-  const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  const fmt     = (iso: string) => new Date(iso).toLocaleString(SITE_LOCALE[toSiteLng(lang)], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(SITE_LOCALE[toSiteLng(lang)], { weekday: 'long', day: 'numeric', month: 'long' })
+  const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString(SITE_LOCALE[toSiteLng(lang)], { hour: '2-digit', minute: '2-digit' })
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
@@ -123,7 +124,7 @@ export default function DashboardPage() {
             {greeting}, {barber.name}
           </h1>
           <p style={{ marginTop: 6, fontSize: 14, color: '#9b9a97', margin: 0 }}>
-            {new Date().toLocaleDateString(lang || undefined, { weekday: 'long', day: 'numeric', month: 'long' })}
+            {new Date().toLocaleDateString(SITE_LOCALE[toSiteLng(lang)], { weekday: 'long', day: 'numeric', month: 'long' })}
             {' · '}{upcoming.length} {t.upcomingWord} {upcoming.length !== 1 ? t.apptWordPlural : t.apptWord}
           </p>
         </div>
@@ -176,11 +177,11 @@ export default function DashboardPage() {
                     <div style={{ background: 'rgba(255,255,255,0.4)', padding: '16px 16px' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, marginBottom: 12 }}>
                         {[
-                          { l: lang === 'tr' ? 'Tarih' : 'Date', v: fmtDate(appt.start_time) },
-                          { l: lang === 'tr' ? 'Saat' : 'Time', v: `${fmtTime(appt.start_time)} – ${fmtTime(appt.end_time)}` },
-                          { l: lang === 'tr' ? 'Hizmet' : 'Service', v: appt.services?.name ?? '—' },
+                          { l: L(toSiteLng(lang), { en: 'Date', nl: 'Datum', de: 'Datum', tr: 'Tarih', ar: 'التاريخ' }), v: fmtDate(appt.start_time) },
+                          { l: L(toSiteLng(lang), { en: 'Time', nl: 'Tijd', de: 'Uhrzeit', tr: 'Saat', ar: 'الوقت' }), v: `${fmtTime(appt.start_time)} – ${fmtTime(appt.end_time)}` },
+                          { l: L(toSiteLng(lang), { en: 'Service', nl: 'Behandeling', de: 'Leistung', tr: 'Hizmet', ar: 'الخدمة' }), v: appt.services?.name ?? '—' },
                           ...(FIRST_VISIT_DISCOUNT && appt.discount_percent ? [{ l: 'First-visit discount', v: appt.services ? `${appt.discount_percent}% — customer pays ${format(Math.round(appt.services.price * (100 - appt.discount_percent)) / 100)}` : `${appt.discount_percent}%` }] : []),
-                          { l: lang === 'tr' ? 'Telefon' : 'Phone', v: appt.customer_phone ?? '—' },
+                          { l: L(toSiteLng(lang), { en: 'Phone', nl: 'Telefoon', de: 'Telefon', tr: 'Telefon', ar: 'الهاتف' }), v: appt.customer_phone ?? '—' },
                         ].map(({ l, v }) => (
                           <div key={l} style={{ ...glass(true), padding: '10px 12px', borderRadius: 14 }}>
                             <p style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', color: '#9b9a97', margin: 0, textTransform: 'uppercase' }}>{l}</p>

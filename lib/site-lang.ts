@@ -25,3 +25,8 @@ export function browserSiteLng(): SiteLng {
 /** One short text in every site language. */
 export type All = Record<SiteLng, string>
 export const L = (lng: SiteLng, t: All) => t[lng] ?? t.en
+
+/** Date/number locale for each site language (Arabic with Latin digits, like the booking page). */
+export const SITE_LOCALE: Record<SiteLng, string> = { en: 'en-GB', nl: 'nl-NL', de: 'de-DE', tr: 'tr-TR', ar: 'ar-u-nu-latn' }
+/** Any language code → a site language (unknown → English). */
+export const toSiteLng = (v: unknown): SiteLng => (isSiteLng(v) ? v : 'en')

@@ -7,16 +7,17 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LogOut, MoreHorizontal, X, type LucideIcon } from 'lucide-react'
+import { L, type SiteLng } from '@/lib/site-lang'
 
 export type TabItem = { href: string; label: string; Icon: LucideIcon }
 
 export default function MobileTabBar({
-  tabs, more, pathname, tr, me, onLogout,
+  tabs, more, pathname, lng, me, onLogout,
 }: {
   tabs: TabItem[]
   more: TabItem[]
   pathname: string
-  tr: boolean
+  lng: SiteLng
   me: { name: string; email: string; photo: string | null }
   onLogout: () => void
 }) {
@@ -38,7 +39,7 @@ export default function MobileTabBar({
   return (
     <div className="md:hidden">
       {/* tab bar */}
-      <nav aria-label={tr ? 'Ana menü' : 'Main menu'}
+      <nav aria-label={L(lng, { en: 'Main menu', nl: 'Hoofdmenu', de: 'Hauptmenü', tr: 'Ana menü', ar: 'القائمة الرئيسية' })}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.06] bg-white/85 backdrop-blur-xl"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto flex max-w-[520px] items-stretch justify-around px-1">
@@ -55,7 +56,7 @@ export default function MobileTabBar({
           <button onClick={() => setOpen(true)} className="flex min-w-0 flex-1 flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10.5px] font-semibold"
             style={{ color: moreActive || open ? 'var(--accent)' : '#8e8e93' }} aria-haspopup="dialog" aria-expanded={open}>
             <MoreHorizontal size={23} strokeWidth={moreActive ? 2.2 : 1.8} />
-            <span>{tr ? 'Daha fazla' : 'More'}</span>
+            <span>{L(lng, { en: 'More', nl: 'Meer', de: 'Mehr', tr: 'Daha fazla', ar: 'المزيد' })}</span>
           </button>
         </div>
       </nav>
@@ -65,7 +66,7 @@ export default function MobileTabBar({
         {open && (
           <>
             <motion.div key="dim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)} className="fixed inset-0 z-50 bg-black/30" />
-            <motion.div key="sheet" role="dialog" aria-modal="true" aria-label={tr ? 'Daha fazla' : 'More'}
+            <motion.div key="sheet" role="dialog" aria-modal="true" aria-label={L(lng, { en: 'More', nl: 'Meer', de: 'Mehr', tr: 'Daha fazla', ar: 'المزيد' })}
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 420, damping: 38 }}
               drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.6 }}
               onDragEnd={(_, info) => { if (info.offset.y > 90 || info.velocity.y > 600) setOpen(false) }}
@@ -79,11 +80,11 @@ export default function MobileTabBar({
                     {me.photo ? <img src={me.photo} alt="" className="h-full w-full object-cover" /> : (me.name || me.email || '?').charAt(0).toUpperCase()}
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-[16px] font-semibold text-[#1c1c1e]">{me.name || (tr ? 'Hesabın' : 'Your account')}</p>
+                    <p className="truncate text-[16px] font-semibold text-[#1c1c1e]">{me.name || (L(lng, { en: 'Your account', nl: 'Je account', de: 'Dein Konto', tr: 'Hesabın', ar: 'حسابك' }))}</p>
                     <p className="truncate text-[13px] text-[#8e8e93]">{me.email}</p>
                   </div>
                 </div>
-                <button onClick={() => setOpen(false)} aria-label={tr ? 'Kapat' : 'Close'} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/[0.06] text-[#3a3a3c]"><X size={17} /></button>
+                <button onClick={() => setOpen(false)} aria-label={L(lng, { en: 'Close', nl: 'Sluiten', de: 'Schließen', tr: 'Kapat', ar: 'إغلاق' })} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/[0.06] text-[#3a3a3c]"><X size={17} /></button>
               </div>
 
               <div className="overflow-hidden rounded-[16px] bg-white">
@@ -101,7 +102,7 @@ export default function MobileTabBar({
               </div>
 
               <button onClick={onLogout} className="mt-3 flex w-full items-center gap-3 rounded-[16px] bg-white px-4 py-3.5 text-left text-[16px] font-medium text-[#ff3b30] active:bg-black/[0.04]">
-                <LogOut size={20} strokeWidth={1.9} /> {tr ? 'Çıkış yap' : 'Sign out'}
+                <LogOut size={20} strokeWidth={1.9} /> {L(lng, { en: 'Sign out', nl: 'Uitloggen', de: 'Abmelden', tr: 'Çıkış yap', ar: 'تسجيل الخروج' })}
               </button>
             </motion.div>
           </>

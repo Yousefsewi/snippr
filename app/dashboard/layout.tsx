@@ -16,6 +16,7 @@ import { useStored, writeStored } from '@/lib/use-stored'
 import { glass, glassHover, GLASS_WASH, SALON_STYLE_KEY, getSalonStyle } from '@/lib/glass'
 import { isPlan, PLAN_NAMES, trialDaysLeft, trialCopy, type PlanId } from '@/lib/plan'
 import { ANNOUNCEMENTS, NEWS_READ_KEY, newsDate, newsLang, parseRead, txt } from '@/lib/announcements'
+import { L, SITE_LOCALE } from '@/lib/site-lang'
 
 const navIcons: Record<string, LucideIcon> = {
   overview: Home, calendar: Calendar, waitlist: Hourglass, sales: Receipt, appointmentsNav: ListChecks, addons: Blocks, services: Scissors, profile: User,
@@ -56,8 +57,7 @@ function Chrome({ children }: { children: ReactNode }) {
   const router   = useRouter()
   const pathname = usePathname()
   const { t, isRTL, lang } = useLang()
-  const tr = lang === 'tr'
-  const loc = tr ? 'tr-TR' : 'en-US'
+  const loc = SITE_LOCALE[lang]
   const { theme } = useTheme()
   const [loggingOut, setLoggingOut] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
@@ -172,7 +172,7 @@ function Chrome({ children }: { children: ReactNode }) {
           padding: collapsed ? '14px 0 10px' : '14px 12px 10px',
           borderBottom: '1px solid #e9e9e7',
         }}>
-          <Link href="/dashboard" title={tr ? 'Ana sayfa' : 'Home'} aria-label={tr ? 'Panel ana sayfası' : 'Dashboard home'} style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden', textDecoration: 'none', cursor: 'pointer' }}>
+          <Link href="/dashboard" title={L(lang, { en: 'Home', nl: 'Home', de: 'Startseite', tr: 'Ana sayfa', ar: 'الرئيسية' })} aria-label={L(lang, { en: 'Dashboard home', nl: 'Dashboard-home', de: 'Dashboard-Startseite', tr: 'Panel ana sayfası', ar: 'الصفحة الرئيسية للوحة' })} style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden', textDecoration: 'none', cursor: 'pointer' }}>
             {collapsed ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src="/logo.svg" alt="Snippr" style={{ width: 40, height: 'auto', flexShrink: 0, display: 'block' }} />
@@ -180,14 +180,14 @@ function Chrome({ children }: { children: ReactNode }) {
               <div style={{ overflow: 'hidden' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/logo.svg" alt="Snippr" style={{ height: 24, width: 'auto', display: 'block', margin: '2px 0 3px' }} />
-                <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>{tr ? 'Akıllı randevu' : 'Book smarter'}</p>
+                <p style={{ fontSize: 12, color: '#9b9a97', margin: 0 }}>{L(lang, { en: 'Book smarter', nl: 'Slimmer boeken', de: 'Smarter buchen', tr: 'Akıllı randevu', ar: 'احجز بذكاء' })}</p>
               </div>
             )}
           </Link>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            title={collapsed ? (tr ? 'Menüyü aç' : 'Expand menu') : (tr ? 'Menüyü daralt' : 'Collapse menu')}
-            aria-label={collapsed ? (tr ? 'Menüyü aç' : 'Expand menu') : (tr ? 'Menüyü daralt' : 'Collapse menu')}
+            title={collapsed ? (L(lang, { en: 'Expand menu', nl: 'Menu uitklappen', de: 'Menü ausklappen', tr: 'Menüyü aç', ar: 'افتح القائمة' })) : (L(lang, { en: 'Collapse menu', nl: 'Menu inklappen', de: 'Menü einklappen', tr: 'Menüyü daralt', ar: 'صغّر القائمة' }))}
+            aria-label={collapsed ? (L(lang, { en: 'Expand menu', nl: 'Menu uitklappen', de: 'Menü ausklappen', tr: 'Menüyü aç', ar: 'افتح القائمة' })) : (L(lang, { en: 'Collapse menu', nl: 'Menu inklappen', de: 'Menü einklappen', tr: 'Menüyü daralt', ar: 'صغّر القائمة' }))}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 9, background: 'none', border: 'none', color: '#9b9a97', cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s, color 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#37352f' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#9b9a97' }}
@@ -208,7 +208,7 @@ function Chrome({ children }: { children: ReactNode }) {
             <div style={{ ...glass(), display: 'flex', alignItems: 'center', gap: 8, padding: '9px 11px', borderRadius: 14, marginBottom: 6 }}>
               <Search size={15} strokeWidth={1.75} color="#9b9a97" style={{ flexShrink: 0 }} />
               <input
-                placeholder={tr ? 'Ara…' : 'Search…'}
+                placeholder={L(lang, { en: 'Search…', nl: 'Zoeken…', de: 'Suchen…', tr: 'Ara…', ar: 'بحث…' })}
                 style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 14.5, color: '#37352f', fontFamily: 'inherit' }}
               />
             </div>
@@ -284,7 +284,7 @@ function Chrome({ children }: { children: ReactNode }) {
                   </span>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#37352f', margin: '12px 0 0' }}>{t.noNotifications}</p>
                   <p style={{ fontSize: 12.5, color: '#9b9a97', margin: '4px 0 0', lineHeight: 1.45 }}>
-                    {nl === 'tr' ? 'Yeni özellikler ve duyurular burada görünecek.' : nl === 'nl' ? 'Nieuwe functies en aankondigingen verschijnen hier.' : 'New features and announcements will show up here.'}
+                    {L(lang, { en: 'New features and announcements will show up here.', nl: 'Nieuwe functies en aankondigingen verschijnen hier.', de: 'Neue Funktionen und Ankündigungen erscheinen hier.', tr: 'Yeni özellikler ve duyurular burada görünecek.', ar: 'ستظهر هنا الميزات الجديدة والإعلانات.' })}
                   </p>
                 </div>
               ) : ANNOUNCEMENTS.map(a => {
@@ -314,7 +314,7 @@ function Chrome({ children }: { children: ReactNode }) {
               </div>
               <Link href="/dashboard/news" onClick={() => setShowNotif(false)}
                 style={{ display: 'block', textAlign: 'center', padding: '11px 14px', borderTop: '1px solid #f1f1ef', fontSize: 13, fontWeight: 600, color: '#37352f', textDecoration: 'none' }}>
-                {nl === 'tr' ? 'Tüm duyurular' : nl === 'nl' ? 'Alle aankondigingen' : 'All announcements'}
+                {L(lang, { en: 'All announcements', nl: 'Alle aankondigingen', de: 'Alle Ankündigungen', tr: 'Tüm duyurular', ar: 'كل الإعلانات' })}
               </Link>
             </div>
             </>
@@ -400,7 +400,7 @@ function Chrome({ children }: { children: ReactNode }) {
                       onMouseLeave={e => { if (pathname !== '/dashboard/link') glassHover(e, false) }}
                     >
                       <Link2 size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                      <span>{tr ? 'Randevu linki' : 'Booking link'}</span>
+                      <span>{L(lang, { en: 'Booking link', nl: 'Boekingslink', de: 'Buchungslink', tr: 'Randevu linki', ar: 'رابط الحجز' })}</span>
                     </Link>
                     {/* Need support? */}
                     <Link href="/dashboard/help" onClick={() => setShowProfileMenu(false)}
@@ -410,9 +410,9 @@ function Chrome({ children }: { children: ReactNode }) {
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                         <LifeBuoy size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                        {tr ? 'Destek mi lazım?' : 'Need support?'}
+                        {L(lang, { en: 'Need support?', nl: 'Hulp nodig?', de: 'Hilfe nötig?', tr: 'Destek mi lazım?', ar: 'تحتاج مساعدة؟' })}
                       </span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#fff', background: 'var(--accent)', borderRadius: 6, padding: '2px 6px' }}>{tr ? 'Yeni' : 'New'}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#fff', background: 'var(--accent)', borderRadius: 6, padding: '2px 6px' }}>{L(lang, { en: 'New', nl: 'Nieuw', de: 'Neu', tr: 'Yeni', ar: 'جديد' })}</span>
                     </Link>
                     {/* Settings */}
                     <Link href="/dashboard/settings" onClick={() => setShowProfileMenu(false)}
@@ -455,14 +455,14 @@ function Chrome({ children }: { children: ReactNode }) {
                       : <span style={{ fontSize: 15, fontWeight: 700, color: '#787774' }}>{(me.name || me.email || '?').charAt(0).toUpperCase()}</span>}
                   </div>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <p style={{ fontSize: 13.5, fontWeight: 600, color: '#37352f', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{me.name || (tr ? 'Hesabın' : 'Your account')}</p>
+                    <p style={{ fontSize: 13.5, fontWeight: 600, color: '#37352f', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{me.name || (L(lang, { en: 'Your account', nl: 'Je account', de: 'Dein Konto', tr: 'Hesabın', ar: 'حسابك' }))}</p>
                     <p style={{ fontSize: 12, color: '#9b9a97', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{me.email}</p>
                   </div>
                 </Link>
                 {/* ... → menu */}
                 <button
                   onClick={() => setShowProfileMenu(o => !o)}
-                  title={tr ? 'Daha fazla' : 'More'}
+                  title={L(lang, { en: 'More', nl: 'Meer', de: 'Mehr', tr: 'Daha fazla', ar: 'المزيد' })}
                   style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 8, border: 'none', background: 'none', color: '#9b9a97', cursor: 'pointer' }}
                   onMouseEnter={e => { glassHover(e, true) }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}
@@ -511,7 +511,7 @@ function Chrome({ children }: { children: ReactNode }) {
       {/* ── Phone navigation ── */}
       <MobileTabBar
         pathname={pathname}
-        tr={tr}
+        lng={lang}
         me={me}
         onLogout={handleLogout}
         tabs={[
@@ -524,7 +524,7 @@ function Chrome({ children }: { children: ReactNode }) {
           { href: '/dashboard/waitlist', label: t.waitlist, Icon: Hourglass },
           ...(servicesOn ? [{ href: '/dashboard/services', label: t.services, Icon: Scissors }] : []),
           { href: '/dashboard/profile', label: t.profile, Icon: User },
-          { href: '/dashboard/link', label: tr ? 'Randevu linki' : 'Booking link', Icon: Link2 },
+          { href: '/dashboard/link', label: L(lang, { en: 'Booking link', nl: 'Boekingslink', de: 'Buchungslink', tr: 'Randevu linki', ar: 'رابط الحجز' }), Icon: Link2 },
           { href: '/dashboard/addons', label: t.addons, Icon: Blocks },
           { href: '/dashboard/plans', label: t.plansBilling, Icon: CreditCard },
           { href: '/dashboard/settings', label: t.settings, Icon: Settings },
