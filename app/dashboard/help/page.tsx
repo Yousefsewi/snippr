@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { SUPPORT_EMAIL } from '@/lib/site'
+import { useTx } from '@/lib/i18n'
+import { DICT } from './copy'
 
 const text = 'text-[#37352f]'
 const muted = 'text-[#9b9a97]'
@@ -23,24 +25,25 @@ const faqs = [
 ]
 
 export default function HelpPage() {
+  const tx = useTx(DICT)
   const [open, setOpen] = useState<number | null>(0)
 
   return (
     <div className="flex flex-col gap-8" style={{ fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
       <div>
-        <h1 className={`text-[28px] font-bold tracking-tight ${text}`}>Help &amp; Instructions</h1>
-        <p className={`mt-1.5 text-sm ${muted}`}>Everything you need to get started and make the most of Snippr</p>
+        <h1 className={`text-[28px] font-bold tracking-tight ${text}`}>{tx('Help & Instructions')}</h1>
+        <p className={`mt-1.5 text-sm ${muted}`}>{tx('Everything you need to get started and make the most of Snippr')}</p>
       </div>
 
       {/* Getting started steps */}
       <section>
-        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>Getting started</p>
+        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{tx('Getting started')}</p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {steps.map(({ n, title, desc }) => (
             <div key={n} className={`rounded-lg border ${border} bg-[#ffffff] p-4`}>
               <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#37352f] text-xs font-semibold text-[#ffffff]">{n}</div>
-              <p className={`text-sm font-medium ${text}`}>{title}</p>
-              <p className={`mt-1 text-xs leading-relaxed ${muted}`}>{desc}</p>
+              <p className={`text-sm font-medium ${text}`}>{tx(title)}</p>
+              <p className={`mt-1 text-xs leading-relaxed ${muted}`}>{tx(desc)}</p>
             </div>
           ))}
         </div>
@@ -48,7 +51,7 @@ export default function HelpPage() {
 
       {/* FAQ */}
       <section>
-        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>Frequently asked questions</p>
+        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{tx('Frequently asked questions')}</p>
         <div className={`overflow-hidden rounded-lg border ${border} bg-[#ffffff] divide-y divide-[#e9e9e7]`}>
           {faqs.map((f, i) => (
             <div key={i}>
@@ -56,11 +59,11 @@ export default function HelpPage() {
                 onClick={() => setOpen(open === i ? null : i)}
                 className="flex w-full items-center justify-between px-4 py-3.5 text-left transition hover:bg-[#f7f7f5]"
               >
-                <span className={`text-sm font-medium ${text}`}>{f.q}</span>
+                <span className={`text-sm font-medium ${text}`}>{tx(f.q)}</span>
                 <span className={`ml-3 text-xs ${muted} transition-transform ${open === i ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {open === i && (
-                <div className={`px-4 pb-4 text-sm leading-relaxed ${muted}`}>{f.a}</div>
+                <div className={`px-4 pb-4 text-sm leading-relaxed ${muted}`}>{tx(f.a)}</div>
               )}
             </div>
           ))}
@@ -69,17 +72,17 @@ export default function HelpPage() {
 
       {/* Contact */}
       <section>
-        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>Still need help?</p>
+        <p className={`mb-3 px-1 text-xs font-medium ${muted}`}>{tx('Still need help?')}</p>
         <div className={`flex items-center justify-between rounded-lg border ${border} bg-[#ffffff] p-4`}>
           <div>
-            <p className={`text-sm font-medium ${text}`}>Contact support</p>
-            <p className={`text-xs ${muted}`}>We usually reply within a few hours</p>
+            <p className={`text-sm font-medium ${text}`}>{tx('Contact support')}</p>
+            <p className={`text-xs ${muted}`}>{tx('We usually reply within a few hours')}</p>
           </div>
           <a
             href={`mailto:${SUPPORT_EMAIL}`}
             className="rounded-md bg-[#37352f] px-4 py-2 text-sm font-medium text-[#ffffff] transition hover:opacity-90"
           >
-            Email us
+            {tx('Email us')}
           </a>
         </div>
       </section>
