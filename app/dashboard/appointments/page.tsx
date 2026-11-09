@@ -12,6 +12,7 @@ import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { isBlock } from '@/lib/blocks'
 import { buildXlsx, downloadBlob, type Cell } from '@/lib/xlsx'
 import { kindForStatus, notifyStatus } from '@/lib/notify-status'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 interface Appt {
   id: string; customer_name: string; customer_phone: string | null; customer_email: string | null
@@ -44,6 +45,36 @@ const COPY = {
     st: { pending: 'Beklemede', confirmed: 'Onaylandı', completed: 'Tamamlandı', cancelled: 'İptal' } as Record<string, string>,
     showing: (a: number, b: number, n: number) => `${a} - ${b} / ${n} sonuç görüntüleniyor`, none: 'Eşleşen randevu yok', noneSub: 'Başka bir tarih aralığı dene ya da filtreleri temizle.',
     h: 'sa', min: 'dk', confirm: 'Onayla', complete: 'Tamamlandı yap', cancel: 'İptal et', phone: 'Telefon', email: 'E-posta',
+  },
+  nl: {
+    title: 'Afspraken', sub: 'Bekijk, filter en exporteer de afspraken die bij je zijn geboekt.', export: 'Exporteren', search: 'Zoek op nummer of klant',
+    ranges: { all: 'Alle datums', upcoming: 'Komend', today: 'Vandaag', mtd: 'Deze maand tot nu', last7: 'Afgelopen 7 dagen', last30: 'Afgelopen 30 dagen', thisMonth: 'Deze maand', lastMonth: 'Vorige maand' },
+    sorts: { startDesc: 'Datum afspraak (nieuwste eerst)', startAsc: 'Datum afspraak (oudste eerst)', createdDesc: 'Aangemaakt (nieuwste eerst)', createdAsc: 'Aangemaakt (oudste eerst)' },
+    filters: 'Filters', status: 'Status', service: 'Behandeling', anyService: 'Alle behandelingen', clear: 'Alles wissen', apply: 'Resultaten tonen',
+    cols: { ref: 'Nr.', client: 'Klant', service: 'Behandeling', created: 'Aangemaakt', scheduled: 'Gepland', duration: 'Duur', price: 'Prijs', status: 'Status' },
+    st: { pending: 'In afwachting', confirmed: 'Bevestigd', completed: 'Afgerond', cancelled: 'Geannuleerd' } as Record<string, string>,
+    showing: (a: number, b: number, n: number) => `${a}–${b} van ${n} resultaten`, none: 'Geen afspraken gevonden', noneSub: 'Probeer een andere periode of wis de filters.',
+    h: 'u', min: 'min', confirm: 'Bevestigen', complete: 'Afronden', cancel: 'Annuleren', phone: 'Telefoon', email: 'E-mail',
+  },
+  de: {
+    title: 'Termine', sub: 'Sieh dir die bei dir gebuchten Termine an, filtere und exportiere sie.', export: 'Exportieren', search: 'Nach Nummer oder Kunde suchen',
+    ranges: { all: 'Alle Daten', upcoming: 'Kommend', today: 'Heute', mtd: 'Monat bis heute', last7: 'Letzte 7 Tage', last30: 'Letzte 30 Tage', thisMonth: 'Dieser Monat', lastMonth: 'Letzter Monat' },
+    sorts: { startDesc: 'Termindatum (neueste zuerst)', startAsc: 'Termindatum (älteste zuerst)', createdDesc: 'Erstellt (neueste zuerst)', createdAsc: 'Erstellt (älteste zuerst)' },
+    filters: 'Filter', status: 'Status', service: 'Leistung', anyService: 'Alle Leistungen', clear: 'Alles zurücksetzen', apply: 'Ergebnisse anzeigen',
+    cols: { ref: 'Nr.', client: 'Kunde', service: 'Leistung', created: 'Erstellt', scheduled: 'Geplant', duration: 'Dauer', price: 'Preis', status: 'Status' },
+    st: { pending: 'Ausstehend', confirmed: 'Bestätigt', completed: 'Abgeschlossen', cancelled: 'Storniert' } as Record<string, string>,
+    showing: (a: number, b: number, n: number) => `${a}–${b} von ${n} Ergebnissen`, none: 'Keine passenden Termine', noneSub: 'Versuch einen anderen Zeitraum oder setz die Filter zurück.',
+    h: 'Std.', min: 'Min.', confirm: 'Bestätigen', complete: 'Als erledigt markieren', cancel: 'Stornieren', phone: 'Telefon', email: 'E-Mail',
+  },
+  ar: {
+    title: 'المواعيد', sub: 'اعرض المواعيد المحجوزة لديك وصفّها وصدّرها.', export: 'تصدير', search: 'ابحث بالرقم أو اسم العميل',
+    ranges: { all: 'كل التواريخ', upcoming: 'القادمة', today: 'اليوم', mtd: 'الشهر حتى الآن', last7: 'آخر 7 أيام', last30: 'آخر 30 يومًا', thisMonth: 'هذا الشهر', lastMonth: 'الشهر الماضي' },
+    sorts: { startDesc: 'تاريخ الموعد (الأحدث أولًا)', startAsc: 'تاريخ الموعد (الأقدم أولًا)', createdDesc: 'تاريخ الإنشاء (الأحدث أولًا)', createdAsc: 'تاريخ الإنشاء (الأقدم أولًا)' },
+    filters: 'الفلاتر', status: 'الحالة', service: 'الخدمة', anyService: 'كل الخدمات', clear: 'مسح الكل', apply: 'عرض النتائج',
+    cols: { ref: 'الرقم', client: 'العميل', service: 'الخدمة', created: 'أُنشئ', scheduled: 'الموعد', duration: 'المدة', price: 'السعر', status: 'الحالة' },
+    st: { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغى' } as Record<string, string>,
+    showing: (a: number, b: number, n: number) => `${a}–${b} من ${n} نتيجة`, none: 'لا توجد مواعيد مطابقة', noneSub: 'جرّب فترة أخرى أو امسح الفلاتر.',
+    h: 'س', min: 'د', confirm: 'تأكيد', complete: 'تحديد كمكتمل', cancel: 'إلغاء', phone: 'الهاتف', email: 'البريد الإلكتروني',
   },
 }
 
@@ -119,9 +150,9 @@ function FileBadge({ label }: { label: string }) {
 
 export default function AppointmentsPage() {
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
   const t = COPY[lng]
-  const locale = lng === 'tr' ? 'tr-TR' : 'en-US'
+  const locale = SITE_LOCALE[lng]
   const { format } = useCurrency()
 
   const [appts, setAppts] = useState<Appt[]>([])
@@ -212,7 +243,7 @@ export default function AppointmentsPage() {
     [t.cols.ref, t.cols.client, t.phone, t.email, t.cols.service, t.cols.created, t.cols.scheduled, t.cols.duration, t.cols.price, t.cols.status],
     ...filtered.map(a => [ref(a.id), a.customer_name, a.customer_phone ?? '', a.customer_email ?? '', a.services?.name ?? '', dt(a.created_at), dt(a.start_time), dur(a), Math.round(net(a) * 100) / 100, t.st[a.status] ?? a.status]),
   ]
-  const fileBase = `snippr-${lng === 'tr' ? 'randevular' : 'appointments'}-${new Date().toISOString().slice(0, 10)}`
+  const fileBase = `snippr-${({ en: 'appointments', nl: 'afspraken', de: 'termine', tr: 'randevular', ar: 'appointments' })[lng]}-${new Date().toISOString().slice(0, 10)}`
   const exportCsv = () => {
     const esc = (v: Cell) => `"${String(v ?? '').replace(/"/g, '""')}"`
     downloadBlob(new Blob(['﻿' + table().map(r => r.map(esc).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }), `${fileBase}.csv`)

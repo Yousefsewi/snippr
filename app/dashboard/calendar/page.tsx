@@ -16,6 +16,7 @@ import { DEFAULT_HOURS, type Day as HDay, type Hours } from '@/lib/hours'
 import { blockName, blockReason, isBlock } from '@/lib/blocks'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
 import { notifyStatus } from '@/lib/notify-status'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 interface Appointment {
   id: string
@@ -60,6 +61,48 @@ const COPY = {
     errOverlap: 'Bu saatte zaten bir randevu var.', errGeneric: 'Kaydedilemedi. Lütfen tekrar dene.', errDays: 'Son gün, ilk günle aynı ya da sonra olmalı (en fazla 60 gün).',
     st: { pending: 'Beklemede', confirmed: 'Onaylandı', completed: 'Tamamlandı', cancelled: 'İptal' } as Record<string, string>,
     closed: 'Kapalı', delBlock: 'Bu kapalı zaman silinsin mi?',
+  },
+  nl: {
+    today: 'Vandaag', views: { day: 'Dagweergave', three: '3-dagenweergave', week: 'Weekweergave', month: 'Maandweergave' }, short: { day: 'Dag', three: '3 dagen', week: 'Week', month: 'Maand' },
+    actions: 'Acties', addAppt: 'Afspraak toevoegen', addBlock: 'Geblokkeerde tijd toevoegen', editHours: 'Openingstijden bewerken', addOff: 'Vrije tijd toevoegen',
+    inWeeks: (n: number) => `Over ${n} ${n > 1 ? 'weken' : 'week'}`, inMonths: (n: number) => `Over ${n} maanden`, more: 'Meer', less: 'Minder',
+    dragHint: 'Sleep om te verplaatsen · sleep de onderrand om de duur te wijzigen', add: 'Toevoegen', refresh: 'Vernieuwen', addWait: 'Wachtlijst', addApptShort: 'Afspraak', addBlockShort: 'Geblokkeerde tijd', addOffShort: 'Vrij', cancel: 'Annuleren', save: 'Opslaan', saving: 'Opslaan…', delete: 'Verwijderen',
+    client: 'Naam klant', phone: 'Telefoon (optioneel)', service: 'Behandeling', noService: 'Geen behandeling', date: 'Datum', time: 'Tijd', from: 'Van', to: 'Tot', startDate: 'Eerste dag', endDate: 'Laatste dag',
+    reason: 'Reden (optioneel)', blockDefault: 'Gesloten', offDefault: 'Vrij', reasonPh: 'bijv. Lunchpauze',
+    blockHelp: 'Klanten kunnen in deze tijd niet boeken.', offHelp: 'Je boekingspagina is op deze dagen dicht.',
+    noAppts: 'Geen afspraken', more3: (n: number) => `+${n} meer`, minutes: 'min',
+    errName: 'Vul de naam van de klant in.', errTime: 'De eindtijd moet na de begintijd liggen.', errPast: 'Je kunt niets in het verleden toevoegen.',
+    errOverlap: 'Er staat al een afspraak op deze tijd.', errGeneric: 'Opslaan is niet gelukt. Probeer het opnieuw.', errDays: 'Kies een laatste dag op of na de eerste dag (max. 60 dagen).',
+    st: { pending: 'In afwachting', confirmed: 'Bevestigd', completed: 'Afgerond', cancelled: 'Geannuleerd' } as Record<string, string>,
+    closed: 'Gesloten', delBlock: 'Deze geblokkeerde tijd verwijderen?',
+  },
+  de: {
+    today: 'Heute', views: { day: 'Tagesansicht', three: '3-Tage-Ansicht', week: 'Wochenansicht', month: 'Monatsansicht' }, short: { day: 'Tag', three: '3 Tage', week: 'Woche', month: 'Monat' },
+    actions: 'Aktionen', addAppt: 'Termin hinzufügen', addBlock: 'Gesperrte Zeit hinzufügen', editHours: 'Arbeitszeiten bearbeiten', addOff: 'Freie Zeit hinzufügen',
+    inWeeks: (n: number) => `In ${n} ${n > 1 ? 'Wochen' : 'Woche'}`, inMonths: (n: number) => `In ${n} Monaten`, more: 'Mehr', less: 'Weniger',
+    dragHint: 'Zum Verschieben ziehen · untere Kante ziehen, um die Dauer zu ändern', add: 'Hinzufügen', refresh: 'Aktualisieren', addWait: 'Warteliste', addApptShort: 'Termin', addBlockShort: 'Gesperrte Zeit', addOffShort: 'Frei', cancel: 'Abbrechen', save: 'Speichern', saving: 'Wird gespeichert…', delete: 'Löschen',
+    client: 'Name des Kunden', phone: 'Telefon (optional)', service: 'Leistung', noService: 'Keine Leistung', date: 'Datum', time: 'Uhrzeit', from: 'Von', to: 'Bis', startDate: 'Erster Tag', endDate: 'Letzter Tag',
+    reason: 'Grund (optional)', blockDefault: 'Geschlossen', offDefault: 'Frei', reasonPh: 'z. B. Mittagspause',
+    blockHelp: 'Kunden können in dieser Zeit nicht buchen.', offHelp: 'Deine Buchungsseite ist an diesen Tagen geschlossen.',
+    noAppts: 'Keine Termine', more3: (n: number) => `+${n} weitere`, minutes: 'Min.',
+    errName: 'Bitte gib den Namen des Kunden ein.', errTime: 'Die Endzeit muss nach der Startzeit liegen.', errPast: 'Du kannst nichts in der Vergangenheit eintragen.',
+    errOverlap: 'Zu dieser Zeit gibt es schon einen Termin.', errGeneric: 'Speichern fehlgeschlagen. Bitte versuch es noch einmal.', errDays: 'Wähle einen letzten Tag am oder nach dem ersten Tag (max. 60 Tage).',
+    st: { pending: 'Ausstehend', confirmed: 'Bestätigt', completed: 'Abgeschlossen', cancelled: 'Storniert' } as Record<string, string>,
+    closed: 'Geschlossen', delBlock: 'Diese gesperrte Zeit entfernen?',
+  },
+  ar: {
+    today: 'اليوم', views: { day: 'عرض اليوم', three: 'عرض 3 أيام', week: 'عرض الأسبوع', month: 'عرض الشهر' }, short: { day: 'يوم', three: '3 أيام', week: 'أسبوع', month: 'شهر' },
+    actions: 'إجراءات', addAppt: 'إضافة موعد', addBlock: 'إضافة وقت مغلق', editHours: 'تعديل ساعات العمل', addOff: 'إضافة إجازة',
+    inWeeks: (n: number) => `بعد ${n} أسبوع`, inMonths: (n: number) => `بعد ${n} أشهر`, more: 'المزيد', less: 'أقل',
+    dragHint: 'اسحب للنقل · اسحب الحافة السفلية لتغيير المدة', add: 'إضافة', refresh: 'تحديث', addWait: 'قائمة الانتظار', addApptShort: 'موعد', addBlockShort: 'وقت مغلق', addOffShort: 'إجازة', cancel: 'إلغاء', save: 'حفظ', saving: 'جارٍ الحفظ…', delete: 'حذف',
+    client: 'اسم العميل', phone: 'الهاتف (اختياري)', service: 'الخدمة', noService: 'بدون خدمة', date: 'التاريخ', time: 'الوقت', from: 'من', to: 'إلى', startDate: 'اليوم الأول', endDate: 'اليوم الأخير',
+    reason: 'السبب (اختياري)', blockDefault: 'مغلق', offDefault: 'إجازة', reasonPh: 'مثلًا: استراحة الغداء',
+    blockHelp: 'لا يمكن للعملاء الحجز في هذا الوقت.', offHelp: 'صفحة الحجز مغلقة في هذه الأيام.',
+    noAppts: 'لا مواعيد', more3: (n: number) => `+${n} أخرى`, minutes: 'د',
+    errName: 'يرجى إدخال اسم العميل.', errTime: 'يجب أن يكون وقت النهاية بعد وقت البداية.', errPast: 'لا يمكنك إضافة شيء في الماضي.',
+    errOverlap: 'يوجد موعد بالفعل في هذا الوقت.', errGeneric: 'تعذر الحفظ. يرجى المحاولة مرة أخرى.', errDays: 'اختر يومًا أخيرًا في اليوم الأول أو بعده (60 يومًا كحد أقصى).',
+    st: { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغى' } as Record<string, string>,
+    closed: 'مغلق', delBlock: 'إزالة هذا الوقت المغلق؟',
   },
 }
 
@@ -166,9 +209,9 @@ export default function CalendarPage() {
   const router = useRouter()
   const { format } = useCurrency()
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
   const t = COPY[lng]
-  const locale = lng === 'tr' ? 'tr-TR' : 'en-US'
+  const locale = SITE_LOCALE[lng]
   const weekdays = Array.from({ length: 7 }, (_, i) => plusDays(mondayOf(new Date(2026, 0, 5)), i).toLocaleDateString(locale, { weekday: 'short' }))
 
   const [appointments, setAppointments] = useState<Appointment[]>([])

@@ -14,6 +14,7 @@ import { isBlock } from '@/lib/blocks'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
 import { buildXlsx, downloadBlob, type Cell } from '@/lib/xlsx'
 import { notifyStatus } from '@/lib/notify-status'
+import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 type Method = 'cash' | 'card' | 'other'
 type Period = 'day' | 'week' | 'month'
@@ -56,6 +57,54 @@ const COPY = {
     setupTitle: 'Kasayı açmak için bir adım kaldı', setupBody: 'supabase/sales.sql dosyasını Supabase SQL Editor’da bir kez çalıştır, sonra yenile. Özet tablolar şimdiden çalışıyor.',
     sale: 'Yeni satış', client: 'Müşteri', walkIn: 'Kapıdan gelen müşteri', service: 'Hizmet', payBy: 'Ödeme', cancel: 'Vazgeç', save: 'Kaydet', saving: 'Kaydediliyor…',
     errOverlap: 'Şu anda başka bir randevu var — önce onu bitir ya da kaydır.', errGeneric: 'Kaydedilemedi. Lütfen tekrar dene.', errService: 'Bir hizmet seç.',
+  },
+  nl: {
+    title: 'Dagomzet', titles: { day: 'Dagomzet', week: 'Weekomzet', month: 'Maandomzet' }, periods: { day: 'Dag', week: 'Week', month: 'Maand' },
+    sub: 'Bekijk omzet en betalingen per dag, week of maand, en exporteer ze.', export: 'Exporteren', csv: 'CSV', excel: 'Excel', pdf: 'PDF', print: 'Afdrukken / PDF', newSale: 'Nieuwe verkoop',
+    byDay: 'Per dag', dayCol: 'Dag', apptsCol: 'Afspraken', salesCol: 'Omzet', tillAll: 'Kassa — afspraken', sheetSummary: 'Overzicht', sheetDays: 'Dagen', sheetAppts: 'Afspraken',
+    colDate: 'Datum', colTime: 'Tijd', colClient: 'Klant', colService: 'Behandeling', colStatus: 'Status', colPrice: 'Prijs', colPay: 'Betaling', colTip: 'Fooi', period: 'Periode',
+    today: 'Vandaag',
+    items: 'Omzetoverzicht', itemType: 'Item', qty: 'Aantal', gross: 'Totaal',
+    rServices: 'Behandelingen (afgerond)', rDiscounts: 'Korting eerste bezoek', rUpcoming: 'Geboekt, nog niet afgerond', rCancelled: 'Geannuleerd', rTotal: 'Totale omzet',
+    cash: 'Betaaloverzicht', method: 'Betaalwijze', collected: 'Ontvangen',
+    m: { cash: 'Contant', card: 'Pin', other: 'Anders' } as Record<Method, string>, mNone: 'Nog niet vastgelegd', mTotal: 'Totaal ontvangen', tips: 'Fooien',
+    till: 'Kassa — afspraken van vandaag', tillHelp: 'Kies hoe elke afgeronde afspraak is betaald. Daarmee wordt hij als afgerond gemarkeerd.', tip: 'Fooi', noAppts: 'Geen afspraken op deze dag.',
+    st: { pending: 'In afwachting', confirmed: 'Bevestigd', completed: 'Afgerond', cancelled: 'Geannuleerd' } as Record<string, string>,
+    setupTitle: 'Nog één stap om de kassa aan te zetten', setupBody: 'Voer supabase/sales.sql één keer uit in de Supabase SQL Editor en vernieuw de pagina. Het overzicht werkt al zonder.',
+    sale: 'Nieuwe verkoop', client: 'Klant', walkIn: 'Inloopklant', service: 'Behandeling', payBy: 'Betaald met', cancel: 'Annuleren', save: 'Opslaan', saving: 'Opslaan…',
+    errOverlap: 'Er loopt nu een andere afspraak. Rond die eerst af of verplaats hem.', errGeneric: 'Opslaan is niet gelukt. Probeer het opnieuw.', errService: 'Kies een behandeling.',
+  },
+  de: {
+    title: 'Tagesumsatz', titles: { day: 'Tagesumsatz', week: 'Wochenumsatz', month: 'Monatsumsatz' }, periods: { day: 'Täglich', week: 'Wöchentlich', month: 'Monatlich' },
+    sub: 'Sieh Umsätze und Zahlungen für einen Tag, eine Woche oder einen Monat und exportiere sie.', export: 'Exportieren', csv: 'CSV', excel: 'Excel', pdf: 'PDF', print: 'Drucken / PDF', newSale: 'Neuer Verkauf',
+    byDay: 'Nach Tag', dayCol: 'Tag', apptsCol: 'Termine', salesCol: 'Umsatz', tillAll: 'Kasse — Termine', sheetSummary: 'Übersicht', sheetDays: 'Tage', sheetAppts: 'Termine',
+    colDate: 'Datum', colTime: 'Uhrzeit', colClient: 'Kunde', colService: 'Leistung', colStatus: 'Status', colPrice: 'Preis', colPay: 'Zahlung', colTip: 'Trinkgeld', period: 'Zeitraum',
+    today: 'Heute',
+    items: 'Umsatzübersicht', itemType: 'Posten', qty: 'Menge', gross: 'Gesamt',
+    rServices: 'Leistungen (abgeschlossen)', rDiscounts: 'Rabatte beim ersten Besuch', rUpcoming: 'Gebucht, noch nicht fertig', rCancelled: 'Storniert', rTotal: 'Gesamtumsatz',
+    cash: 'Zahlungsübersicht', method: 'Zahlungsart', collected: 'Eingenommen',
+    m: { cash: 'Bar', card: 'Karte', other: 'Andere' } as Record<Method, string>, mNone: 'Noch nicht erfasst', mTotal: 'Gesamt eingenommen', tips: 'Trinkgeld',
+    till: 'Kasse — heutige Termine', tillHelp: 'Wähle, wie jeder fertige Termin bezahlt wurde. Damit wird er als abgeschlossen markiert.', tip: 'Trinkgeld', noAppts: 'An diesem Tag keine Termine.',
+    st: { pending: 'Ausstehend', confirmed: 'Bestätigt', completed: 'Abgeschlossen', cancelled: 'Storniert' } as Record<string, string>,
+    setupTitle: 'Ein Schritt, um die Kasse einzuschalten', setupBody: 'Führe supabase/sales.sql einmal im Supabase SQL Editor aus und lade die Seite neu. Die Übersicht funktioniert schon ohne.',
+    sale: 'Neuer Verkauf', client: 'Kunde', walkIn: 'Laufkunde', service: 'Leistung', payBy: 'Bezahlt mit', cancel: 'Abbrechen', save: 'Speichern', saving: 'Wird gespeichert…',
+    errOverlap: 'Gerade läuft ein anderer Termin. Schließ ihn zuerst ab oder verschiebe ihn.', errGeneric: 'Speichern fehlgeschlagen. Bitte versuch es noch einmal.', errService: 'Wähle eine Leistung.',
+  },
+  ar: {
+    title: 'المبيعات اليومية', titles: { day: 'المبيعات اليومية', week: 'المبيعات الأسبوعية', month: 'المبيعات الشهرية' }, periods: { day: 'يومي', week: 'أسبوعي', month: 'شهري' },
+    sub: 'اعرض المبيعات والمدفوعات ليوم أو أسبوع أو شهر وصدّرها.', export: 'تصدير', csv: 'CSV', excel: 'Excel', pdf: 'PDF', print: 'طباعة / PDF', newSale: 'عملية بيع جديدة',
+    byDay: 'حسب اليوم', dayCol: 'اليوم', apptsCol: 'المواعيد', salesCol: 'المبيعات', tillAll: 'الصندوق — المواعيد', sheetSummary: 'الملخص', sheetDays: 'الأيام', sheetAppts: 'المواعيد',
+    colDate: 'التاريخ', colTime: 'الوقت', colClient: 'العميل', colService: 'الخدمة', colStatus: 'الحالة', colPrice: 'السعر', colPay: 'الدفع', colTip: 'الإكرامية', period: 'الفترة',
+    today: 'اليوم',
+    items: 'ملخص المبيعات', itemType: 'البند', qty: 'الكمية', gross: 'الإجمالي',
+    rServices: 'الخدمات (المكتملة)', rDiscounts: 'خصومات الزيارة الأولى', rUpcoming: 'محجوز ولم يكتمل بعد', rCancelled: 'ملغى', rTotal: 'إجمالي المبيعات',
+    cash: 'ملخص المدفوعات', method: 'طريقة الدفع', collected: 'المحصّل',
+    m: { cash: 'نقدًا', card: 'بطاقة', other: 'أخرى' } as Record<Method, string>, mNone: 'لم يُسجَّل بعد', mTotal: 'إجمالي المحصّل', tips: 'الإكراميات',
+    till: 'الصندوق — مواعيد اليوم', tillHelp: 'اختر طريقة دفع كل موعد منتهٍ، وسيُحدَّد كمكتمل.', tip: 'إكرامية', noAppts: 'لا مواعيد في هذا اليوم.',
+    st: { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغى' } as Record<string, string>,
+    setupTitle: 'خطوة واحدة لتشغيل الصندوق', setupBody: 'شغّل supabase/sales.sql مرة واحدة في محرر SQL في Supabase ثم حدّث الصفحة. الملخص يعمل بدونه.',
+    sale: 'عملية بيع جديدة', client: 'العميل', walkIn: 'عميل بلا موعد', service: 'الخدمة', payBy: 'دُفع بـ', cancel: 'إلغاء', save: 'حفظ', saving: 'جارٍ الحفظ…',
+    errOverlap: 'هناك موعد آخر جارٍ الآن. أنهِه أو انقله أولًا.', errGeneric: 'تعذر الحفظ. يرجى المحاولة مرة أخرى.', errService: 'اختر خدمة.',
   },
 }
 
@@ -112,9 +161,9 @@ function Table({ title, head, rows, foot }: { title: string; head: [string, stri
 
 export default function SalesPage() {
   const { lang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const lng = toSiteLng(lang)
   const t = COPY[lng]
-  const locale = lng === 'tr' ? 'tr-TR' : 'en-US'
+  const locale = SITE_LOCALE[lng]
   const { format } = useCurrency()
 
   const [barberId, setBarberId] = useState<string | null>(null)
