@@ -18,6 +18,8 @@ import FeatureAccordion from '@/components/feature-accordion'
 import HeroCalendar from '@/components/hero-calendar'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
 import { TRIAL_DAYS } from '@/lib/legal'
+import { L, browserSiteLng, isSiteLng, type SiteLng } from '@/lib/site-lang'
+import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
 
 const serif = Inter({ subsets: ['latin'], weight: ['600', '700', '800', '900'], display: 'swap' })
 const playfair = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['500', '600', '700'], display: 'swap' })
@@ -63,7 +65,6 @@ const SHOW_HERO_CUBE = true
 const ParticleCube = dynamic(() => import("@/components/ParticleCube"), { ssr: false })
 
 function HeroArt({ lng }: { lng: string }) {
-  const tr = lng === 'tr'
   const glass: React.CSSProperties = {
     background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(18px) saturate(160%)', WebkitBackdropFilter: 'blur(18px) saturate(160%)',
     border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 18px 40px -18px rgba(40,60,80,0.35)',
@@ -103,7 +104,7 @@ function HeroArt({ lng }: { lng: string }) {
           <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ background: '#1f9d55' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7" /></svg>
           </span>
-          <span className="text-[13px] font-semibold text-[#1d1d1f]">{tr ? 'Cmt 14:30 · Onaylandı' : 'Sat 14:30 · Confirmed'}</span>
+          <span className="text-[13px] font-semibold text-[#1d1d1f]">{L(lng as SiteLng, { en: "Sat 14:30 · Confirmed", nl: "za 14:30 · Bevestigd", de: "Sa 14:30 · Bestätigt", tr: "Cmt 14:30 · Onaylandı", ar: "السبت 14:30 · مؤكد" })}</span>
         </div>
 
         {/* phone-style booking notification, overlapping the lower left corner */}
@@ -111,10 +112,10 @@ function HeroArt({ lng }: { lng: string }) {
           <div className="mb-1.5 flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.svg" alt="Snippr" style={{ height: 13, width: 'auto' }} />
-            <span className="ml-auto text-[11px] text-[#9ca3af]">{tr ? 'şimdi' : 'now'}</span>
+            <span className="ml-auto text-[11px] text-[#9ca3af]">{L(lng as SiteLng, { en: "now", nl: "nu", de: "jetzt", tr: "şimdi", ar: "الآن" })}</span>
           </div>
-          <p className="text-[13.5px] font-semibold text-[#1d1d1f]">{tr ? 'Yeni randevu' : 'New booking'}</p>
-          <p className="mt-0.5 text-[12.5px] leading-snug text-[#4b5563]">{tr ? 'Ali, Cumartesi 14:30 için saç kesimi randevusu aldı.' : 'Ali booked a haircut for Saturday at 14:30.'}</p>
+          <p className="text-[13.5px] font-semibold text-[#1d1d1f]">{L(lng as SiteLng, { en: "New booking", nl: "Nieuwe afspraak", de: "Neuer Termin", tr: "Yeni randevu", ar: "حجز جديد" })}</p>
+          <p className="mt-0.5 text-[12.5px] leading-snug text-[#4b5563]">{L(lng as SiteLng, { en: "Ali booked a haircut for Saturday at 14:30.", nl: "Ali boekte een knipbeurt voor zaterdag 14:30.", de: "Ali hat einen Haarschnitt für Samstag 14:30 gebucht.", tr: "Ali, Cumartesi 14:30 için saç kesimi randevusu aldı.", ar: "حجز علي قص شعر يوم السبت الساعة 14:30." })}</p>
         </div>
       </motion.div>
     </div>
@@ -265,10 +266,118 @@ const FAQ_DATA_TR: Record<string, { q: string; a: string }[]> = {
   ],
 }
 
-type Lng = 'en' | 'tr'
-const FAQ_BY_LANG: Record<Lng, Record<string, { q: string; a: string }[]>> = { en: FAQ_DATA, tr: FAQ_DATA_TR }
+const FAQ_DATA_NL: Record<string, { q: string; a: string }[]> = {
+  'Aan de slag': [
+    { q: 'Hoe stel ik mijn boekingspagina in?', a: 'Meld je aan en voeg je behandelingen, prijzen en openingstijden toe. Binnen ongeveer 2 minuten heb je je eigen boekingslink om te delen.' },
+    { q: 'Hoe boeken mijn klanten?', a: 'Deel je link of QR-code op Instagram, WhatsApp of in je zaak. Klanten kiezen een behandeling en een vrij tijdstip en bevestigen; jij krijgt direct een melding.' },
+    { q: 'Moeten klanten een app downloaden?', a: 'Nee. Snippr opent in elke browser. Ze tikken op je link en boeken, er hoeft niets geïnstalleerd te worden.' },
+    { q: 'Ik ben niet zo handig met technologie. Is het moeilijk?', a: 'Helemaal niet. Kun je Instagram gebruiken, dan kun je Snippr gebruiken. Het instellen gaat stap voor stap, en we helpen je als je vastloopt.' },
+  ],
+  'Afspraken': [
+    { q: 'Wat als een klant niet komt opdagen?', a: 'Je krijgt bij elke afspraak een melding en kunt die in je dashboard bevestigen of annuleren. Bij elke afspraak staan de contactgegevens van de klant, zodat je hem kunt bereiken. Klanten die hun e-mail achterlaten krijgen ook een automatische herinnering.' },
+    { q: 'Kunnen klanten hun afspraak annuleren?', a: 'Ja. In elke afspraakmail staat een link “Afspraak annuleren”. Het tijdstip komt meteen weer vrij in je agenda en je krijgt een melding. Wil een klant een andere tijd, dan annuleert hij en kiest hij een nieuwe op je boekingspagina.' },
+    { q: 'Kunnen twee mensen hetzelfde tijdstip boeken?', a: 'Nooit. Zodra een tijdstip bezet is, verdwijnt het voor iedereen. Dubbele boekingen zijn dus onmogelijk.' },
+    { q: 'Kan ik mijn openingstijden en vrije dagen instellen?', a: 'Ja. Stel je tijden per weekdag in en zet de dagen uit waarop je dicht bent. Die tijden worden nooit aan klanten getoond.' },
+  ],
+  'Prijzen': [
+    { q: 'Is Snippr gratis?', a: `Elk abonnement kun je ${TRIAL_DAYS} dagen gratis proberen, zonder creditcard. Er wordt niets afgeschreven als de proef afloopt: voordat betalingen starten mailen we je eerst, en al je gegevens blijven van jou.` },
+    { q: 'Zijn er verborgen kosten?', a: 'Nee. Geen opstartkosten, en we nemen nooit commissie op je afspraken.' },
+    { q: 'Kan ik mijn account verwijderen?', a: 'Altijd, via Instellingen → Account verwijderen. Je pagina, behandelingen en afspraken worden definitief verwijderd.' },
+  ],
+  'Betalingen': [
+    { q: 'Kan ik online een aanbetaling of betaling ontvangen?', a: 'Nog niet. Klanten betalen je in de zaak, zoals ze nu al doen. Online aanbetalingen staan op onze planning.' },
+    { q: 'Neemt Snippr een deel van mijn verdiensten?', a: 'Nee. Je houdt 100% van wat je klanten je betalen.' },
+  ],
+  'Functies': [
+    { q: 'Krijgen klanten een bevestiging?', a: 'Ja. Als ze hun e-mail achterlaten, krijgen ze direct na het boeken een bevestiging met datum, tijd en prijs, plus een automatische herinnering vóór de afspraak.' },
+    { q: 'Kan ik kortingen geven?', a: 'Nog niet. Acties zoals korting bij het eerste bezoek staan gepland voor het betaalde abonnement.' },
+    { q: 'Kan ik mijn eigen behandelingen en prijzen instellen?', a: 'Natuurlijk. Voeg zoveel behandelingen toe als je wilt, elk met een eigen duur en prijs.' },
+    { q: 'Kan ik mijn pagina op Instagram delen?', a: 'Ja. Je link is gemaakt voor je Instagram-bio, Stories en WhatsApp, en je krijgt een QR-code om te printen voor bij de kassa.' },
+    { q: 'Kan ik mijn team of meerdere kappers toevoegen?', a: 'Nog niet. Nu is elk account één kapper met één agenda. Teamagenda’s staan op onze planning.' },
+  ],
+  'Support': [
+    { q: 'Hoe krijg ik hulp?', a: `Mail ons op ${SUPPORT_EMAIL}, dan antwoorden we per e-mail.` },
+    { q: 'Helpen jullie me met instellen?', a: 'Ja. Mail ons en we helpen je gratis met je behandelingen, tijden en boekingspagina.' },
+    { q: 'Zijn mijn gegevens veilig?', a: 'Je gegevens worden veilig in de EU opgeslagen en nooit verkocht. Alleen jij ziet de gegevens van je klanten, en je kunt je account en al je gegevens altijd verwijderen via Instellingen.' },
+  ],
+}
 
-// Landing copy (English / Turkish)
+const FAQ_DATA_DE: Record<string, { q: string; a: string }[]> = {
+  'Erste Schritte': [
+    { q: 'Wie richte ich meine Buchungsseite ein?', a: 'Registriere dich und trag deine Leistungen, Preise und Arbeitszeiten ein. In etwa 2 Minuten hast du deinen eigenen Buchungslink zum Teilen.' },
+    { q: 'Wie buchen meine Kunden?', a: 'Teile deinen Link oder QR-Code auf Instagram, WhatsApp oder im Laden. Kunden wählen eine Leistung und eine freie Zeit und bestätigen; du wirst sofort benachrichtigt.' },
+    { q: 'Müssen Kunden eine App herunterladen?', a: 'Nein. Snippr öffnet sich in jedem Browser. Sie tippen auf deinen Link und buchen, nichts muss installiert werden.' },
+    { q: 'Ich bin nicht so technikaffin. Ist das schwer?', a: 'Überhaupt nicht. Wenn du Instagram nutzen kannst, kannst du auch Snippr nutzen. Die Einrichtung führt dich Schritt für Schritt, und wir helfen, wenn du nicht weiterkommst.' },
+  ],
+  'Termine': [
+    { q: 'Was, wenn ein Kunde nicht erscheint?', a: 'Du bekommst bei jeder Buchung eine Benachrichtigung und kannst sie im Dashboard bestätigen oder absagen. Jede Buchung enthält die Kontaktdaten des Kunden, damit du ihn erreichst. Kunden, die ihre E-Mail angeben, bekommen außerdem eine automatische Erinnerung.' },
+    { q: 'Können Kunden ihren Termin absagen?', a: 'Ja. In jeder Buchungsmail gibt es einen Link „Termin absagen“. Die Zeit wird sofort wieder frei in deinem Kalender und du bekommst eine Benachrichtigung. Für eine andere Zeit sagt der Kunde ab und wählt auf deiner Buchungsseite eine neue.' },
+    { q: 'Können zwei Personen dieselbe Zeit buchen?', a: 'Nie. Sobald eine Zeit vergeben ist, verschwindet sie für alle. Doppelbuchungen sind also ausgeschlossen.' },
+    { q: 'Kann ich Arbeitszeiten und freie Tage festlegen?', a: 'Ja. Leg deine Zeiten für jeden Wochentag fest und schalte die Tage ab, an denen du geschlossen hast. Diese Zeiten werden Kunden nie angeboten.' },
+  ],
+  'Preise': [
+    { q: 'Ist Snippr kostenlos?', a: `Jeden Tarif kannst du ${TRIAL_DAYS} Tage kostenlos testen, ohne Kreditkarte. Wenn die Testphase endet, wird nichts abgebucht: Bevor Zahlungen starten, schreiben wir dir zuerst, und alle deine Daten bleiben deine.` },
+    { q: 'Gibt es versteckte Kosten?', a: 'Nein. Keine Einrichtungsgebühr, und wir nehmen nie Provision auf deine Buchungen.' },
+    { q: 'Kann ich mein Konto löschen?', a: 'Jederzeit, unter Einstellungen → Konto löschen. Deine Seite, Leistungen und Termine werden endgültig entfernt.' },
+  ],
+  'Zahlungen': [
+    { q: 'Kann ich online eine Anzahlung oder Zahlung annehmen?', a: 'Noch nicht. Kunden bezahlen dich im Laden, so wie bisher. Online-Anzahlungen sind geplant.' },
+    { q: 'Nimmt Snippr einen Anteil an meinen Einnahmen?', a: 'Nein. Du behältst 100 % von dem, was deine Kunden dir zahlen.' },
+  ],
+  'Funktionen': [
+    { q: 'Bekommen Kunden eine Bestätigung?', a: 'Ja. Wenn sie ihre E-Mail angeben, bekommen sie direkt nach der Buchung eine Bestätigung mit Datum, Uhrzeit und Preis, dazu eine automatische Erinnerung vor dem Termin.' },
+    { q: 'Kann ich Rabatte anbieten?', a: 'Noch nicht. Aktionen wie ein Rabatt beim ersten Besuch sind für den bezahlten Tarif geplant.' },
+    { q: 'Kann ich eigene Leistungen und Preise festlegen?', a: 'Natürlich. Füge so viele Leistungen hinzu, wie du willst, jede mit eigener Dauer und eigenem Preis.' },
+    { q: 'Kann ich meine Seite auf Instagram teilen?', a: 'Ja. Dein Link ist für Instagram-Bio, Stories und WhatsApp gemacht, und du bekommst einen QR-Code zum Ausdrucken für die Theke.' },
+    { q: 'Kann ich mein Team oder mehrere Barbiere hinzufügen?', a: 'Noch nicht. Derzeit ist jedes Konto ein Barbier mit einem Kalender. Team-Kalender sind geplant.' },
+  ],
+  'Support': [
+    { q: 'Wie bekomme ich Hilfe?', a: `Schreib uns an ${SUPPORT_EMAIL}, wir antworten per E-Mail.` },
+    { q: 'Helft ihr mir bei der Einrichtung?', a: 'Ja. Schreib uns und wir richten deine Leistungen, Zeiten und Buchungsseite kostenlos mit dir ein.' },
+    { q: 'Sind meine Daten sicher?', a: 'Deine Daten werden sicher in der EU gespeichert und nie verkauft. Nur du siehst die Daten deiner Kunden, und du kannst dein Konto mit allen Daten jederzeit in den Einstellungen löschen.' },
+  ],
+}
+
+const FAQ_DATA_AR: Record<string, { q: string; a: string }[]> = {
+  'البداية': [
+    { q: 'كيف أُعدّ صفحة الحجز؟', a: 'سجّل وأضف خدماتك وأسعارك وساعات عملك، وخلال دقيقتين تقريبًا يصبح لديك رابط حجز خاص بك لمشاركته.' },
+    { q: 'كيف يحجز عملائي؟', a: 'شارك رابطك أو رمز QR على إنستغرام أو واتساب أو في محلك. يختار العميل خدمة ووقتًا متاحًا ويؤكد، ويصلك إشعار فورًا.' },
+    { q: 'هل يحتاج العملاء إلى تنزيل تطبيق؟', a: 'لا. يفتح Snippr في أي متصفح. يضغطون على رابطك ويحجزون، دون تثبيت أي شيء.' },
+    { q: 'لست جيدًا في التقنية، هل الأمر صعب؟', a: 'إطلاقًا. إذا كنت تستخدم إنستغرام فستستخدم Snippr. الإعداد يرشدك خطوة بخطوة، ونحن هنا إذا احتجت مساعدة.' },
+  ],
+  'الحجوزات': [
+    { q: 'ماذا لو لم يحضر العميل؟', a: 'يصلك إشعار مع كل حجز ويمكنك تأكيده أو إلغاؤه من لوحتك. كل حجز يتضمن بيانات تواصل العميل لتتمكن من الوصول إليه. والعملاء الذين يتركون بريدهم يحصلون أيضًا على تذكير تلقائي قبل الموعد.' },
+    { q: 'هل يمكن للعملاء إلغاء موعدهم؟', a: 'نعم. في كل رسالة حجز رابط "إلغاء موعدي". يصبح الوقت متاحًا فورًا في تقويمك ويصلك إشعار. ولتغيير الوقت يلغي العميل ويختار وقتًا جديدًا من صفحة الحجز.' },
+    { q: 'هل يمكن لشخصين حجز الوقت نفسه؟', a: 'أبدًا. بمجرد حجز الوقت يختفي للجميع، فلا يحدث حجز مزدوج.' },
+    { q: 'هل يمكنني ضبط ساعات العمل وأيام العطلة؟', a: 'نعم. اضبط ساعاتك لكل يوم من أيام الأسبوع وأغلق الأيام التي لا تعمل فيها، ولن تُعرض تلك الأوقات على العملاء.' },
+  ],
+  'الأسعار': [
+    { q: 'هل Snippr مجاني؟', a: `يمكنك تجربة كل الخطط مجانًا لمدة ${TRIAL_DAYS} يومًا بدون بطاقة ائتمان. لا يُخصم شيء عند انتهاء التجربة: قبل بدء الدفع نراسلك أولًا، وتبقى كل بياناتك ملكك.` },
+    { q: 'هل توجد رسوم خفية؟', a: 'لا. لا رسوم إعداد، ولا نأخذ أي عمولة على حجوزاتك.' },
+    { q: 'هل يمكنني حذف حسابي؟', a: 'في أي وقت من الإعدادات ← حذف الحساب. تُحذف صفحتك وخدماتك ومواعيدك نهائيًا.' },
+  ],
+  'الدفع': [
+    { q: 'هل يمكنني أخذ عربون أو دفع عبر الإنترنت؟', a: 'ليس بعد. يدفع العملاء لك في المحل كما يفعلون الآن. العربون عبر الإنترنت ضمن خططنا.' },
+    { q: 'هل يأخذ Snippr نسبة من أرباحي؟', a: 'لا. تحتفظ بـ 100% مما يدفعه لك عملاؤك.' },
+  ],
+  'الميزات': [
+    { q: 'هل يحصل العملاء على تأكيد؟', a: 'نعم. إذا تركوا بريدهم الإلكتروني يحصلون على تأكيد بالتاريخ والوقت والسعر بعد الحجز مباشرة، مع تذكير تلقائي قبل الموعد.' },
+    { q: 'هل يمكنني تقديم خصومات؟', a: 'ليس بعد. العروض مثل خصم الزيارة الأولى مخطط لها في الخطة المدفوعة.' },
+    { q: 'هل يمكنني إضافة خدماتي وأسعاري؟', a: 'بالطبع. أضف ما تشاء من الخدمات، لكل منها مدتها وسعرها.' },
+    { q: 'هل يمكنني مشاركة صفحتي على إنستغرام؟', a: 'نعم. رابطك مناسب للبايو والقصص وواتساب، وتحصل على رمز QR لطباعته عند الكاشير.' },
+    { q: 'هل يمكنني إضافة فريقي أو أكثر من حلاق؟', a: 'ليس بعد. حاليًا كل حساب لحلاق واحد بتقويم واحد. تقويمات الفريق ضمن خططنا.' },
+  ],
+  'الدعم': [
+    { q: 'كيف أحصل على المساعدة؟', a: `راسلنا على ${SUPPORT_EMAIL} وسنرد عليك بالبريد.` },
+    { q: 'هل تساعدونني في الإعداد؟', a: 'نعم. راسلنا وسنساعدك مجانًا في إعداد خدماتك وساعاتك وصفحة الحجز.' },
+    { q: 'هل بياناتي آمنة؟', a: 'تُحفظ بياناتك بأمان داخل الاتحاد الأوروبي ولا تُباع أبدًا. أنت وحدك ترى بيانات عملائك، ويمكنك حذف حسابك وكل بياناته في أي وقت من الإعدادات.' },
+  ],
+}
+
+type Lng = SiteLng
+const FAQ_BY_LANG: Record<Lng, Record<string, { q: string; a: string }[]>> = { en: FAQ_DATA, tr: FAQ_DATA_TR, nl: FAQ_DATA_NL, de: FAQ_DATA_DE, ar: FAQ_DATA_AR }
+
+// Landing copy (English, Dutch, German, Turkish, Arabic)
 const LC: Record<Lng, {
   nav: { how: string; pricing: string; faq: string; about: string; help: string }
   login: string; getStarted: string; badge: string; downloadApp: string
@@ -353,6 +462,114 @@ const LC: Record<Lng, {
       { name: 'Müşteriler gece gündüz randevu alır', value: '7/24', href: '#how' },
     ],
     tagline: 'Berberlerin her koltuğu zahmetsizce doldurmasına yardım ediyoruz.', rights: `© ${new Date().getFullYear()} Snippr. Tüm hakları saklıdır.`, builtWith: 'Şununla yapıldı:',
+  },
+  nl: {
+    nav: { how: 'Hoe het werkt', pricing: 'Prijzen', faq: 'Veelgestelde vragen', about: 'Over ons', help: 'Hulp en support' },
+    login: 'Inloggen', getStarted: 'Beginnen', badge: '24/7 online boeken', downloadApp: 'App downloaden',
+    heroBig: 'MIS NOOIT\nMEER EEN KLANT.',
+    heroSub: 'Zet je link in je bio, op Instagram of waar je maar wilt, of hang je QR-code op. Klanten boeken in een paar seconden.',
+    appTag: 'Mobiele app', appTitle: 'Snippr als app?',
+    appBody: 'Snippr werkt al prima in de browser van je telefoon. We bouwen ook apps voor iOS en Android. Wil je het als eerste horen als ze klaar zijn?',
+    appBtn: 'Mail me als hij klaar is', appDone: 'Bedankt! Stuur die e-mail en je hoort het als eerste.',
+    howTag: 'Aan de slag', howTitle: 'Eenvoudige stappen om te beginnen',
+    howBody: 'Volg deze stappen om je boekingspagina in te stellen en binnen een paar minuten afspraken te ontvangen.',
+    howSteps: [
+      { title: 'Aanmelden', body: 'Maak je account aan en voeg je behandelingen, prijzen en openingstijden toe.' },
+      { title: 'Je boekingslink', body: 'Krijg je eigen boekingslink en een QR-code om te printen voor je zaak.' },
+      { title: 'Delen', body: 'Zet hem op Instagram en WhatsApp, of print de QR-code voor bij de kassa.' },
+      { title: 'Afspraken en groei', body: 'Klanten boeken 24/7 online. Jij beheert elke afspraak vanuit één dashboard.' },
+    ],
+    baTitle: 'Stop met achter afspraken aan rennen.',
+    baRows: [
+      ['Eindeloze berichtjes om een tijd te prikken', 'Ze tikken op je link en zijn geboekt'],
+      ['Klanten die de details vergeten', 'Een bevestigingsmail met datum en tijd'],
+      ['Afspraken missen terwijl je knipt', 'Direct een melding op je telefoon'],
+      ['Een volgekrabbeld afsprakenboekje', 'Alle afspraken op één plek'],
+      ['Klanten die vragen “waar zit je?”', 'Je adres opent direct in Maps'],
+    ],
+    questions: 'Vragen?',
+    briefTitle: 'NEEM CONTACT OP', briefBody: 'Vragen, ideeën of hulp nodig bij het instellen van je pagina? We lezen elke e-mail.',
+    briefPlaceholder: '', briefBtn: 'MAIL ONS',
+    trustTag: 'Gemaakt voor de lange termijn', trustTitle: 'Maak ruimte voor het werk dat telt.',
+    trustBody: 'Snippr regelt de details stil op de achtergrond, zodat elke afspraak goed verzorgd is van de eerste klik tot de laatste look.',
+    stats: [
+      { name: 'Gratis proefperiode, geen creditcard', value: `${TRIAL_DAYS} dagen`, href: '/pricing' },
+      { name: 'Om je boekingspagina in te stellen', value: '2 min', href: '/register' },
+      { name: 'Klanten boeken dag en nacht', value: '24/7', href: '#how' },
+    ],
+    tagline: 'We helpen kappers elke stoel moeiteloos te vullen.', rights: `© ${new Date().getFullYear()} Snippr. Alle rechten voorbehouden.`, builtWith: 'Gemaakt met',
+  },
+  de: {
+    nav: { how: 'So funktioniert’s', pricing: 'Preise', faq: 'FAQ', about: 'Über uns', help: 'Hilfe und Support' },
+    login: 'Anmelden', getStarted: 'Loslegen', badge: 'Online-Buchung rund um die Uhr', downloadApp: 'App laden',
+    heroBig: 'VERPASSE NIE\nWIEDER KUNDEN.',
+    heroSub: 'Pack deinen Link in deine Bio, auf Instagram oder wohin du willst, oder häng deinen QR-Code auf. Kunden buchen in Sekunden.',
+    appTag: 'Mobile App', appTitle: 'Snippr als App?',
+    appBody: 'Snippr läuft schon super im Browser deines Handys. Wir bauen auch Apps für iOS und Android. Willst du als Erster erfahren, wann sie fertig sind?',
+    appBtn: 'Schreib mir, wenn sie fertig ist', appDone: 'Danke! Schick die E-Mail ab und du erfährst es als Erster.',
+    howTag: 'Erste Schritte', howTitle: 'Einfache Schritte zum Start',
+    howBody: 'Mit diesen Schritten richtest du deine Buchungsseite ein und nimmst in wenigen Minuten Termine an.',
+    howSteps: [
+      { title: 'Registrieren', body: 'Erstelle dein Konto und trag deine Leistungen, Preise und Arbeitszeiten ein.' },
+      { title: 'Dein Buchungslink', body: 'Hol dir deinen eigenen Buchungslink und einen QR-Code zum Ausdrucken für deinen Laden.' },
+      { title: 'Teilen', body: 'Teile ihn auf Instagram und WhatsApp oder druck den QR-Code für die Theke aus.' },
+      { title: 'Gebucht werden und wachsen', body: 'Kunden buchen rund um die Uhr online. Du verwaltest jeden Termin in einem Dashboard.' },
+    ],
+    baTitle: 'Schluss mit Hinterherlaufen. Fang an zu buchen.',
+    baRows: [
+      ['Endlose Nachrichten, nur um eine Zeit zu finden', 'Sie tippen auf deinen Link und sind gebucht'],
+      ['Kunden, die die Details vergessen', 'Eine Bestätigungsmail mit Datum und Uhrzeit'],
+      ['Verpasste Buchungen, während du schneidest', 'Sofortige Benachrichtigung aufs Handy'],
+      ['Ein vollgekritzeltes Terminbuch', 'Alle Termine an einem Ort'],
+      ['Kunden, die fragen „Wo bist du?“', 'Deine Adresse öffnet sich direkt in Maps'],
+    ],
+    questions: 'Fragen?',
+    briefTitle: 'SCHREIB UNS', briefBody: 'Fragen, Ideen oder Hilfe beim Einrichten deiner Seite? Wir lesen jede E-Mail.',
+    briefPlaceholder: '', briefBtn: 'E-MAIL SENDEN',
+    trustTag: 'Auf lange Sicht gebaut', trustTitle: 'Schaff Platz für die Arbeit, die zählt.',
+    trustBody: 'Snippr hält die Details leise im Hintergrund am Laufen, damit sich jeder Termin vom ersten Klick bis zum fertigen Look durchdacht anfühlt.',
+    stats: [
+      { name: 'Kostenlos testen, ohne Kreditkarte', value: `${TRIAL_DAYS} Tage`, href: '/pricing' },
+      { name: 'Bis deine Buchungsseite steht', value: '2 Min.', href: '/register' },
+      { name: 'Kunden buchen Tag und Nacht', value: '24/7', href: '#how' },
+    ],
+    tagline: 'Wir helfen Barbieren, jeden Stuhl mühelos zu füllen.', rights: `© ${new Date().getFullYear()} Snippr. Alle Rechte vorbehalten.`, builtWith: 'Gebaut mit',
+  },
+  ar: {
+    nav: { how: 'كيف يعمل', pricing: 'الأسعار', faq: 'الأسئلة الشائعة', about: 'من نحن', help: 'المساعدة والدعم' },
+    login: 'تسجيل الدخول', getStarted: 'ابدأ الآن', badge: 'حجز عبر الإنترنت على مدار الساعة', downloadApp: 'نزّل التطبيق',
+    heroBig: 'لا تفوّت\nأي زبون.',
+    heroSub: 'ضع رابطك في البايو أو على إنستغرام أو في أي مكان تريده، أو علّق رمز QR الخاص بك. يحجز العملاء في ثوانٍ.',
+    appTag: 'تطبيق الجوال', appTitle: 'هل تريد Snippr كتطبيق؟',
+    appBody: 'يعمل Snippr بشكل ممتاز في متصفح هاتفك. ونعمل أيضًا على تطبيقات iOS وأندرويد. هل تريد أن تعرف أولًا عندما تصبح جاهزة؟',
+    appBtn: 'راسلني عندما يصبح جاهزًا', appDone: 'شكرًا! أرسل تلك الرسالة وستكون أول من يعرف.',
+    howTag: 'البداية', howTitle: 'خطوات بسيطة للبدء',
+    howBody: 'اتبع هذه الخطوات لإعداد صفحة الحجز وابدأ باستقبال المواعيد خلال دقائق.',
+    howSteps: [
+      { title: 'سجّل', body: 'أنشئ حسابك وأضف خدماتك وأسعارك وساعات عملك.' },
+      { title: 'احصل على رابط الحجز', body: 'احصل على رابط حجز خاص بك ورمز QR لطباعته لمحلك.' },
+      { title: 'شاركه', body: 'انشره على إنستغرام وواتساب، أو اطبع رمز QR عند الكاشير.' },
+      { title: 'احجز وانمُ', body: 'يحجز العملاء عبر الإنترنت على مدار الساعة، وأنت تدير كل المواعيد من لوحة واحدة.' },
+    ],
+    baTitle: 'توقف عن الملاحقة. ابدأ بالحجز.',
+    baRows: [
+      ['رسائل لا تنتهي فقط لاختيار وقت', 'يضغطون على رابطك ويتم الحجز'],
+      ['عملاء ينسون التفاصيل', 'بريد تأكيد بالتاريخ والوقت'],
+      ['حجوزات تضيع وأنت تعمل', 'إشعار فوري على هاتفك'],
+      ['دفتر مواعيد مليء بالشطب', 'كل المواعيد في مكان واحد'],
+      ['عملاء يسألون "أين أنت؟"', 'عنوانك يفتح مباشرة في الخرائط'],
+    ],
+    questions: 'أسئلة؟',
+    briefTitle: 'تواصل معنا', briefBody: 'أسئلة أو أفكار أو تحتاج مساعدة في إعداد صفحتك؟ نقرأ كل رسالة.',
+    briefPlaceholder: '', briefBtn: 'راسلنا',
+    trustTag: 'مصمَّم للمدى الطويل', trustTitle: 'افسح المجال للعمل الذي يهم.',
+    trustBody: 'يدير Snippr التفاصيل بهدوء في الخلفية، ليبدو كل موعد مدروسًا من أول نقرة حتى اللمسة الأخيرة.',
+    stats: [
+      { name: 'تجربة مجانية بدون بطاقة ائتمان', value: `${TRIAL_DAYS} يومًا`, href: '/pricing' },
+      { name: 'لإعداد صفحة الحجز', value: 'دقيقتان', href: '/register' },
+      { name: 'العملاء يحجزون ليلًا ونهارًا', value: '24/7', href: '#how' },
+    ],
+    tagline: 'نساعد الحلاقين على ملء كل كرسي بسهولة.', rights: `© ${new Date().getFullYear()} Snippr. جميع الحقوق محفوظة.`, builtWith: 'صُنع باستخدام',
   },
 }
 
@@ -471,7 +688,7 @@ function HowItWorksSection({ lng }: { lng: Lng }) {
                   </div>
                   <div className="glass-card grow rounded-2xl p-4">
                     <span className="text-xs font-medium" style={{ color: '#6e6e73' }}>
-                      {lng === 'tr' ? `Adım ${i + 1}` : `Step ${i + 1}`}
+                      {`${L(lng as SiteLng, { en: "Step", nl: "Stap", de: "Schritt", tr: "Adım", ar: "الخطوة" })} ${i + 1}`}
                     </span>
                     <h3 className="mt-1 font-semibold" style={{ color: '#1d1d1f' }}>{step.title}</h3>
                     <p className="mt-2 text-sm" style={{ color: 'rgba(29, 29, 31,0.6)' }}>{step.body}</p>
@@ -498,7 +715,7 @@ function StatsSection({ lng }: { lng: Lng }) {
             <span className="text-[40px] leading-none font-semibold tracking-[-0.03em] text-[#1d1d1f] sm:text-[46px]">{stat.value}</span>
             <span className="mt-3 text-[14.5px] text-[#1d1d1f]/60">{stat.name}</span>
             <span aria-hidden className="mt-3 text-[13px] font-semibold text-[#1d1d1f] opacity-0 transition-opacity group-hover:opacity-100">
-              {stat.href === '/pricing' ? (lng === 'tr' ? 'Planları gör →' : 'See plans →') : stat.href === '/register' ? (lng === 'tr' ? 'Hemen başla →' : 'Get started →') : (lng === 'tr' ? 'Nasıl çalışır →' : 'How it works →')}
+              {stat.href === '/pricing' ? L(lng as SiteLng, { en: "See plans →", nl: "Bekijk abonnementen →", de: "Tarife ansehen →", tr: "Planları gör →", ar: "شاهد الخطط ←" }) : stat.href === '/register' ? L(lng as SiteLng, { en: "Get started →", nl: "Nu beginnen →", de: "Jetzt loslegen →", tr: "Hemen başla →", ar: "ابدأ الآن ←" }) : L(lng as SiteLng, { en: "How it works →", nl: "Hoe het werkt →", de: "So funktioniert’s →", tr: "Nasıl çalışır →", ar: "كيف يعمل ←" })}
             </span>
           </Link>
         ))}
@@ -544,12 +761,14 @@ function AppInterestCTA({ serif, lng }: { serif: string; lng: Lng }) {
 }
 
 export default function Home() {
-  const [lng, setLng] = useState<Lng>('en')
+  const saved = useStored('snippr-lang')
+  const browserLng = useClientValue(browserSiteLng, 'en' as SiteLng)
+  const lng: Lng = isSiteLng(saved) ? saved : browserLng
   // hero cube: scattered (true) or a cube (false) — changes the hint under it
   const [cubeScattered, setCubeScattered] = useState(false)
-  const chooseLng = (l: Lng) => { setLng(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
+  const chooseLng = (l: Lng) => { try { writeStored('snippr-lang', l) } catch { /* storage blocked */ } }
   const c = LC[lng]
-  const isRTL = false
+  const isRTL = lng === 'ar'
 
   // Light text on the dark video, dark text on the light colour wash
   const navText  = SHOW_HERO_VIDEO ? 'rgba(255,255,255,0.82)' : 'rgba(29,29,31,0.72)'
@@ -668,7 +887,7 @@ export default function Home() {
             <Link href="/pricing" className="pointer-events-auto mb-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition hover:opacity-80"
               style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.85)', color: SHOW_HERO_VIDEO ? '#f4efe7' : '#3a3a3c', boxShadow: '0 4px 14px rgba(29,29,31,0.06)' }}>
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#34c759' }} />
-              {lng === 'tr' ? `Lansman · Bütün planlar ${TRIAL_DAYS} gün ücretsiz, kart gerekmez` : `Launch · Every plan free for ${TRIAL_DAYS} days, no card needed`}
+              {L(lng, { en: `Launch · Every plan free for ${TRIAL_DAYS} days, no card needed`, nl: `Lancering · Elk abonnement ${TRIAL_DAYS} dagen gratis, geen kaart nodig`, de: `Start · Jeder Tarif ${TRIAL_DAYS} Tage kostenlos, keine Karte nötig`, tr: `Lansman · Bütün planlar ${TRIAL_DAYS} gün ücretsiz, kart gerekmez`, ar: `إطلاق · كل الخطط مجانية لمدة ${TRIAL_DAYS} يومًا، بدون بطاقة` })}
               <span aria-hidden>→</span>
             </Link>
             <h1 className={`${serif.className} leading-[0.95] whitespace-pre-line`} style={{ fontSize: 'clamp(44px, 8vw, 110px)', fontWeight: 600, letterSpacing: '-0.03em', color: SHOW_HERO_VIDEO ? '#f4efe7' : '#1d1d1f', textShadow: SHOW_HERO_VIDEO ? '0 8px 40px rgba(0,0,0,0.4)' : 'none' }}>
@@ -709,7 +928,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[#1d1d1f]/45" style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}>
-                {cubeScattered ? (lng === 'tr' ? 'Tekrar tıkla — toplansın' : 'Click again to rebuild') : (lng === 'tr' ? 'Tıkla — dağılsın' : 'Click to scatter')}
+                {cubeScattered ? L(lng as SiteLng, { en: "Click again to rebuild", nl: "Klik opnieuw om op te bouwen", de: "Nochmal klicken zum Zusammensetzen", tr: "Tekrar tıkla, toplansın", ar: "اضغط مجددًا لإعادة البناء" }) : L(lng as SiteLng, { en: "Click to scatter", nl: "Klik om te verspreiden", de: "Klicken zum Zerstreuen", tr: "Tıkla, dağılsın", ar: "اضغط للتفريق" })}
               </p>
             </motion.div>
           </div>

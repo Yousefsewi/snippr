@@ -13,10 +13,13 @@ import { ArrowRight, Check, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { SITE_URL } from '@/lib/site-url'
 
-type Lng = 'en' | 'tr'
+import type { SiteLng as Lng } from '@/lib/site-lang'
 
-const COPY = {
+const COPY: Record<Lng, Record<'big' | 'italic' | 'sub' | 'ph' | 'start' | 'login' | 'free' | 'taken' | 'checking', string>> = {
   en: { big: 'More than a link', italic: 'Your shop’s home online', sub: 'Your services, prices, free times and bookings on one page.', ph: 'yourname', start: 'Start', login: 'or log in', free: 'Available', taken: 'Taken — try another', checking: 'Checking…' },
+  nl: { big: 'Meer dan een link', italic: 'Het online thuis van je zaak', sub: 'Je behandelingen, prijzen, vrije tijden en afspraken op één pagina.', ph: 'jouwnaam', start: 'Starten', login: 'of log in', free: 'Beschikbaar', taken: 'Bezet, probeer een andere', checking: 'Controleren…' },
+  de: { big: 'Mehr als ein Link', italic: 'Das Online-Zuhause deines Ladens', sub: 'Deine Leistungen, Preise, freien Zeiten und Termine auf einer Seite.', ph: 'deinname', start: 'Starten', login: 'oder anmelden', free: 'Verfügbar', taken: 'Vergeben, versuch einen anderen', checking: 'Wird geprüft…' },
+  ar: { big: 'أكثر من مجرد رابط', italic: 'بيت محلك على الإنترنت', sub: 'خدماتك وأسعارك وأوقاتك المتاحة وحجوزاتك في صفحة واحدة.', ph: 'اسمك', start: 'ابدأ', login: 'أو سجّل الدخول', free: 'متاح', taken: 'محجوز، جرّب اسمًا آخر', checking: 'جارٍ التحقق…' },
   tr: { big: 'Bir linkten fazlası', italic: 'Dükkânının internetteki evi', sub: 'Hizmetlerin, fiyatların, boş saatlerin ve randevuların tek sayfada.', ph: 'adın', start: 'Başla', login: 'veya giriş yap', free: 'Boşta', taken: 'Alınmış — başka bir ad dene', checking: 'Bakılıyor…' },
 }
 

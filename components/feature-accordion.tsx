@@ -10,7 +10,7 @@ import { MousePointerClick, Bell, Mail, TrendingUp, Check, CalendarDays, Gift, Q
 // and reveals its steps and a small UI mock on a colourful gradient. On phones the cards
 // stack and every card shows its content.
 
-type Lng = 'en' | 'tr'
+import type { SiteLng as Lng } from '@/lib/site-lang'
 
 const COPY: Record<Lng, {
   eyebrow: string; title: string; body: string; cta: string
@@ -46,6 +46,54 @@ const COPY: Record<Lng, {
         steps: ['Tarih ve saatli onay maili', 'İndirim dahil fiyat', 'Adresin Haritalar’da açılır'] },
       { title: 'Büyü', desc: 'İlk kez gelenleri müdavime çevir.',
         steps: ['Kendi renklerinle kendi sayfan', 'Dükkân camın için QR kod', 'Tüm randevular tek panelde'] },
+    ],
+  },
+  nl: {
+    eyebrow: 'ZO WERKT SNIPPR',
+    title: 'Gemaakt voor kappers wier dag draait om afspraken',
+    body: 'Knippen brengt je verder, maar de berichten eromheen houden je op. Snippr regelt alles voor en na de afspraak, zodat je handen aan de tondeuse blijven.',
+    cta: 'Gratis starten',
+    cards: [
+      { title: 'Boeken', desc: 'Een klant tikt op je link in Instagram of WhatsApp en kiest een vrij tijdstip. Geen app, geen account, geen telefoontjes.',
+        steps: ['Tikt op de link in je bio', 'Kiest zaterdag 14:30', 'Krijgt meteen een bevestiging'] },
+      { title: 'Melding', desc: 'Mis nooit een afspraak terwijl je aan het knippen bent.',
+        steps: ['Direct een melding op je telefoon', 'Verschijnt live in je agenda', 'Bevestigen of annuleren met één tik'] },
+      { title: 'Bevestiging', desc: 'Klanten weten precies wanneer ze moeten komen.',
+        steps: ['Bevestigingsmail met datum en tijd', 'Behandeling en prijs erbij', 'Je adres opent in Maps'] },
+      { title: 'Groeien', desc: 'Maak van nieuwe klanten vaste klanten.',
+        steps: ['Je eigen pagina in je eigen kleuren', 'QR-code voor je etalage', 'Alle afspraken in één dashboard'] },
+    ],
+  },
+  de: {
+    eyebrow: 'SO FUNKTIONIERT SNIPPR',
+    title: 'Gemacht für Barbiere, deren Tag von Terminen lebt',
+    body: 'Haare schneiden bringt dich weiter, die Nachrichten drumherum bremsen dich. Snippr erledigt alles vor und nach dem Termin, damit deine Hände an der Maschine bleiben.',
+    cta: 'Kostenlos starten',
+    cards: [
+      { title: 'Buchen', desc: 'Ein Kunde tippt auf deinen Link in Instagram oder WhatsApp und wählt eine freie Zeit. Keine App, kein Konto, keine Anrufe.',
+        steps: ['Tippt auf den Link in deiner Bio', 'Wählt Samstag 14:30', 'Bekommt sofort eine Bestätigung'] },
+      { title: 'Benachrichtigen', desc: 'Verpasse keinen Termin, während du schneidest.',
+        steps: ['Sofortige Benachrichtigung aufs Handy', 'Erscheint live in deinem Kalender', 'Mit einem Tipp bestätigen oder absagen'] },
+      { title: 'Bestätigen', desc: 'Kunden wissen genau, wann sie kommen sollen.',
+        steps: ['Bestätigungsmail mit Datum und Uhrzeit', 'Leistung und Preis inklusive', 'Deine Adresse öffnet sich in Maps'] },
+      { title: 'Wachsen', desc: 'Mach aus Erstkunden Stammkunden.',
+        steps: ['Deine eigene Seite in deinen Farben', 'QR-Code fürs Schaufenster', 'Alle Termine in einem Dashboard'] },
+    ],
+  },
+  ar: {
+    eyebrow: 'كيف يعمل Snippr',
+    title: 'مصمَّم للحلاقين الذين يعتمد يومهم على المواعيد',
+    body: 'قص الشعر يدفعك للأمام، لكن الرسائل من حوله تبطئك. يتولى Snippr كل ما قبل الموعد وبعده، لتبقى يداك على ماكينة الحلاقة.',
+    cta: 'ابدأ مجانًا',
+    cards: [
+      { title: 'الحجز', desc: 'يضغط العميل على رابطك في إنستغرام أو واتساب ويختار وقتًا متاحًا، بدون تطبيق أو حساب أو مكالمات.',
+        steps: ['يضغط على الرابط في البايو', 'يختار السبت 14:30', 'يحصل على تأكيد فورًا'] },
+      { title: 'الإشعار', desc: 'لا تفوّت أي حجز وأنت تعمل.',
+        steps: ['إشعار فوري على هاتفك', 'يظهر مباشرة في تقويمك', 'أكّد أو ألغِ بلمسة واحدة'] },
+      { title: 'التأكيد', desc: 'يعرف العميل بالضبط متى يأتي.',
+        steps: ['بريد تأكيد بالتاريخ والوقت', 'الخدمة والسعر مذكوران', 'عنوانك يفتح في الخرائط'] },
+      { title: 'النمو', desc: 'حوّل الزبائن الجدد إلى زبائن دائمين.',
+        steps: ['صفحتك الخاصة بألوانك', 'رمز QR لواجهة محلك', 'كل الحجوزات في لوحة واحدة'] },
     ],
   },
 }

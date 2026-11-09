@@ -11,7 +11,7 @@ import { ArrowRight, CalendarDays, ChevronRight, Clock3, MapPin, Plus, Scissors,
 // picture per tab with "+" points that explain what you see. Soft mint → peach → green wash.
 // Every value here is a real Snippr feature; keep it that way when editing.
 
-type Lng = 'en' | 'tr'
+import { L, type All, type SiteLng as Lng } from '@/lib/site-lang'
 type Tab = { key: string; tab: string; title: string; body: string; specs: [string, string][]; points: [string, string][] }
 
 const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
@@ -73,6 +73,93 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       },
     ],
   },
+  nl: {
+    cta: 'Gratis starten',
+    tabs: [
+      {
+        key: 'booking', tab: 'Boekingspagina', title: 'Geboekt terwijl\nje knipt',
+        body: 'Je eigen boekingspagina met je behandelingen, prijzen en vrije tijden. Klanten openen je link via Instagram, WhatsApp of de QR-code in je etalage, kiezen een tijd en krijgen meteen een bevestiging. Geen app, geen account, geen telefoontjes.',
+        specs: [['Prijs', 'Vanaf €14,95/mnd'], ['Klantaccount', 'Niet nodig'], ['App downloaden', 'Niet nodig'], ['Talen', 'EN · TR · NL · AR'], ['Delen als', 'Link + QR-code'], ['Instellen', '± 2 min']],
+        points: [['Je zaak', 'Foto, naam en adres bovenaan'], ['Datum en tijd', 'Bezette tijden verdwijnen voor iedereen'], ['Betalen in de zaak', 'Online wordt niets afgeschreven']],
+      },
+      {
+        key: 'calendar', tab: 'Agenda', title: 'Alle afspraken,\néén agenda',
+        body: 'Nieuwe afspraken staan meteen in je agenda en je telefoon krijgt een melding. Blokkeer een lunchpauze of vrije dag in één beweging; niemand kan eroverheen boeken. Is de dag vol? Dan komen klanten op je wachtlijst.',
+        specs: [['Weergave', 'Dag · Week · Maand'], ['Dubbele boekingen', 'Geblokkeerd'], ['Nieuwe afspraak', 'Direct een melding'], ['Gesloten tijden', 'Elk tijdstip, elke dag'], ['Wachtlijst', 'Ingebouwd'], ['Openingstijden', 'Per weekdag']],
+        points: [['Live', 'Afspraken verschijnen direct'], ['Gesloten', 'Pauzes en vrije dagen blijven vrij'], ['Vandaag', 'Je hele dag in één oogopslag']],
+      },
+      {
+        key: 'reminders', tab: 'Herinneringen', title: 'Minder\nlege stoelen',
+        body: 'Snippr mailt je klanten voor je: een bevestiging direct na het boeken, een herinnering vóór de afspraak en een bericht als die wordt geannuleerd. Elke mail gaat in de taal waarin de klant heeft geboekt. Zet ze los aan of uit.',
+        specs: [['Bevestiging', 'Direct'], ['Herinnering', '1 of 3 dagen vooraf'], ['Verstuurd om', '10:00 (NL-tijd)'], ['Annulering', 'Automatisch'], ['Bedankje', 'Na het bezoek'], ['Taal', 'Die van de klant']],
+        points: [['Herinnering', 'Eén dag vooraf, om 10:00'], ['Gegevens', 'Datum, tijd, behandeling en prijs'], ['Maps', 'Je adres opent met één tik']],
+      },
+      {
+        key: 'sales', tab: 'Omzet', title: 'Weet wat\nje verdient',
+        body: 'Bekijk je omzet per dag, week of maand: behandelingen, fooien en hoe er betaald is. Voeg een verkoop met de hand toe als iemand binnenloopt, en exporteer alles voor je boekhouding met één klik.',
+        specs: [['Periodes', 'Dag · Week · Maand'], ['Fooien', 'Bijgehouden'], ['Betaalwijze', 'Contant · Pin · Anders'], ['Export', 'PDF · CSV · Excel'], ['Inlopers', 'Met de hand toevoegen'], ['Korting eerste bezoek', 'Optioneel']],
+        points: [['Deze week', 'Je verdiensten per dag'], ['Fooien', 'Apart geteld'], ['Export', 'Klaar voor je boekhouder']],
+      },
+    ],
+  },
+  de: {
+    cta: 'Kostenlos starten',
+    tabs: [
+      {
+        key: 'booking', tab: 'Buchungsseite', title: 'Gebucht, während\ndu schneidest',
+        body: 'Deine eigene Buchungsseite mit deinen Leistungen, Preisen und freien Zeiten. Kunden öffnen deinen Link über Instagram, WhatsApp oder den QR-Code im Schaufenster, wählen eine Zeit und bekommen sofort eine Bestätigung. Keine App, kein Konto, keine Anrufe.',
+        specs: [['Preis', 'Ab 14,95 €/Monat'], ['Kundenkonto', 'Nicht nötig'], ['App-Download', 'Nicht nötig'], ['Sprachen', 'EN · TR · NL · AR'], ['Teilen als', 'Link + QR-Code'], ['Einrichtung', '± 2 Min.']],
+        points: [['Dein Laden', 'Foto, Name und Adresse oben'], ['Datum und Uhrzeit', 'Vergebene Zeiten verschwinden für alle'], ['Zahlung im Laden', 'Online wird nichts abgebucht']],
+      },
+      {
+        key: 'calendar', tab: 'Kalender', title: 'Alle Termine,\nein Kalender',
+        body: 'Neue Termine stehen sofort in deinem Kalender und dein Handy bekommt eine Benachrichtigung. Blocke Mittagspause oder freien Tag mit einem Griff; niemand kann darüber buchen. Ist der Tag voll, kommen Kunden auf deine Warteliste.',
+        specs: [['Ansichten', 'Tag · Woche · Monat'], ['Doppelbuchungen', 'Blockiert'], ['Neuer Termin', 'Sofortige Benachrichtigung'], ['Geschlossene Zeiten', 'Jede Zeit, jeder Tag'], ['Warteliste', 'Eingebaut'], ['Öffnungszeiten', 'Pro Wochentag']],
+        points: [['Live', 'Termine erscheinen sofort'], ['Geschlossen', 'Pausen und freie Tage bleiben frei'], ['Heute', 'Dein ganzer Tag auf einen Blick']],
+      },
+      {
+        key: 'reminders', tab: 'Erinnerungen', title: 'Weniger\nleere Stühle',
+        body: 'Snippr schreibt deinen Kunden für dich: eine Bestätigung direkt nach der Buchung, eine Erinnerung vor dem Termin und eine Nachricht bei einer Absage. Jede Mail geht in der Sprache raus, in der der Kunde gebucht hat. Jede lässt sich ein- oder ausschalten.',
+        specs: [['Bestätigung', 'Sofort'], ['Erinnerung', '1 oder 3 Tage vorher'], ['Versand um', '10:00 (NL-Zeit)'], ['Absage', 'Automatisch'], ['Dankeschön', 'Nach dem Besuch'], ['Sprache', 'Die des Kunden']],
+        points: [['Erinnerung', 'Einen Tag vorher um 10:00'], ['Details', 'Datum, Uhrzeit, Leistung und Preis'], ['Maps', 'Deine Adresse öffnet mit einem Tipp']],
+      },
+      {
+        key: 'sales', tab: 'Umsatz', title: 'Wisse, was\ndu verdienst',
+        body: 'Sieh deinen Umsatz für einen Tag, eine Woche oder einen Monat: Leistungen, Trinkgeld und wie bezahlt wurde. Trag Laufkundschaft von Hand ein und exportiere alles mit einem Klick für die Buchhaltung.',
+        specs: [['Zeiträume', 'Tag · Woche · Monat'], ['Trinkgeld', 'Erfasst'], ['Zahlungsarten', 'Bar · Karte · Andere'], ['Export', 'PDF · CSV · Excel'], ['Laufkundschaft', 'Von Hand eintragen'], ['Rabatt beim ersten Besuch', 'Optional']],
+        points: [['Diese Woche', 'Dein Verdienst Tag für Tag'], ['Trinkgeld', 'Separat gezählt'], ['Export', 'Fertig für den Steuerberater']],
+      },
+    ],
+  },
+  ar: {
+    cta: 'ابدأ مجانًا',
+    tabs: [
+      {
+        key: 'booking', tab: 'صفحة الحجز', title: 'حجوزات تصلك\nوأنت تعمل',
+        body: 'صفحة حجز خاصة بك مع خدماتك وأسعارك وأوقاتك المتاحة. يفتح العملاء رابطك من إنستغرام أو واتساب أو رمز QR على واجهة محلك، يختارون وقتًا ويحصلون على تأكيد فورًا. بدون تطبيق أو حساب أو مكالمات.',
+        specs: [['السعر', 'من €14.95 شهريًا'], ['حساب للعميل', 'غير مطلوب'], ['تنزيل تطبيق', 'غير مطلوب'], ['اللغات', 'EN · TR · NL · AR'], ['المشاركة', 'رابط + رمز QR'], ['وقت الإعداد', 'حوالي دقيقتين']],
+        points: [['محلك', 'الصورة والاسم والعنوان في الأعلى'], ['التاريخ والوقت', 'الأوقات المحجوزة تختفي للجميع'], ['الدفع في المحل', 'لا يُخصم شيء عبر الإنترنت']],
+      },
+      {
+        key: 'calendar', tab: 'التقويم', title: 'كل الحجوزات\nفي تقويم واحد',
+        body: 'تظهر الحجوزات الجديدة في تقويمك فور وصولها ويصلك إشعار على هاتفك. أغلق استراحة الغداء أو يوم العطلة بحركة واحدة، فلا يستطيع أحد الحجز فوقها. وإذا امتلأ اليوم ينضم العملاء إلى قائمة الانتظار.',
+        specs: [['طرق العرض', 'يوم · أسبوع · شهر'], ['الحجز المزدوج', 'ممنوع'], ['حجز جديد', 'إشعار فوري'], ['أوقات الإغلاق', 'أي وقت وأي يوم'], ['قائمة الانتظار', 'مدمجة'], ['ساعات العمل', 'لكل يوم']],
+        points: [['مباشر', 'الحجوزات تظهر فورًا'], ['مغلق', 'الاستراحات والعطل تبقى فارغة'], ['اليوم', 'يومك كله بنظرة واحدة']],
+      },
+      {
+        key: 'reminders', tab: 'التذكيرات', title: 'كراسٍ فارغة\nأقل',
+        body: 'يرسل Snippr الرسائل لعملائك نيابةً عنك: تأكيد بعد الحجز مباشرة، وتذكير قبل الموعد، ورسالة إذا أُلغي. كل رسالة تُرسل باللغة التي حجز بها العميل، ويمكنك تشغيل كل واحدة أو إيقافها.',
+        specs: [['التأكيد', 'فوري'], ['التذكير', 'قبل يوم أو 3 أيام'], ['وقت الإرسال', '10:00 (بتوقيت هولندا)'], ['الإلغاء', 'تلقائي'], ['الشكر', 'بعد الزيارة'], ['اللغة', 'لغة العميل']],
+        points: [['التذكير', 'قبل يوم الساعة 10:00'], ['التفاصيل', 'التاريخ والوقت والخدمة والسعر'], ['الخرائط', 'عنوانك يفتح بلمسة']],
+      },
+      {
+        key: 'sales', tab: 'المبيعات', title: 'اعرف كم\nكسبت',
+        body: 'شاهد مبيعاتك ليوم أو أسبوع أو شهر: الخدمات والإكراميات وطريقة الدفع. أضف عملية بيع يدويًا عند دخول عميل بلا موعد، وصدّر كل شيء لمحاسبك بنقرة واحدة.',
+        specs: [['الفترات', 'يوم · أسبوع · شهر'], ['الإكراميات', 'تُسجَّل'], ['طرق الدفع', 'نقدًا · بطاقة · أخرى'], ['التصدير', 'PDF · CSV · Excel'], ['عملاء بلا موعد', 'إضافة يدوية'], ['خصم الزيارة الأولى', 'اختياري']],
+        points: [['هذا الأسبوع', 'أرباحك يومًا بيوم'], ['الإكراميات', 'تُحسب منفصلة'], ['التصدير', 'جاهز لمحاسبك']],
+      },
+    ],
+  },
 }
 
 const mono = { fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' } as const
@@ -87,7 +174,7 @@ const POINTS: Record<string, [number, number][]> = {
 }
 
 function Picture({ k, lng }: { k: string; lng: Lng }) {
-  const tr = lng === 'tr'
+  const W = (t: All) => L(lng, t)
   const card = 'rounded-[26px] bg-white/85 shadow-[0_40px_80px_-40px_rgba(30,50,40,0.45)] ring-1 ring-black/[0.04] backdrop-blur'
   // the real Snippr booking page (app/b/[slug]): dark glass sheet, cover with "open today",
   // iOS-style rows with coloured icon tiles — with sample shop data
@@ -122,7 +209,7 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
               <span className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[10px] text-white" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(8px)' }}><Share size={14} /></span>
               <span className="absolute top-2.5 left-2.5 flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold text-white"
                 style={{ background: 'rgba(20,16,14,0.45)', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(8px)' }}>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#34c759]" />{tr ? 'Bugün açık 09:00–19:00' : 'Open today 09:00–19:00'}
+                <span className="h-1.5 w-1.5 rounded-full bg-[#34c759]" />{W({ en: "Open today 09:00–19:00", nl: "Vandaag open 09:00–19:00", de: "Heute geöffnet 09:00–19:00", tr: "Bugün açık 09:00–19:00", ar: "مفتوح اليوم 09:00–19:00" })}
               </span>
             </div>
             {/* barber photo, overlapping the cover */}
@@ -132,13 +219,13 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
             </div>
             <div className="mt-2 text-center text-[19px] font-bold text-white">Golden Scissors</div>
             <div className="mt-0.5 flex items-center justify-center gap-1 text-[12px] text-white/70"><MapPin size={12} /><span className="underline">Assen</span></div>
-          <div className="mt-3 px-1 text-[13px] font-semibold text-white">{tr ? 'Randevu bilgileri' : 'Appointment details'}</div>
+          <div className="mt-3 px-1 text-[13px] font-semibold text-white">{W({ en: "Appointment details", nl: "Afspraakgegevens", de: "Termindetails", tr: "Randevu bilgileri", ar: "تفاصيل الموعد" })}</div>
           <div className="mt-2 overflow-hidden rounded-[16px]" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}>
-            {row(CalendarDays, tr ? 'Tarih' : 'Date', tr ? 'Cmt 1 Kas' : 'Sat 1 Nov')}
-            {row(Clock3, tr ? 'Saat' : 'Time', '14:30')}
-            {row(Scissors, tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi' : 'Haircut', true)}
+            {row(CalendarDays, W({ en: "Date", nl: "Datum", de: "Datum", tr: "Tarih", ar: "التاريخ" }), W({ en: "Sat 1 Nov", nl: "za 1 nov", de: "Sa., 1. Nov.", tr: "Cmt 1 Kas", ar: "السبت 1 نوفمبر" }))}
+            {row(Clock3, W({ en: "Time", nl: "Tijd", de: "Uhrzeit", tr: "Saat", ar: "الوقت" }), '14:30')}
+            {row(Scissors, W({ en: "Service", nl: "Behandeling", de: "Leistung", tr: "Hizmet", ar: "الخدمة" }), W({ en: "Haircut", nl: "Knippen", de: "Haarschnitt", tr: "Saç kesimi", ar: "قص الشعر" }), true)}
           </div>
-          <div className="mt-2 px-1 text-[10.5px] leading-snug text-white/55">{tr ? 'Ödemeyi dükkânda yaparsın — online para çekilmez.' : 'You pay in the shop — nothing is charged online.'}</div>
+          <div className="mt-2 px-1 text-[10.5px] leading-snug text-white/55">{W({ en: "You pay in the shop. Nothing is charged online.", nl: "Je betaalt in de zaak. Online wordt niets afgeschreven.", de: "Du bezahlst im Laden. Online wird nichts abgebucht.", tr: "Ödemeyi dükkânda yaparsın, online para çekilmez.", ar: "تدفع في المحل، ولا يُخصم أي مبلغ عبر الإنترنت." })}</div>
           </div>
         </div>
       </div>
@@ -146,9 +233,9 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
   }
   if (k === 'calendar') return (
     <div className={`${card} mx-auto w-[340px] p-5`}>
-      <div className="flex items-baseline justify-between"><p className="text-[15px] font-semibold text-[#1d1d1f]">{tr ? 'Bugün' : 'Today'}</p><p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>4 {tr ? 'randevu' : 'bookings'}</p></div>
+      <div className="flex items-baseline justify-between"><p className="text-[15px] font-semibold text-[#1d1d1f]">{W({ en: "Today", nl: "Vandaag", de: "Heute", tr: "Bugün", ar: "اليوم" })}</p><p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>4 {W({ en: "bookings", nl: "afspraken", de: "Termine", tr: "randevu", ar: "حجوزات" })}</p></div>
       <div className="mt-4 space-y-2">
-        {[['10:00', 'Ali · ' + (tr ? 'Saç kesimi' : 'Haircut'), '#e8f0fe', '#1d4ed8'], ['11:00', 'Mehmet · ' + (tr ? 'Sakal' : 'Beard'), '#eaf7ee', '#15803d'], ['12:30', tr ? 'Öğle arası' : 'Lunch break', '#f3f4f6', '#6b7280'], ['14:30', 'Sam · Fade', '#fdf2e9', '#b45309'], ['16:00', 'Yusuf · ' + (tr ? 'Saç + sakal' : 'Hair + beard'), '#e8f0fe', '#1d4ed8']].map(([t, n, bg, fg]) => (
+        {[['10:00', 'Ali · ' + W({ en: "Haircut", nl: "Knippen", de: "Haarschnitt", tr: "Saç kesimi", ar: "قص الشعر" }), '#e8f0fe', '#1d4ed8'], ['11:00', 'Mehmet · ' + W({ en: "Beard", nl: "Baard", de: "Bart", tr: "Sakal", ar: "لحية" }), '#eaf7ee', '#15803d'], ['12:30', W({ en: "Lunch break", nl: "Lunchpauze", de: "Mittagspause", tr: "Öğle arası", ar: "استراحة الغداء" }), '#f3f4f6', '#6b7280'], ['14:30', 'Sam · Fade', '#fdf2e9', '#b45309'], ['16:00', 'Yusuf · ' + W({ en: "Hair + beard", nl: "Haar + baard", de: "Haare + Bart", tr: "Saç + sakal", ar: "شعر + لحية" }), '#e8f0fe', '#1d4ed8']].map(([t, n, bg, fg]) => (
           <div key={t} className="flex items-center gap-3">
             <span className="w-11 text-[12px] text-[#9ca3af] tabular-nums" style={mono}>{t}</span>
             <span className="flex-1 rounded-[10px] px-3 py-2 text-[12.5px] font-medium" style={{ background: bg, color: fg }}>{n}</span>
@@ -159,28 +246,28 @@ function Picture({ k, lng }: { k: string; lng: Lng }) {
   )
   if (k === 'reminders') return (
     <div className={`${card} mx-auto w-[330px] p-5`}>
-      <p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>{tr ? 'Yarın · 10:00' : 'Tomorrow · 10:00'}</p>
-      <p className="mt-2 text-[16px] font-semibold text-[#1d1d1f]">{tr ? 'Yarın görüşürüz, Ali!' : 'See you tomorrow, Ali!'}</p>
+      <p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>{W({ en: "Tomorrow · 10:00", nl: "Morgen · 10:00", de: "Morgen · 10:00", tr: "Yarın · 10:00", ar: "غدًا · 10:00" })}</p>
+      <p className="mt-2 text-[16px] font-semibold text-[#1d1d1f]">{W({ en: "See you tomorrow, Ali!", nl: "Tot morgen, Ali!", de: "Bis morgen, Ali!", tr: "Yarın görüşürüz, Ali!", ar: "نراك غدًا يا علي!" })}</p>
       <div className="mt-4 divide-y divide-[#f0f0ee] text-[13px]">
-        {[[tr ? 'Tarih' : 'Date', tr ? 'Cumartesi 1 Kasım' : 'Saturday 1 Nov'], [tr ? 'Saat' : 'Time', '14:30'], [tr ? 'Hizmet' : 'Service', tr ? 'Saç kesimi · €25' : 'Haircut · €25']].map(([a, b]) => (
+        {[[W({ en: "Date", nl: "Datum", de: "Datum", tr: "Tarih", ar: "التاريخ" }), W({ en: "Saturday 1 Nov", nl: "zaterdag 1 nov", de: "Samstag, 1. Nov.", tr: "Cumartesi 1 Kasım", ar: "السبت 1 نوفمبر" })], [W({ en: "Time", nl: "Tijd", de: "Uhrzeit", tr: "Saat", ar: "الوقت" }), '14:30'], [W({ en: "Service", nl: "Behandeling", de: "Leistung", tr: "Hizmet", ar: "الخدمة" }), W({ en: "Haircut · €25", nl: "Knippen · €25", de: "Haarschnitt · €25", tr: "Saç kesimi · €25", ar: "قص الشعر · €25" })]].map(([a, b]) => (
           <div key={a} className="flex justify-between py-2"><span className="text-[#9ca3af]">{a}</span><span className="font-medium text-[#1d1d1f]">{b}</span></div>
         ))}
       </div>
-      <div className="mt-4 rounded-full border border-[#e5e7eb] py-2.5 text-center text-[13px] font-medium text-[#1d1d1f]">{tr ? 'Haritada aç' : 'Open in Maps'}</div>
+      <div className="mt-4 rounded-full border border-[#e5e7eb] py-2.5 text-center text-[13px] font-medium text-[#1d1d1f]">{W({ en: "Open in Maps", nl: "Openen in Maps", de: "In Maps öffnen", tr: "Haritada aç", ar: "افتح في الخرائط" })}</div>
     </div>
   )
   const bars = [38, 62, 45, 80, 70, 95, 52]
   return (
     <div className={`${card} mx-auto w-[340px] p-5`}>
-      <p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>{tr ? 'Bu hafta' : 'This week'}</p>
+      <p className="text-[11px] uppercase tracking-[0.12em] text-[#6b7280]" style={mono}>{W({ en: "This week", nl: "Deze week", de: "Diese Woche", tr: "Bu hafta", ar: "هذا الأسبوع" })}</p>
       <p className="mt-1 text-[30px] font-semibold tracking-[-0.02em] text-[#1d1d1f]">€1.240</p>
       <div className="mt-4 flex h-[110px] items-end gap-2">
         {bars.map((h, i) => <span key={i} className="flex-1 rounded-t-[6px]" style={{ height: `${h}%`, background: i === 5 ? '#1d1d1f' : '#d9e4dc' }} />)}
       </div>
       <div className="mt-2 flex justify-between text-[10.5px] text-[#9ca3af]" style={mono}>
-        {(tr ? ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'] : ['M', 'T', 'W', 'T', 'F', 'S', 'S']).map((d, i) => <span key={i} className="flex-1 text-center">{d}</span>)}
+        {W({ en: 'M T W T F S S', nl: 'M D W D V Z Z', de: 'M D M D F S S', tr: 'Pt Sa Ça Pe Cu Ct Pz', ar: 'ن ث ر خ ج س ح' }).split(' ').map((d, i) => <span key={i} className="flex-1 text-center">{d}</span>)}
       </div>
-      <div className="mt-4 flex justify-between border-t border-[#f0f0ee] pt-3 text-[13px]"><span className="text-[#9ca3af]">{tr ? 'Bahşiş' : 'Tips'}</span><span className="font-medium text-[#1d1d1f]">€86</span></div>
+      <div className="mt-4 flex justify-between border-t border-[#f0f0ee] pt-3 text-[13px]"><span className="text-[#9ca3af]">{W({ en: "Tips", nl: "Fooi", de: "Trinkgeld", tr: "Bahşiş", ar: "الإكراميات" })}</span><span className="font-medium text-[#1d1d1f]">€86</span></div>
     </div>
   )
 }

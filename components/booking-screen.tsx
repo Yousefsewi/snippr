@@ -6,10 +6,13 @@
 
 import { useState } from 'react'
 
-type Lng = 'en' | 'tr'
+import type { SiteLng as Lng } from '@/lib/site-lang'
 
 const T = {
   en: { open: 'Open today 09:00–19:00', details: 'Appointment details', date: 'Date', time: 'Time', service: 'Service', choose: 'Choose', pickDate: 'Choose a date first', haircut: 'Haircut · €25', note: 'Times in your local time. You pay in the shop — nothing is charged online.', powered: 'Powered by', days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], today: 'Today', locale: 'en-GB' },
+  nl: { open: 'Vandaag open 09:00–19:00', details: 'Afspraakgegevens', date: 'Datum', time: 'Tijd', service: 'Behandeling', choose: 'Kies', pickDate: 'Kies eerst een datum', haircut: 'Knippen · €25', note: 'Tijden in jouw lokale tijd. Je betaalt in de zaak, online wordt niets afgeschreven.', powered: 'Mogelijk gemaakt door', days: ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'], today: 'Vandaag', locale: 'nl-NL' },
+  de: { open: 'Heute geöffnet 09:00–19:00', details: 'Termindetails', date: 'Datum', time: 'Uhrzeit', service: 'Leistung', choose: 'Wählen', pickDate: 'Wähle zuerst ein Datum', haircut: 'Haarschnitt · €25', note: 'Zeiten in deiner Ortszeit. Du bezahlst im Laden, online wird nichts abgebucht.', powered: 'Bereitgestellt von', days: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'], today: 'Heute', locale: 'de-DE' },
+  ar: { open: 'مفتوح اليوم 09:00–19:00', details: 'تفاصيل الموعد', date: 'التاريخ', time: 'الوقت', service: 'الخدمة', choose: 'اختر', pickDate: 'اختر التاريخ أولًا', haircut: 'قص الشعر · €25', note: 'الأوقات بتوقيتك المحلي. تدفع في المحل، ولا يُخصم شيء عبر الإنترنت.', powered: 'بدعم من', days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], today: 'اليوم', locale: 'ar-u-nu-latn' },
   tr: { open: 'Bugün açık 09:00–19:00', details: 'Randevu bilgileri', date: 'Tarih', time: 'Saat', service: 'Hizmet', choose: 'Seç', pickDate: 'Önce tarih seç', haircut: 'Saç kesimi · €25', note: 'Saatler senin yerel saatinde. Ödemeyi dükkânda yaparsın — online para çekilmez.', powered: 'Altyapı:', days: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'], today: 'Bugün', locale: 'tr-TR' },
 }
 const TIMES = ['09:30', '10:00', '11:00', '11:30', '13:30', '14:00', '14:30', '15:30', '16:00']
@@ -45,7 +48,7 @@ export default function BookingScreen({ lng, days }: { lng: Lng; days: Date[] })
   const [time, setTime] = useState<string | null>(null)
   const dayText = day !== null && days[day] ? days[day].toLocaleDateString(t.locale, { weekday: 'short', day: 'numeric', month: 'short' }) : t.choose
   const line = <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', marginLeft: 64 }} />
-  const activeLang = lng === 'tr' ? 'Türkçe' : 'English'
+  const activeLang = ({ tr: 'Türkçe', nl: 'Nederlands', en: 'English', ar: 'العربية', de: 'English' } as Record<Lng, string>)[lng]
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={ios}>
@@ -114,7 +117,7 @@ export default function BookingScreen({ lng, days }: { lng: Lng; days: Date[] })
 
         <div className="mt-5 text-center text-[14px] text-white/60">{t.powered} <b className="text-white">Snippr</b></div>
         <div className="mt-3 flex justify-center gap-2">
-          {['Türkçe', 'Nederlands', 'English'].map(l => (
+          {['Türkçe', 'Nederlands', 'English', 'العربية'].map(l => (
             <span key={l} className="rounded-full px-3.5 py-1.5 text-[13px] font-semibold"
               style={{ border: '1px solid rgba(255,255,255,0.25)', color: l === activeLang ? '#fff' : 'rgba(255,255,255,0.55)', background: l === activeLang ? 'rgba(255,255,255,0.12)' : 'transparent' }}>{l}</span>
           ))}

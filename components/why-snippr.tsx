@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 
 // "What makes Snippr different" on the homepage. Only true claims — keep it that way.
 
-type Lng = 'en' | 'tr'
+import type { SiteLng as Lng } from '@/lib/site-lang'
 
 const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [string, string][] }> = {
   en: {
@@ -31,6 +31,45 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
       ['Müşterinin dilini konuşur', 'Randevu sayfası ve mailler İngilizce, Türkçe, Felemenkçe ve Arapça; müşteri hangisini seçtiyse.'],
       ['Verilerin Avrupa’da kalır', 'AB’deki sunucularda, GDPR kurallarıyla saklanır. İstediğin an indirebilir ya da silebilirsin.'],
       ['Hollanda’da yapıldı', 'Assen’de berberler ve salonlar için yapıldı — hatırlatmalar Hollanda saatiyle 10:00’da gider.'],
+    ],
+  },
+  nl: {
+    eyebrow: 'WAAROM SNIPPR',
+    title: 'Wat Snippr anders maakt',
+    body: 'De meeste boekingsapps zijn gemaakt voor grote salons en ketens. Snippr is gemaakt voor de kapper met één stoel en een drukke dag.',
+    items: [
+      ['Geen commissie', 'Start zonder creditcard. Snippr neemt nooit een deel van je boekingen; klanten betalen jou direct.'],
+      ['Niets te installeren voor klanten', 'Geen app en geen account. Je klanten tikken op je link en boeken in een paar tikken.'],
+      ['Jouw pagina, geen marktplaats', 'Klanten zien alleen jou. Geen andere kappers naast je, niemand die je klanten wegkaapt.'],
+      ['Spreekt de taal van je klanten', 'Boekingspagina en e-mails in het Engels, Turks, Nederlands en Arabisch, in de taal die je klant kiest.'],
+      ['Je gegevens blijven in Europa', 'Opgeslagen op servers in de EU en verwerkt volgens de AVG. Je kunt ze altijd downloaden of verwijderen.'],
+      ['Gemaakt in Nederland', 'Gebouwd in Assen voor kappers en salons, met herinneringen om 10:00 Nederlandse tijd.'],
+    ],
+  },
+  de: {
+    eyebrow: 'WARUM SNIPPR',
+    title: 'Was Snippr anders macht',
+    body: 'Die meisten Buchungs-Apps wurden für große Salons und Ketten gebaut. Snippr ist für den Barbier mit einem Stuhl und einem vollen Tag gemacht.',
+    items: [
+      ['Keine Provision', 'Starte ohne Kreditkarte. Snippr nimmt nie einen Anteil an deinen Buchungen; Kunden bezahlen dich direkt.'],
+      ['Nichts zu installieren für Kunden', 'Keine App und kein Konto. Deine Kunden tippen auf deinen Link und buchen mit wenigen Tipps.'],
+      ['Deine Seite, kein Marktplatz', 'Kunden sehen nur dich. Keine anderen Barbiere daneben, niemand schnappt dir Kunden weg.'],
+      ['Spricht die Sprache deiner Kunden', 'Buchungsseite und E-Mails auf Englisch, Türkisch, Niederländisch und Arabisch, in der Sprache, die dein Kunde wählt.'],
+      ['Deine Daten bleiben in Europa', 'Gespeichert auf Servern in der EU und verarbeitet nach der DSGVO. Du kannst sie jederzeit herunterladen oder löschen.'],
+      ['Gemacht in den Niederlanden', 'Entwickelt in Assen für Barbiere und Salons, mit Erinnerungen um 10:00 Uhr niederländischer Zeit.'],
+    ],
+  },
+  ar: {
+    eyebrow: 'لماذا Snippr',
+    title: 'ما الذي يميّز Snippr',
+    body: 'معظم تطبيقات الحجز صُممت للصالونات الكبيرة والسلاسل. أما Snippr فمصمَّم للحلاق صاحب الكرسي الواحد واليوم المزدحم.',
+    items: [
+      ['بدون عمولة', 'ابدأ بدون بطاقة ائتمان. لا يأخذ Snippr أي نسبة من حجوزاتك، والعملاء يدفعون لك مباشرة.'],
+      ['لا شيء يُثبَّت للعملاء', 'بدون تطبيق أو حساب. يضغط عملاؤك على رابطك ويحجزون بلمسات قليلة.'],
+      ['صفحتك، وليست سوقًا', 'يرى العملاء أنت فقط. لا حلاقين آخرين بجانبك، ولا أحد يأخذ زبائنك.'],
+      ['يتحدث لغة عملائك', 'صفحة الحجز والرسائل بالإنجليزية والتركية والهولندية والعربية، باللغة التي يختارها عميلك.'],
+      ['بياناتك تبقى في أوروبا', 'تُحفظ على خوادم داخل الاتحاد الأوروبي وتُعالج وفق اللائحة العامة لحماية البيانات. يمكنك تنزيلها أو حذفها في أي وقت.'],
+      ['صُنع في هولندا', 'طُوِّر في أسن للحلاقين والصالونات، مع تذكيرات تُرسل الساعة 10:00 بتوقيت هولندا.'],
     ],
   },
 }

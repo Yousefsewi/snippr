@@ -8,6 +8,7 @@ import { ArrowLeft } from 'lucide-react'
 import LangCurrencyPicker from '@/components/lang-currency-picker'
 import PricingPlans, { type Lng } from '@/components/pricing-plans'
 import { useCurrencyChoice } from '@/lib/currency'
+import { browserSiteLng, isSiteLng, type SiteLng } from '@/lib/site-lang'
 
 const T = {
   en: {
@@ -25,15 +26,17 @@ const T = {
 const FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif"
 
 export default function PricingPage() {
-  const detected = useSyncExternalStore(() => () => {}, (): Lng => {
-    try { const s = localStorage.getItem('snippr-lang'); if (s && s.includes('tr')) return 'tr'; if (s && s.includes('en')) return 'en' } catch { /* blocked */ }
-    return (navigator.language || '').toLowerCase().startsWith('tr') ? 'tr' : 'en'
-  }, (): Lng => 'en')
-  const [choice, setChoice] = useState<Lng | null>(null)
-  const lng = choice ?? detected
+  // the site language (5 languages); this page's texts exist in English and Turkish so far
+  const detected = useSyncExternalStore(() => () => {}, (): SiteLng => {
+    try { const s = localStorage.getItem('snippr-lang'); if (isSiteLng(s)) return s } catch { /* blocked */ }
+    return browserSiteLng()
+  }, (): SiteLng => 'en')
+  const [choice, setChoice] = useState<SiteLng | null>(null)
+  const siteLng = choice ?? detected
+  const lng: Lng = siteLng === 'tr' ? 'tr' : 'en'
   const t = T[lng]
   const [cur] = useCurrencyChoice()
-  const chooseLng = (l: Lng) => { setChoice(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
+  const chooseLng = (l: SiteLng) => { setChoice(l); try { localStorage.setItem('snippr-lang', l) } catch { /* storage blocked */ } }
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]" style={{ fontFamily: FONT, colorScheme: 'light' }}>
@@ -43,7 +46,7 @@ export default function PricingPage() {
           <Link href="/" className="flex items-center gap-1 rounded-full px-2 py-1.5 text-[15px] font-medium text-[#0a84ff] hover:bg-white/70">
             <ArrowLeft size={18} /> {t.back}
           </Link>
-          <LangCurrencyPicker lng={lng} setLng={chooseLng} />
+          <LangCurrencyPicker lng={siteLng} setLng={chooseLng} />
         </div>
 
         {/* header */}

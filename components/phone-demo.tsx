@@ -16,7 +16,7 @@ import BookingScreen from '@/components/booking-screen'
 
 const nunito = Nunito({ subsets: ['latin', 'latin-ext'], weight: ['600', '700', '800', '900'], display: 'swap' })
 
-type Lng = 'en' | 'tr'
+import type { SiteLng as Lng } from '@/lib/site-lang'
 const BRAND = '#7D8F4E', BRAND2 = '#56663A'
 // true: the phone shows the real Snippr booking page · false: the cartoon booking walkthrough
 const SHOW_BOOKING_PAGE = true
@@ -239,7 +239,7 @@ const W = 390, H = 844, F = 16
 const OW = W + 2 * F, OH = H + 2 * F
 
 export default function PhoneDemo({ lng, maxHeight = 640 }: { lng: Lng; maxHeight?: number }) {
-  const t = T[lng] ?? T.en
+  const t = lng === 'tr' ? T.tr : T.en
   const boxRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.7)
   const [step, setStep] = useState(0)

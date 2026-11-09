@@ -4,13 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronDown, Globe } from 'lucide-react'
 import { CURRENCIES, useCurrencyChoice } from '@/lib/currency'
+import { L, SITE_LANGS, type SiteLng } from '@/lib/site-lang'
 
-type Lng = 'en' | 'tr'
-
-const LANGS: { code: Lng; tag: string; label: string }[] = [
-  { code: 'en', tag: 'EN', label: 'English' },
-  { code: 'tr', tag: 'TR', label: 'Türkçe' },
-]
+type Lng = SiteLng
+const LANGS = SITE_LANGS
 
 const FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif"
 
@@ -47,7 +44,6 @@ export default function LangCurrencyPicker({
     return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
   }, [open])
 
-  const tr = lng === 'tr'
   const dark = theme === 'dark'
   const pos = [
     placement === 'up' ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]',
@@ -79,14 +75,14 @@ export default function LangCurrencyPicker({
             className={`absolute z-50 ${pos} grid w-[min(420px,calc(100vw-32px))] grid-cols-2 overflow-hidden rounded-[18px] bg-white/95 text-left shadow-[0_24px_60px_-12px_rgba(0,0,0,0.35),0_0_0_0.5px_rgba(0,0,0,0.08)] backdrop-blur-xl`}>
             {/* languages */}
             <div className="ios-scroll max-h-[300px] overflow-y-auto p-2" style={{ borderRight: '0.5px solid rgba(0,0,0,0.1)' }}>
-              <p className="px-3 pt-1.5 pb-1 text-[11px] font-semibold tracking-[0.08em] text-[#8e8e93] uppercase">{tr ? 'Dil' : 'Language'}</p>
+              <p className="px-3 pt-1.5 pb-1 text-[11px] font-semibold tracking-[0.08em] text-[#8e8e93] uppercase">{L(lng, { en: 'Language', nl: 'Taal', de: 'Sprache', tr: 'Dil', ar: 'اللغة' })}</p>
               {LANGS.map(l => (
                 <Row key={l.code} tag={l.tag} label={l.label} on={l.code === lng} onClick={() => setLng(l.code)} />
               ))}
             </div>
             {/* currencies */}
             <div className="ios-scroll max-h-[300px] overflow-y-auto p-2">
-              <p className="px-3 pt-1.5 pb-1 text-[11px] font-semibold tracking-[0.08em] text-[#8e8e93] uppercase">{tr ? 'Para birimi' : 'Currency'}</p>
+              <p className="px-3 pt-1.5 pb-1 text-[11px] font-semibold tracking-[0.08em] text-[#8e8e93] uppercase">{L(lng, { en: 'Currency', nl: 'Valuta', de: 'Währung', tr: 'Para birimi', ar: 'العملة' })}</p>
               {CURRENCIES.map(c => (
                 <Row key={c.code} tag={c.code.slice(0, 2)} label={c.code} on={c.code === cur} onClick={() => setCur(c.code)} />
               ))}

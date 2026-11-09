@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
 
-type Lng = 'en' | 'tr'
+import type { SiteLng as Lng } from '@/lib/site-lang'
 type Slot = { time: string; service: string | null; name: string | null; fresh?: boolean }
 
 const T = {
@@ -24,6 +24,27 @@ const T = {
     msg: (d: string, t: string) => `Your booking for ${d} at ${t} is confirmed ✂️`, minutes: 'min',
     services: [['Haircut', 30], ['Beard trim', 20], ['Hair & beard', 45], ['Kids cut', 25], ['Colour', 60]] as [string, number][],
     names: ['Alex K.', 'Sam Y.', 'Chris D.', 'Ethan S.', 'Ben T.', 'Leo A.', 'Noah O.', 'Max B.'],
+  },
+  nl: {
+    locale: 'nl-NL', free: 'Vrij', tapHint: 'Tik op een vrij tijdstip', confirmed: 'Bevestigd', booked: 'geboekt',
+    notifTitle: 'Nieuwe afspraak', viaLink: 'Via je link', now: 'nu', toClient: 'Naar de klant',
+    msg: (d: string, t: string) => `Je afspraak op ${d} om ${t} is bevestigd ✂️`, minutes: 'min',
+    services: [['Knippen', 30], ['Baard trimmen', 20], ['Haar & baard', 45], ['Kinderknipbeurt', 25], ['Kleuren', 60]] as [string, number][],
+    names: ['Daan K.', 'Sem Y.', 'Lucas D.', 'Milan S.', 'Finn T.', 'Levi A.', 'Noah O.', 'Bram B.'],
+  },
+  de: {
+    locale: 'de-DE', free: 'Frei', tapHint: 'Tippe auf einen freien Termin', confirmed: 'Bestätigt', booked: 'gebucht',
+    notifTitle: 'Neuer Termin', viaLink: 'Über deinen Link', now: 'jetzt', toClient: 'An den Kunden',
+    msg: (d: string, t: string) => `Dein Termin am ${d} um ${t} ist bestätigt ✂️`, minutes: 'Min.',
+    services: [['Haarschnitt', 30], ['Bart trimmen', 20], ['Haare & Bart', 45], ['Kinderhaarschnitt', 25], ['Färben', 60]] as [string, number][],
+    names: ['Lukas K.', 'Jonas Y.', 'Felix D.', 'Paul S.', 'Leon T.', 'Ben A.', 'Elias O.', 'Max B.'],
+  },
+  ar: {
+    locale: 'ar-u-nu-latn', free: 'متاح', tapHint: 'اضغط على وقت متاح', confirmed: 'مؤكد', booked: 'محجوز',
+    notifTitle: 'حجز جديد', viaLink: 'عبر رابطك', now: 'الآن', toClient: 'أُرسل للعميل',
+    msg: (d: string, t: string) => `تم تأكيد موعدك يوم ${d} الساعة ${t} ✂️`, minutes: 'د',
+    services: [['قص الشعر', 30], ['تهذيب اللحية', 20], ['شعر ولحية', 45], ['قص للأطفال', 25], ['صبغ', 60]] as [string, number][],
+    names: ['أحمد ك.', 'يوسف ي.', 'عمر د.', 'خالد س.', 'سامي ت.', 'كريم أ.', 'رامي ع.', 'ليث ب.'],
   },
 }
 

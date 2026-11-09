@@ -5,25 +5,16 @@ import { useStored, useClientValue, writeStored } from './use-stored'
 
 export interface Currency { code: string; symbol: string; label: string; locale: string }
 
+// Only the markets Snippr goes after: the eurozone (NL, BE, DE…), the UK, Switzerland,
+// Turkey, the Gulf and US dollars. Others were removed on purpose (no potential for now).
 export const CURRENCIES: Currency[] = [
-  { code: 'USD', symbol: '$',   label: 'US Dollar',          locale: 'en-US' },
   { code: 'EUR', symbol: '€',   label: 'Euro',               locale: 'de-DE' },
   { code: 'GBP', symbol: '£',   label: 'British Pound',      locale: 'en-GB' },
+  { code: 'CHF', symbol: 'CHF', label: 'Swiss Franc',        locale: 'de-CH' },
   { code: 'TRY', symbol: '₺',   label: 'Turkish Lira',       locale: 'tr-TR' },
-  { code: 'JPY', symbol: '¥',   label: 'Japanese Yen',       locale: 'ja-JP' },
-  { code: 'CNY', symbol: '¥',   label: 'Chinese Yuan',       locale: 'zh-CN' },
-  { code: 'INR', symbol: '₹',   label: 'Indian Rupee',       locale: 'en-IN' },
+  { code: 'USD', symbol: '$',   label: 'US Dollar',          locale: 'en-US' },
   { code: 'AED', symbol: 'د.إ', label: 'UAE Dirham',         locale: 'ar-AE' },
   { code: 'SAR', symbol: '﷼',   label: 'Saudi Riyal',        locale: 'ar-SA' },
-  { code: 'CAD', symbol: 'CA$', label: 'Canadian Dollar',    locale: 'en-CA' },
-  { code: 'AUD', symbol: 'A$',  label: 'Australian Dollar',  locale: 'en-AU' },
-  { code: 'BRL', symbol: 'R$',  label: 'Brazilian Real',     locale: 'pt-BR' },
-  { code: 'RUB', symbol: '₽',   label: 'Russian Ruble',      locale: 'ru-RU' },
-  { code: 'CHF', symbol: 'CHF', label: 'Swiss Franc',        locale: 'de-CH' },
-  { code: 'KRW', symbol: '₩',   label: 'South Korean Won',   locale: 'ko-KR' },
-  { code: 'MXN', symbol: 'MX$', label: 'Mexican Peso',       locale: 'es-MX' },
-  { code: 'ZAR', symbol: 'R',   label: 'South African Rand', locale: 'en-ZA' },
-  { code: 'EGP', symbol: 'E£',  label: 'Egyptian Pound',     locale: 'ar-EG' },
 ]
 
 // Approximate FX rates (units of currency per 1 USD) — for displaying plan prices
