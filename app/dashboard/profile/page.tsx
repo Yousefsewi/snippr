@@ -15,6 +15,7 @@ import { useCurrency } from '@/lib/currency'
 import { isBlock } from '@/lib/blocks'
 import { isOn, type MsgKind, type MsgSettings } from '@/lib/messages'
 import { SITE_URL } from '@/lib/site-url'
+import { SITE_LANGS, SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 type Status = 'pending' | 'confirmed' | 'completed' | 'cancelled'
 type Appt = {
@@ -38,6 +39,51 @@ const T = {
     security: 'Hesap ve güvenlik', email: 'E-posta', password: 'Şifre', changePw: 'Şifreyi değiştir',
     link: 'Randevu linki', copyLink: 'Randevu linkini kopyala', copy: 'Kopyala', copied: 'Kopyalandı', language: 'Panel dili', change: 'Değiştir',
     del: 'Hesabı sil', delSub: 'Ayarlar sayfasından',
+  },
+  nl: {
+    barber: 'Kapper', noLocation: 'Voeg je locatie toe', edit: 'Profiel bewerken', myPage: 'Mijn boekingspagina',
+    changeCover: 'Omslagfoto wijzigen', changePhoto: 'Foto wijzigen', verified: 'Geverifieerd account',
+    stats: ['Afgeronde afspraken', 'Klanten', 'Komende afspraken', 'Verdiend deze maand'],
+    recent: 'Recente afspraken', export: 'Exporteren', search: 'Zoeken…', viewAll: 'Alles bekijken', refresh: 'Vernieuwen',
+    cols: ['Klant', 'Behandeling', 'Datum', 'Tijd', 'Status'],
+    status: { pending: 'In afwachting', confirmed: 'Bevestigd', completed: 'Afgerond', cancelled: 'Geannuleerd' } as Record<Status, string>,
+    empty: 'Nog geen afspraken. Deel je boekingslink, dan verschijnen ze hier.', noMatch: 'Geen resultaten.',
+    notif: 'E-mails aan klanten', notifSub: 'E-mails die je klanten automatisch krijgen.',
+    kinds: { remind1d: 'Herinnering 1 dag vooraf', confirmed: 'Afspraak bevestigd', cancelled: 'Afspraak geannuleerd', thanks: 'Bedankje na het bezoek' } as Partial<Record<MsgKind, string>>,
+    allMessages: 'Alle berichtinstellingen', notReady: 'Berichtinstellingen zijn nog niet ingesteld.',
+    security: 'Account en beveiliging', email: 'E-mail', password: 'Wachtwoord', changePw: 'Wachtwoord wijzigen',
+    link: 'Boekingslink', copyLink: 'Boekingslink kopiëren', copy: 'Kopiëren', copied: 'Gekopieerd', language: 'Taal van het dashboard', change: 'Wijzigen',
+    del: 'Account verwijderen', delSub: 'Via de instellingenpagina',
+  },
+  de: {
+    barber: 'Barbier', noLocation: 'Standort hinzufügen', edit: 'Profil bearbeiten', myPage: 'Meine Buchungsseite',
+    changeCover: 'Titelbild ändern', changePhoto: 'Foto ändern', verified: 'Verifiziertes Konto',
+    stats: ['Abgeschlossene Termine', 'Kunden', 'Kommende Termine', 'Diesen Monat verdient'],
+    recent: 'Letzte Termine', export: 'Exportieren', search: 'Suchen…', viewAll: 'Alle ansehen', refresh: 'Aktualisieren',
+    cols: ['Kunde', 'Leistung', 'Datum', 'Uhrzeit', 'Status'],
+    status: { pending: 'Ausstehend', confirmed: 'Bestätigt', completed: 'Abgeschlossen', cancelled: 'Storniert' } as Record<Status, string>,
+    empty: 'Noch keine Termine. Teile deinen Buchungslink, dann erscheinen sie hier.', noMatch: 'Keine Ergebnisse.',
+    notif: 'E-Mails an Kunden', notifSub: 'E-Mails, die deine Kunden automatisch bekommen.',
+    kinds: { remind1d: 'Erinnerung 1 Tag vorher', confirmed: 'Termin bestätigt', cancelled: 'Termin storniert', thanks: 'Dankeschön nach dem Besuch' } as Partial<Record<MsgKind, string>>,
+    allMessages: 'Alle Nachrichteneinstellungen', notReady: 'Nachrichteneinstellungen sind noch nicht eingerichtet.',
+    security: 'Konto und Sicherheit', email: 'E-Mail', password: 'Passwort', changePw: 'Passwort ändern',
+    link: 'Buchungslink', copyLink: 'Buchungslink kopieren', copy: 'Kopieren', copied: 'Kopiert', language: 'Sprache des Dashboards', change: 'Ändern',
+    del: 'Konto löschen', delSub: 'Über die Einstellungsseite',
+  },
+  ar: {
+    barber: 'حلاق', noLocation: 'أضف موقعك', edit: 'تعديل الملف', myPage: 'صفحة الحجز الخاصة بي',
+    changeCover: 'تغيير صورة الغلاف', changePhoto: 'تغيير الصورة', verified: 'حساب موثّق',
+    stats: ['المواعيد المكتملة', 'العملاء', 'المواعيد القادمة', 'أرباح هذا الشهر'],
+    recent: 'آخر المواعيد', export: 'تصدير', search: 'بحث…', viewAll: 'عرض الكل', refresh: 'تحديث',
+    cols: ['العميل', 'الخدمة', 'التاريخ', 'الوقت', 'الحالة'],
+    status: { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغى' } as Record<Status, string>,
+    empty: 'لا مواعيد بعد. شارك رابط الحجز وستظهر هنا.', noMatch: 'لا نتائج.',
+    notif: 'رسائل العملاء', notifSub: 'الرسائل التي تصل لعملائك تلقائيًا.',
+    kinds: { remind1d: 'تذكير قبل يوم', confirmed: 'تأكيد الموعد', cancelled: 'إلغاء الموعد', thanks: 'شكر بعد الزيارة' } as Partial<Record<MsgKind, string>>,
+    allMessages: 'كل إعدادات الرسائل', notReady: 'لم يتم إعداد الرسائل بعد.',
+    security: 'الحساب والأمان', email: 'البريد الإلكتروني', password: 'كلمة المرور', changePw: 'تغيير كلمة المرور',
+    link: 'رابط الحجز', copyLink: 'انسخ رابط الحجز', copy: 'نسخ', copied: 'تم النسخ', language: 'لغة اللوحة', change: 'تغيير',
+    del: 'حذف الحساب', delSub: 'من صفحة الإعدادات',
   },
   en: {
     barber: 'Barber', noLocation: 'Add your location', edit: 'Edit profile', myPage: 'My booking page',
@@ -103,10 +149,10 @@ function Toggle({ on, onChange, disabled }: { on: boolean; onChange: () => void;
 const card = 'rounded-[18px] border border-[#ececea] bg-white'
 
 export default function ProfilePage() {
-  const { lang, setLang } = useLang()
-  const lng = lang === 'tr' ? 'tr' : 'en'
+  const { lang } = useLang()
+  const lng = toSiteLng(lang)
   const t = T[lng]
-  const locale = lng === 'tr' ? 'tr-TR' : 'en-GB'
+  const locale = SITE_LOCALE[lng]
   const { format } = useCurrency()
 
   const avatarRef = useRef<HTMLInputElement>(null)
@@ -395,9 +441,9 @@ export default function ProfilePage() {
                   </Row>
                 )}
                 <Row icon={Globe} label={t.language}>
-                  <button onClick={() => setLang(lng === 'tr' ? 'en' : 'tr')} className="font-medium text-[#2563eb]">
-                    {lng === 'tr' ? 'Türkçe' : 'English'} · {t.change}
-                  </button>
+                  <Link href="/dashboard/settings" className="font-medium text-[#2563eb]">
+                    {SITE_LANGS.find(x => x.code === lng)?.label} · {t.change}
+                  </Link>
                 </Row>
                 <Row icon={Trash2} label={t.del} danger>
                   <Link href="/dashboard/settings" className="text-[#8a8f98]">{t.delSub} <ChevronRight size={14} className="inline rtl:-scale-x-100" /></Link>

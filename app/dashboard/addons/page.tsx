@@ -15,7 +15,7 @@ import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
 import { SHOW_UNRELEASED } from '@/lib/legal'
-import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
+import { toSiteLng } from '@/lib/site-lang'
 
 type Icon = React.ComponentType<{ size?: number; strokeWidth?: number }>
 

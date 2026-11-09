@@ -12,7 +12,7 @@ import { SITE_URL } from '@/lib/site-url'
 import { useLang } from '@/lib/i18n'
 import { useClientValue } from '@/lib/use-stored'
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from '@/components/brand-icons'
-import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
+import { toSiteLng } from '@/lib/site-lang'
 
 type Tab = 'instagram' | 'facebook' | 'google' | 'whatsapp'
 
