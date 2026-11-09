@@ -1,9 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import { Outfit } from "next/font/google";
+import { outfit } from "@/lib/fonts";
 
-const outfit = Outfit({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700"], display: "swap" });
 
 // Same card as the login/register screen (components/watermelon-ui/auth-5.tsx), for the
 // smaller auth screens: forgot password and reset password. Always light, like the login.

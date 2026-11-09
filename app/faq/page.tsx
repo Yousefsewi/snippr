@@ -4,9 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { SUPPORT_EMAIL } from '@/lib/site'
-import { Playfair_Display } from 'next/font/google'
+import { playfair as serif } from '@/lib/fonts'
 
-const serif = Playfair_Display({ subsets: ['latin'], weight: ['700'], display: 'swap' })
 
 const faqs = [
   {

@@ -11,10 +11,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Nunito } from 'next/font/google'
+import { nunito } from '@/lib/fonts'
 import BookingScreen from '@/components/booking-screen'
 
-const nunito = Nunito({ subsets: ['latin', 'latin-ext'], weight: ['600', '700', '800', '900'], display: 'swap' })
 
 import type { SiteLng as Lng } from '@/lib/site-lang'
 const BRAND = '#7D8F4E', BRAND2 = '#56663A'

@@ -5,7 +5,7 @@
 // Light on purpose: the site root always carries the "dark" class, so this screen sets
 // its own colours instead of using dark: variants.
 import { useState } from "react";
-import { Outfit } from "next/font/google";
+import { outfit } from "@/lib/fonts";
 import { AuthArt } from "@/components/auth-art";
 import SignupPrivacyNotice from '@/components/signup-privacy-notice'
 import { AUTH_COPY, useAuthLng } from '@/lib/auth-copy'
@@ -14,7 +14,6 @@ import GoogleButton from '@/components/google-button'
 // Left panel: the misty field photo (public/auth-fog.jpg). Set to true for the 3D artwork instead.
 const SHOW_3D_ART = false;
 
-const outfit = Outfit({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700"], display: "swap" });
 
 export interface AuthFeature {
   icon: React.ReactNode;

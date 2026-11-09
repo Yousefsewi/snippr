@@ -22,7 +22,7 @@ Status: ✅ OK for commercial use · ❓ source unknown — confirm or replace b
 Barbers upload their own photos (profile, cover, link images); they keep the rights and
 confirm they may use them (Terms of Service → "Content and rights").
 
-## Fonts (all self-hosted via `next/font`, no requests to Google)
+## Fonts (files in `app/fonts/`, loaded with `next/font/local` from lib/fonts.ts; no requests to Google, not even at build time)
 
 | Font | License | Status |
 |---|---|---|
@@ -31,6 +31,7 @@ confirm they may use them (Terms of Service → "Content and rights").
 | Noto Serif | SIL Open Font License 1.1 | ✅ |
 | Outfit | SIL Open Font License 1.1 | ✅ |
 | Playfair Display | SIL Open Font License 1.1 | ✅ |
+| Nunito | SIL Open Font License 1.1 | ✅ |
 
 ## Icons
 

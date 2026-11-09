@@ -5,7 +5,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { openCookieSettings } from '@/lib/consent'
 import { motion } from 'framer-motion'
-import { Inter, Playfair_Display } from 'next/font/google'
+import { inter as serif, playfair } from '@/lib/fonts'
 import BackToTop from '@/components/ui/back-to-top'
 import DownloadPopup from '@/components/ui/download-popup'
 import TwistingRibbon from '@/components/ui/twisting-ribbon'
@@ -21,8 +21,6 @@ import { TRIAL_DAYS } from '@/lib/legal'
 import { L, browserSiteLng, isSiteLng, type SiteLng } from '@/lib/site-lang'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
 
-const serif = Inter({ subsets: ['latin'], weight: ['600', '700', '800', '900'], display: 'swap' })
-const playfair = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['500', '600', '700'], display: 'swap' })
 
 // iOS-style liquid glass on top of the hero video: translucent, blurred backdrop,
 // bright specular top edge and a soft drop shadow.

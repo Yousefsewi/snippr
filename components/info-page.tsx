@@ -2,9 +2,8 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Playfair_Display } from 'next/font/google'
+import { playfair as serif } from '@/lib/fonts'
 
-const serif = Playfair_Display({ subsets: ['latin'], weight: ['700'], display: 'swap' })
 
 export type InfoSection = { heading: string; body: React.ReactNode; id?: string }
 

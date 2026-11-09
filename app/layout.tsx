@@ -1,24 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Noto_Serif } from "next/font/google";
+import { geistSans, geistMono, notoSerif } from "@/lib/fonts";
 import "./globals.css";
 import CookieConsent from "@/components/cookie-consent";
 import TopLoader from "@/components/top-loader";
 import { SITE_URL } from "@/lib/site-url";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const notoSerif = Noto_Serif({
-  variable: "--font-noto-serif",
-  subsets: ["latin"],
-});
 
 // viewportFit cover: lets the phone tab bar sit above the iPhone home indicator (safe-area insets)
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
