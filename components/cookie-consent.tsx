@@ -60,6 +60,19 @@ const COPY = {
       ["تسويق", "للإعلانات والتخصيص. لا يستخدم Snippr ملفات تعريف ارتباط إعلانية."],
     ] as [string, string][],
   },
+  de: {
+    title: "Deine Privatsphäre",
+    body: "Snippr nutzt nur Cookies und Browserspeicher, die die Seite zum Funktionieren braucht: um dich angemeldet zu halten und Einstellungen wie deine Sprache zu merken. Wir nutzen keine Werbe- oder Tracking-Cookies. Du kannst nur notwendige Cookies erlauben, alle akzeptieren oder deine Einstellungen verwalten. Details in unserer",
+    policy: "Cookie-Richtlinie",
+    necessary: "Nur notwendige", prefs: "Einstellungen", all: "Alle akzeptieren",
+    prefsTitle: "Cookie-Einstellungen", save: "Auswahl speichern", back: "Zurück",
+    always: "Immer an", notUsed: "Nicht im Einsatz",
+    cats: [
+      ["Notwendig", "Halten dich angemeldet und merken sich diese Auswahl. Ohne sie funktioniert die Seite nicht."],
+      ["Analyse", "Helfen uns zu verstehen, wie die Seite genutzt wird. Wir nutzen derzeit keine Analyse-Tools; wenn wir eines hinzufügen, respektieren wir diese Auswahl."],
+      ["Marketing", "Werbung und Personalisierung. Snippr nutzt keine Werbe-Cookies."],
+    ] as [string, string][],
+  },
 }
 
 const subscribe = (onChange: () => void) => {
@@ -92,9 +105,9 @@ export default function CookieConsent() {
   const lng = useSyncExternalStore(() => () => {}, () => {
     let saved: string | null = null
     try { saved = localStorage.getItem("snippr-lang") } catch { /* blocked */ }
-    if (saved === "tr" || saved === "en" || saved === "nl" || saved === "ar") return saved
+    if (saved === "tr" || saved === "en" || saved === "nl" || saved === "ar" || saved === "de") return saved
     const nav = (navigator.language || "").toLowerCase()
-    return nav.startsWith("tr") ? "tr" : nav.startsWith("nl") ? "nl" : nav.startsWith("ar") ? "ar" : "en"
+    return nav.startsWith("tr") ? "tr" : nav.startsWith("nl") ? "nl" : nav.startsWith("ar") ? "ar" : nav.startsWith("de") ? "de" : "en"
   }, () => "en")
   const t: (typeof COPY)["en"] = COPY[lng as keyof typeof COPY]
 

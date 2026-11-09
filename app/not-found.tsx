@@ -3,9 +3,20 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { playfair as serif } from '@/lib/fonts'
+import { useSiteLng } from '@/lib/use-site-lng'
+import type { SiteLng } from '@/lib/site-lang'
 
+
+const COPY: Record<SiteLng, { title: string; body: string; home: string }> = {
+  en: { title: 'Page not found', body: 'Sorry, we couldn’t find the page you’re looking for. It might have been moved or deleted.', home: 'Back to home' },
+  nl: { title: 'Pagina niet gevonden', body: 'Sorry, we konden de pagina die je zoekt niet vinden. Misschien is hij verplaatst of verwijderd.', home: 'Terug naar home' },
+  de: { title: 'Seite nicht gefunden', body: 'Sorry, wir konnten die gesuchte Seite nicht finden. Vielleicht wurde sie verschoben oder gelöscht.', home: 'Zur Startseite' },
+  tr: { title: 'Sayfa bulunamadı', body: 'Üzgünüz, aradığın sayfayı bulamadık. Taşınmış ya da silinmiş olabilir.', home: 'Ana sayfaya dön' },
+  ar: { title: 'الصفحة غير موجودة', body: 'عذرًا، لم نجد الصفحة التي تبحث عنها. ربما نُقلت أو حُذفت.', home: 'العودة للرئيسية' },
+}
 
 export default function NotFound() {
+  const c = COPY[useSiteLng()]
   return (
     <main style={{
       minHeight: '100vh',
@@ -81,7 +92,7 @@ export default function NotFound() {
             margin: '0 0 16px',
             color: '#ffffff',
           }}>
-            Page not found
+            {c.title}
           </h2>
           <p style={{
             fontSize: '16px',
@@ -89,7 +100,7 @@ export default function NotFound() {
             margin: '0 0 32px',
             lineHeight: 1.6,
           }}>
-            Sorry, we couldn’t find the page you’re looking for. It might have been moved or deleted.
+            {c.body}
           </p>
         </motion.div>
 
@@ -113,7 +124,7 @@ export default function NotFound() {
             transition: 'all 0.2s',
             cursor: 'pointer',
           }}>
-            Back to home
+            {c.home}
           </Link>
           <Link href="/dashboard" style={{
             display: 'inline-flex',

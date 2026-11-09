@@ -166,7 +166,120 @@ const FOOTER_HREFS: Record<string, string> = {
   'Pricing': '/pricing', 'About': '/about', 'FAQ': '/faq', 'Help & support': '/help', 'Contact': '/contact', 'Privacy': '/privacy', 'Terms': '/terms', 'Imprint': '/imprint', 'DPA': '/dpa', 'Cookie settings': '#cookie-settings',
 }
 
-function FooterLinks({ links }: { links: string[] }) {
+// footer labels in the other languages (English is the key and the default)
+const FOOTER_LABELS: Partial<Record<SiteLng, Record<string, string>>> = {
+  "nl": {
+    "Made for": "Gemaakt voor",
+    "Features": "Functies",
+    "Company": "Bedrijf",
+    "Barbershops": "Kapperszaken",
+    "Hair salons": "Kapsalons",
+    "Beauty salons": "Schoonheidssalons",
+    "Get started": "Beginnen",
+    "Online Booking": "Online boeken",
+    "Calendar": "Agenda",
+    "Notifications": "Meldingen",
+    "Confirmation emails": "Bevestigingsmails",
+    "Opening hours": "Openingstijden",
+    "Working hours": "Werktijden",
+    "Booking link": "Boekingslink",
+    "QR code": "QR-code",
+    "Pricing": "Prijzen",
+    "About": "Over ons",
+    "FAQ": "Veelgestelde vragen",
+    "Help & support": "Hulp en support",
+    "Contact": "Contact",
+    "Privacy": "Privacy",
+    "Terms": "Voorwaarden",
+    "DPA": "Verwerkersovereenkomst",
+    "Imprint": "Impressum",
+    "Cookie settings": "Cookie-instellingen"
+  },
+  "de": {
+    "Made for": "Gemacht für",
+    "Features": "Funktionen",
+    "Company": "Unternehmen",
+    "Barbershops": "Barbershops",
+    "Hair salons": "Friseursalons",
+    "Beauty salons": "Kosmetikstudios",
+    "Get started": "Loslegen",
+    "Online Booking": "Online-Buchung",
+    "Calendar": "Kalender",
+    "Notifications": "Benachrichtigungen",
+    "Confirmation emails": "Bestätigungsmails",
+    "Opening hours": "Öffnungszeiten",
+    "Working hours": "Arbeitszeiten",
+    "Booking link": "Buchungslink",
+    "QR code": "QR-Code",
+    "Pricing": "Preise",
+    "About": "Über uns",
+    "FAQ": "FAQ",
+    "Help & support": "Hilfe und Support",
+    "Contact": "Kontakt",
+    "Privacy": "Datenschutz",
+    "Terms": "AGB",
+    "DPA": "AV-Vertrag",
+    "Imprint": "Impressum",
+    "Cookie settings": "Cookie-Einstellungen"
+  },
+  "tr": {
+    "Made for": "Kimler için",
+    "Features": "Özellikler",
+    "Company": "Şirket",
+    "Barbershops": "Berber dükkânları",
+    "Hair salons": "Kuaför salonları",
+    "Beauty salons": "Güzellik salonları",
+    "Get started": "Başla",
+    "Online Booking": "Online randevu",
+    "Calendar": "Takvim",
+    "Notifications": "Bildirimler",
+    "Confirmation emails": "Onay e-postaları",
+    "Opening hours": "Açılış saatleri",
+    "Working hours": "Çalışma saatleri",
+    "Booking link": "Randevu linki",
+    "QR code": "QR kod",
+    "Pricing": "Fiyatlar",
+    "About": "Hakkımızda",
+    "FAQ": "SSS",
+    "Help & support": "Yardım ve destek",
+    "Contact": "İletişim",
+    "Privacy": "Gizlilik",
+    "Terms": "Şartlar",
+    "DPA": "Veri işleme sözleşmesi",
+    "Imprint": "Künye",
+    "Cookie settings": "Çerez ayarları"
+  },
+  "ar": {
+    "Made for": "مصمَّم لـ",
+    "Features": "الميزات",
+    "Company": "الشركة",
+    "Barbershops": "محلات الحلاقة",
+    "Hair salons": "صالونات الشعر",
+    "Beauty salons": "صالونات التجميل",
+    "Get started": "ابدأ الآن",
+    "Online Booking": "الحجز عبر الإنترنت",
+    "Calendar": "التقويم",
+    "Notifications": "الإشعارات",
+    "Confirmation emails": "رسائل التأكيد",
+    "Opening hours": "ساعات الافتتاح",
+    "Working hours": "ساعات العمل",
+    "Booking link": "رابط الحجز",
+    "QR code": "رمز QR",
+    "Pricing": "الأسعار",
+    "About": "من نحن",
+    "FAQ": "الأسئلة الشائعة",
+    "Help & support": "المساعدة والدعم",
+    "Contact": "تواصل معنا",
+    "Privacy": "الخصوصية",
+    "Terms": "الشروط",
+    "DPA": "اتفاقية معالجة البيانات",
+    "Imprint": "البيانات القانونية",
+    "Cookie settings": "إعدادات ملفات الارتباط"
+  }
+}
+const fl = (lng: SiteLng, key: string) => FOOTER_LABELS[lng]?.[key] ?? key
+
+function FooterLinks({ links, lng }: { links: string[]; lng: SiteLng }) {
   return (
     <ul className="space-y-3">
       {links.map((l) => (
@@ -175,18 +288,18 @@ function FooterLinks({ links }: { links: string[] }) {
             onClick={FOOTER_HREFS[l] === '#cookie-settings' ? (e) => { e.preventDefault(); openCookieSettings() } : undefined}
             onMouseEnter={e => { e.currentTarget.style.color = '#fff' }}
             onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-          >{l}</a>
+          >{fl(lng, l)}</a>
         </li>
       ))}
     </ul>
   )
 }
 
-function FooterCol({ title, links, serif }: { title: string; links: string[]; serif: string }) {
+function FooterCol({ title, links, serif, lng }: { title: string; links: string[]; serif: string; lng: SiteLng }) {
   return (
     <div>
-      <FooterHead title={title} serif={serif} />
-      <FooterLinks links={links} />
+      <FooterHead title={fl(lng, title)} serif={serif} />
+      <FooterLinks links={links} lng={lng} />
     </div>
   )
 }
@@ -1053,21 +1166,21 @@ export default function Home() {
 
             {/* SERVICES */}
             <div className="lg:col-span-2">
-              <FooterCol title="Made for" links={['Barbershops', 'Hair salons', 'Beauty salons', 'Get started']} serif={serif.className} />
+              <FooterCol title="Made for" links={['Barbershops', 'Hair salons', 'Beauty salons', 'Get started']} serif={serif.className} lng={lng} />
             </div>
 
             {/* FEATURES — two sub columns */}
             <div className="lg:col-span-4">
-              <FooterHead title="Features" serif={serif.className} />
+              <FooterHead title={fl(lng, 'Features')} serif={serif.className} />
               <div className="grid grid-cols-2 gap-x-6">
-                <FooterLinks links={['Online Booking', 'Calendar', 'Notifications', 'Confirmation emails']} />
-                <FooterLinks links={['Opening hours', 'Working hours', 'Booking link', 'QR code']} />
+                <FooterLinks links={['Online Booking', 'Calendar', 'Notifications', 'Confirmation emails']} lng={lng} />
+                <FooterLinks links={['Opening hours', 'Working hours', 'Booking link', 'QR code']} lng={lng} />
               </div>
             </div>
 
             {/* INFO + CONNECT */}
             <div className="lg:col-span-2">
-              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms', 'DPA', 'Imprint', 'Cookie settings']} serif={serif.className} />
+              <FooterCol title="Company" links={['Pricing', 'About', 'FAQ', 'Help & support', 'Contact', 'Privacy', 'Terms', 'DPA', 'Imprint', 'Cookie settings']} serif={serif.className} lng={lng} />
               <div className="mt-8">
               </div>
             </div>
