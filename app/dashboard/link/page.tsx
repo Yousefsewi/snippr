@@ -10,6 +10,8 @@ import { SITE_URL } from '@/lib/site-url'
 import { AddressAutocomplete } from '@/components/address-autocomplete'
 import { glass, GLASS_PAGE_WASH } from '@/lib/glass'
 import { PAGE_THEMES, wallpaper } from '@/lib/page-themes'
+import { useTx } from '@/lib/i18n'
+import { DICT } from './copy'
 import {
   SOCIAL_PLATFORMS, MAX_SOCIALS, MAX_BLOCKS, safeUrl, whatsappUrl, youtubeId, isHexColor,
   type SocialLink, type PageBlock,
@@ -61,6 +63,7 @@ const lightBtn: React.CSSProperties = { padding: '10px 16px', borderRadius: 12, 
 const iconBtn: React.CSSProperties = { width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, border: 'none', background: 'rgba(0,0,0,0.04)', color: INK, cursor: 'pointer' }
 
 export default function BookingLinkPage() {
+  const tx = useTx(DICT)
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
   const coverRef = useRef<HTMLInputElement>(null)
@@ -133,7 +136,7 @@ export default function BookingLinkPage() {
     setSocialError('')
     if (links.length >= MAX_SOCIALS) { setSocialError(`You can add up to ${MAX_SOCIALS} icons.`); return }
     const url = platform === 'whatsapp' ? whatsappUrl(socialInput) : safeUrl(socialInput)
-    if (!url) { setSocialError(platform === 'whatsapp' ? 'Enter a phone number with country code.' : 'That doesn’t look like a valid link.'); return }
+    if (!url) { setSocialError(platform === 'whatsapp' ? tx('Enter a phone number with country code.') : tx('That doesn’t look like a valid link.')); return }
     const next = [...links.filter(l => l.platform !== platform), { platform, url }]
     setLinks(next); setSocialInput('')
     save({ links: next })
@@ -152,10 +155,10 @@ export default function BookingLinkPage() {
     if (blockType === 'embed') {
       const id = youtubeId(blockUrl)
       url = id ? `https://www.youtube.com/watch?v=${id}` : null
-      if (!url) { setBlockError('Paste a YouTube video link (youtube.com/watch?v=… or youtu.be/…).'); return }
+      if (!url) { setBlockError(tx('Paste a YouTube video link (youtube.com/watch?v=… or youtu.be/…).')); return }
     } else {
       url = safeUrl(blockUrl)
-      if (!url) { setBlockError('That doesn’t look like a valid link.'); return }
+      if (!url) { setBlockError(tx('That doesn’t look like a valid link.')); return }
     }
     const title = blockTitle.trim().slice(0, 60) || (blockType === 'embed' ? 'Video' : 'Link')
     const next = [...blocks, { id: newId(), type: blockType, title, url }]
@@ -217,7 +220,7 @@ export default function BookingLinkPage() {
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(svg))
   }
 
-  const statusText = status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved — live on your page' : status === 'error' ? 'Could not save, try again' : ''
+  const statusText = status === 'saving' ? tx('Saving…') : status === 'saved' ? tx('Saved — live on your page') : status === 'error' ? tx('Could not save, try again') : ''
 
   return (
     <div style={{ minHeight: '100vh', background: GLASS_PAGE_WASH, fontFamily: SANS, color: INK, fontWeight: 500 }}>
@@ -236,16 +239,16 @@ export default function BookingLinkPage() {
           <div>
             <button onClick={() => router.back()} style={{ ...glass(), display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14, padding: '7px 14px', borderRadius: 'var(--btn-radius, 999px)', color: INK, fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
-              Back
+              {tx('Back')}
             </button>
-            <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>Booking link</h1>
-            <p style={{ margin: '6px 0 0', fontSize: 14, color: MUTED }}>Make your page yours — every change shows up live on the phone.</p>
+            <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>{tx('Booking link')}</h1>
+            <p style={{ margin: '6px 0 0', fontSize: 14, color: MUTED }}>{tx('Make your page yours — every change shows up live on the phone.')}</p>
           </div>
           {/* link pill */}
           <div style={{ ...glass(true), display: 'flex', alignItems: 'center', gap: 8, padding: 6, paddingLeft: 14, borderRadius: 999, maxWidth: '100%' }}>
-            <span style={{ fontSize: 13.5, color: MUTED, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 260 }}>{url || 'Loading…'}</span>
+            <span style={{ fontSize: 13.5, color: MUTED, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 260 }}>{url || tx('Loading…')}</span>
             <button onClick={copy} disabled={!url} style={{ ...darkBtn, borderRadius: 999, padding: '8px 14px', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              {copied ? <><Check size={15} /> Copied</> : <><Copy size={15} /> Copy</>}
+              {copied ? <><Check size={15} /> {tx('Copied')}</> : <><Copy size={15} /> {tx('Copy')}</>}
             </button>
             {url && <a href={url} target="_blank" rel="noopener noreferrer" style={{ ...lightBtn, borderRadius: 999, padding: '8px 12px', display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}><ExternalLink size={15} /></a>}
           </div>
@@ -255,7 +258,7 @@ export default function BookingLinkPage() {
           {/* ── LEFT: customize ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <section style={panel}>
-              <p style={panelTitle}><Palette size={17} /> Customize</p>
+              <p style={panelTitle}><Palette size={17} /> {tx('Customize')}</p>
               {PAGE_THEMES.filter(g => !g.hidden).map(group => (
                 <div key={group.group} style={{ marginBottom: 14 }}>
                   <p style={{ fontSize: 12.5, fontWeight: 700, margin: '0 0 8px', color: INK }}>{group.group}</p>
@@ -284,12 +287,12 @@ export default function BookingLinkPage() {
               <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4, fontSize: 13.5, color: MUTED, cursor: 'pointer' }}>
                 <input type="color" value={accent} onChange={e => setAccent(e.target.value)} onBlur={e => chooseAccent(e.target.value)}
                   style={{ width: 34, height: 34, border: 'none', borderRadius: 10, padding: 0, background: 'none', cursor: 'pointer' }} />
-                Or pick your own colour
+                {tx('Or pick your own colour')}
               </label>
             </section>
 
             <section style={panel}>
-              <p style={panelTitle}><ImagePlus size={17} /> Background</p>
+              <p style={panelTitle}><ImagePlus size={17} /> {tx('Background')}</p>
               {/* what customers see behind the glass panel */}
               <div style={{ position: 'relative', height: 120, borderRadius: 18, overflow: 'hidden', marginBottom: 12,
                 background: cover ? '#111' : wallpaper(accent) }}>
@@ -297,36 +300,36 @@ export default function BookingLinkPage() {
                 <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 64, height: 84, borderRadius: 16, background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }} />
               </div>
               <p style={{ fontSize: 12.5, color: MUTED, margin: '0 0 12px', lineHeight: 1.5 }}>
-                {cover ? 'Your own background photo, shown softly blurred behind your page.' : 'No background photo — your page uses the wallpaper of your theme above. Your profile photo is separate.'}
+                {cover ? tx('Your own background photo, shown softly blurred behind your page.') : tx('No background photo — your page uses the wallpaper of your theme above. Your profile photo is separate.')}
               </p>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <button onClick={() => coverRef.current?.click()} style={{ ...darkBtn, padding: '8px 13px', fontSize: 13 }}>{cover ? 'Change background' : 'Add background photo'}</button>
-                {cover && <button onClick={() => { setCover(null); save({ cover_url: null }) }} style={{ ...lightBtn, padding: '8px 13px', fontSize: 13 }}>Use theme wallpaper</button>}
+                <button onClick={() => coverRef.current?.click()} style={{ ...darkBtn, padding: '8px 13px', fontSize: 13 }}>{cover ? tx('Change background') : tx('Add background photo')}</button>
+                {cover && <button onClick={() => { setCover(null); save({ cover_url: null }) }} style={{ ...lightBtn, padding: '8px 13px', fontSize: 13 }}>{tx('Use theme wallpaper')}</button>}
               </div>
             </section>
 
             <section style={panel}>
-              <p style={panelTitle}><ImagePlus size={17} /> Profile</p>
+              <p style={panelTitle}><ImagePlus size={17} /> {tx('Profile')}</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
                 <div style={{ width: 64, height: 64, borderRadius: 18, overflow: 'hidden', flexShrink: 0, background: photo ? '#111' : `linear-gradient(160deg, ${accent}, #1a1a1a)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 24 }}>
                   {photo ? <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (name || '?').charAt(0).toUpperCase()}
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={() => fileRef.current?.click()} style={{ ...darkBtn, padding: '8px 13px', fontSize: 13 }}>{photo ? 'Change photo' : 'Add photo'}</button>
-                  {photo && <button onClick={() => { setPhoto(null); save({ photo_url: null }) }} style={{ ...lightBtn, padding: '8px 13px', fontSize: 13 }}>Remove</button>}
+                  <button onClick={() => fileRef.current?.click()} style={{ ...darkBtn, padding: '8px 13px', fontSize: 13 }}>{photo ? tx('Change photo') : tx('Add photo')}</button>
+                  {photo && <button onClick={() => { setPhoto(null); save({ photo_url: null }) }} style={{ ...lightBtn, padding: '8px 13px', fontSize: 13 }}>{tx('Remove')}</button>}
                 </div>
               </div>
               <textarea value={bio} onChange={e => setBio(e.target.value)} maxLength={300} rows={3}
-                placeholder="A line about you or your shop — e.g. Fades, beards & hot-towel shaves. Walk-ins welcome."
+                placeholder={tx('A line about you or your shop — e.g. Fades, beards & hot-towel shaves. Walk-ins welcome.')}
                 style={{ ...field, resize: 'vertical', lineHeight: 1.5 }} />
               <div style={{ marginTop: 10 }}>
-                <AddressAutocomplete value={address} onChange={setAddress} placeholder="Shop address"
+                <AddressAutocomplete value={address} onChange={setAddress} placeholder={tx('Shop address')}
                   icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9b9a97" strokeWidth="2" style={{ position: 'absolute', left: 13, top: 15, pointerEvents: 'none' }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>}
                   inputStyle={{ ...field, paddingLeft: 38 }} />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
                 <span style={{ fontSize: 12, color: MUTED }}>{bio.length}/300</span>
-                <button onClick={() => save({ bio: bio.trim(), address: address.trim() })} style={{ ...darkBtn, padding: '8px 16px', fontSize: 13 }}>Save</button>
+                <button onClick={() => save({ bio: bio.trim(), address: address.trim() })} style={{ ...darkBtn, padding: '8px 16px', fontSize: 13 }}>{tx('Save')}</button>
               </div>
             </section>
           </div>
@@ -352,19 +355,19 @@ export default function BookingLinkPage() {
                   <iframe key={previewKey} src={`${url}?preview=1`} title="Your booking page"
                     style={{ width: 390, height: 618 / 0.745, border: 'none', transform: 'scale(0.745)', transformOrigin: 'top left' }} />
                 ) : (
-                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: MUTED, fontSize: 13 }}>Loading preview…</div>
+                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: MUTED, fontSize: 13 }}>{tx('Loading preview…')}</div>
                 )}
               </div>
             </div>
             <span style={{ fontSize: 12.5, minHeight: 18, color: status === 'error' ? '#dc2626' : status === 'saved' ? '#15803d' : MUTED, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              {status === 'saved' && <Check size={13} />}{statusText || 'Live preview of your page'}
+              {status === 'saved' && <Check size={13} />}{statusText || tx('Live preview of your page')}
             </span>
           </div>
 
           {/* ── RIGHT: add social icons, blocks, share ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <section style={panel}>
-              <p style={panelTitle}><Plus size={17} /> Social icons</p>
+              <p style={panelTitle}><Plus size={17} /> {tx('Social icons')}</p>
               {links.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
                   {links.map(l => {
@@ -373,7 +376,7 @@ export default function BookingLinkPage() {
                       <div key={l.platform} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 10px', borderRadius: 14, background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(0,0,0,0.05)' }}>
                         <span style={{ width: 30, height: 30, borderRadius: 9, background: INK, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icon size={15} /></span>
                         <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.url.replace(/^https?:\/\//, '')}</span>
-                        <button onClick={() => removeSocial(l.platform)} title="Remove" style={iconBtn}><Trash2 size={14} /></button>
+                        <button onClick={() => removeSocial(l.platform)} title={tx('Remove')} style={iconBtn}><Trash2 size={14} /></button>
                       </div>
                     )
                   })}
@@ -385,18 +388,18 @@ export default function BookingLinkPage() {
                 </select>
                 <input value={socialInput} onChange={e => setSocialInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addSocial() }}
                   placeholder={SOCIAL_PLATFORMS.find(p => p.key === platform)?.placeholder} style={field} />
-                <button onClick={addSocial} style={darkBtn}>Add</button>
+                <button onClick={addSocial} style={darkBtn}>{tx('Add')}</button>
               </div>
               {socialError && <p style={{ fontSize: 12.5, color: '#dc2626', margin: '8px 0 0' }}>{socialError}</p>}
             </section>
 
             <section style={panel}>
-              <p style={panelTitle}><Link2 size={17} /> Add blocks</p>
+              <p style={panelTitle}><Link2 size={17} /> {tx('Add blocks')}</p>
               {/* block type cards */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {([
-                  { type: 'link' as const, icon: Link2, title: 'Link button', sub: 'Price list, Instagram post, gift card shop…' },
-                  { type: 'embed' as const, icon: PlaySquare, title: 'YouTube video', sub: 'Show your work: a cut, a transformation' },
+                  { type: 'link' as const, icon: Link2, title: tx('Link button'), sub: tx('Price list, Instagram post, gift card shop…') },
+                  { type: 'embed' as const, icon: PlaySquare, title: tx('YouTube video'), sub: tx('Show your work: a cut, a transformation') },
                 ]).map(o => {
                   const on = blockType === o.type
                   const Icon = o.icon
@@ -417,11 +420,11 @@ export default function BookingLinkPage() {
               {blockType && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
                   <input value={blockTitle} onChange={e => setBlockTitle(e.target.value)} maxLength={60}
-                    placeholder={blockType === 'embed' ? 'Title — e.g. Skin fade in 60 seconds' : 'Button text — e.g. See my price list'} style={field} />
+                    placeholder={blockType === 'embed' ? tx('Title — e.g. Skin fade in 60 seconds') : tx('Button text — e.g. See my price list')} style={field} />
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input value={blockUrl} onChange={e => setBlockUrl(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addBlock() }}
-                      placeholder={blockType === 'embed' ? 'Paste a YouTube link…' : 'Paste or type a link…'} style={field} />
-                    <button onClick={addBlock} style={darkBtn}>Add</button>
+                      placeholder={blockType === 'embed' ? tx('Paste a YouTube link…') : tx('Paste or type a link…')} style={field} />
+                    <button onClick={addBlock} style={darkBtn}>{tx('Add')}</button>
                   </div>
                   {blockError && <p style={{ fontSize: 12.5, color: '#dc2626', margin: 0 }}>{blockError}</p>}
                 </div>
@@ -429,7 +432,7 @@ export default function BookingLinkPage() {
 
               {blocks.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
-                  <p style={{ fontSize: 12.5, fontWeight: 700, margin: 0 }}>On your page</p>
+                  <p style={{ fontSize: 12.5, fontWeight: 700, margin: 0 }}>{tx('On your page')}</p>
                   {blocks.map((b, i) => (
                     <div key={b.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 10px', borderRadius: 14, background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(0,0,0,0.05)' }}>
                       <span style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -441,7 +444,7 @@ export default function BookingLinkPage() {
                       </span>
                       <button onClick={() => moveBlock(i, -1)} disabled={i === 0} title="Move up" style={{ ...iconBtn, opacity: i === 0 ? 0.35 : 1 }}><ChevronUp size={15} /></button>
                       <button onClick={() => moveBlock(i, 1)} disabled={i === blocks.length - 1} title="Move down" style={{ ...iconBtn, opacity: i === blocks.length - 1 ? 0.35 : 1 }}><ChevronDown size={15} /></button>
-                      <button onClick={() => removeBlock(b.id)} title="Remove" style={iconBtn}><Trash2 size={14} /></button>
+                      <button onClick={() => removeBlock(b.id)} title={tx('Remove')} style={iconBtn}><Trash2 size={14} /></button>
                     </div>
                   ))}
                 </div>
@@ -454,9 +457,9 @@ export default function BookingLinkPage() {
                   <QRCode value={url} size={112} />
                 </div>
                 <div style={{ flex: 1, minWidth: 180 }}>
-                  <p style={{ fontSize: 14.5, fontWeight: 700, margin: 0 }}>QR code for your shop</p>
-                  <p style={{ fontSize: 12.5, color: MUTED, margin: '4px 0 12px', lineHeight: 1.5 }}>Print it for your window or counter — customers scan and book.</p>
-                  <button onClick={downloadQr} style={{ ...darkBtn, padding: '8px 14px', fontSize: 13 }}>Download QR (PNG)</button>
+                  <p style={{ fontSize: 14.5, fontWeight: 700, margin: 0 }}>{tx('QR code for your shop')}</p>
+                  <p style={{ fontSize: 12.5, color: MUTED, margin: '4px 0 12px', lineHeight: 1.5 }}>{tx('Print it for your window or counter — customers scan and book.')}</p>
+                  <button onClick={downloadQr} style={{ ...darkBtn, padding: '8px 14px', fontSize: 13 }}>{tx('Download QR (PNG)')}</button>
                 </div>
               </section>
             )}
