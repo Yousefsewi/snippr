@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import QRCode from 'react-qr-code'
+import PrettyQR from '@/components/pretty-qr'
 import { FaInstagram, FaTiktok, FaWhatsapp, FaFacebook, FaYoutube, FaXTwitter, FaGlobe } from 'react-icons/fa6'
 import { Palette, Link2, PlaySquare, ChevronUp, ChevronDown, Trash2, Check, Copy, ExternalLink, ImagePlus, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -204,7 +204,7 @@ export default function BookingLinkPage() {
     if (!svg) return
     const img = new Image()
     img.onload = () => {
-      const size = 1200, pad = 90
+      const size = 1200, pad = 60
       const canvas = document.createElement('canvas')
       canvas.width = size; canvas.height = size
       const ctx = canvas.getContext('2d')
@@ -453,8 +453,8 @@ export default function BookingLinkPage() {
 
             {url && (
               <section style={{ ...panel, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                <div ref={qrRef} style={{ background: '#fff', padding: 10, borderRadius: 14, lineHeight: 0, boxShadow: '0 2px 8px rgba(30,30,60,0.08)' }}>
-                  <QRCode value={url} size={112} />
+                <div ref={qrRef} style={{ lineHeight: 0, borderRadius: 18, boxShadow: '0 2px 10px rgba(30,30,60,0.10)', flexShrink: 0 }}>
+                  <PrettyQR value={url} size={124} />
                 </div>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <p style={{ fontSize: 14.5, fontWeight: 700, margin: 0 }}>{tx('QR code for your shop')}</p>
