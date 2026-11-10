@@ -992,7 +992,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-3xl mb-9"
+            className="max-w-4xl mb-9"
           >
             {/* launch label above the headline: every plan free to try (lib/legal.ts → TRIAL_DAYS) */}
             <Link href="/pricing" className="pointer-events-auto mb-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition hover:opacity-80"
@@ -1019,7 +1019,11 @@ export default function Home() {
               {c.getStarted}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </Link>
-
+            {/* second button: sign up (plain, light) */}
+            <Link href="/register" className="inline-flex items-center rounded-full px-7 py-3.5 text-[15px] font-semibold text-[#1d1d1f] transition-colors hover:bg-white"
+              style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(29,29,31,0.12)' }}>
+              {L(lng, { en: 'Sign up', nl: 'Registreren', de: 'Registrieren', tr: 'Kayıt ol', ar: 'إنشاء حساب' })}
+            </Link>
           </motion.div>
         </div>
 
