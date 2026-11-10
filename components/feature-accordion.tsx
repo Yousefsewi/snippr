@@ -176,17 +176,18 @@ function Mock({ i, lng }: { i: number; lng: Lng }) {
 // small example pictures inside the open card; off to keep the cards light and short
 const SHOW_MOCKS = false
 
-// Grainy colour-glow backgrounds for the four cards, drawn in CSS (no image files).
-// 01 dark teal with an orange glow · 02 a tall orange light column in the middle of dark teal
-// 03 dark teal with a glowing orange arc · 04 dark teal with a warm orange rise
+// Light cards in the homepage's own colours: a warm cream base with one soft glow each,
+// taken from the hero (sand, sky blue, rose) so the section matches the rest of the page.
+// 01 sand · 02 sky blue · 03 rose · 04 sand and sky together
+const CREAM = 'linear-gradient(180deg, #fbf8f3 0%, #f2ebe1 100%)'
 const CARD_BG = [
-  'radial-gradient(60% 45% at 50% 100%, #ff9a2e 0%, rgba(255,154,46,0.55) 35%, rgba(255,154,46,0) 75%), radial-gradient(70% 60% at 50% 55%, #2f6b6b 0%, rgba(47,107,107,0) 75%), linear-gradient(180deg, #0f1c20 0%, #13262a 100%)',
-  'radial-gradient(22% 46% at 50% 55%, #ffa233 0%, rgba(255,162,51,0.85) 35%, rgba(255,162,51,0) 100%), radial-gradient(42% 70% at 50% 55%, rgba(54,120,118,0.95) 0%, rgba(54,120,118,0) 100%), linear-gradient(90deg, #08151a 0%, #0f2227 50%, #08151a 100%)',
-  'radial-gradient(120% 75% at 110% 110%, #ff8c3a 0%, #f2581f 18%, #7a1414 30%, rgba(20,16,20,0) 42%), radial-gradient(60% 40% at 30% 5%, rgba(32,92,96,0.8) 0%, rgba(32,92,96,0) 75%), linear-gradient(180deg, #102024 0%, #151a1f 100%)',
-  'radial-gradient(80% 45% at 30% 105%, #ffb15c 0%, rgba(255,140,58,0.65) 30%, rgba(255,140,58,0) 70%), radial-gradient(45% 30% at 85% 80%, rgba(242,88,31,0.7) 0%, rgba(242,88,31,0) 75%), radial-gradient(70% 50% at 60% 25%, rgba(40,100,104,0.8) 0%, rgba(40,100,104,0) 75%), linear-gradient(180deg, #0d181c 0%, #131f24 100%)',
+  `radial-gradient(70% 60% at 25% 100%, rgba(196,164,124,0.55) 0%, rgba(196,164,124,0) 70%), ${CREAM}`,
+  `radial-gradient(60% 65% at 80% 90%, rgba(147,197,253,0.55) 0%, rgba(147,197,253,0) 70%), ${CREAM}`,
+  `radial-gradient(65% 60% at 50% 105%, rgba(244,114,182,0.32) 0%, rgba(244,114,182,0) 70%), ${CREAM}`,
+  `radial-gradient(55% 50% at 15% 100%, rgba(196,164,124,0.45) 0%, rgba(196,164,124,0) 70%), radial-gradient(55% 50% at 95% 85%, rgba(147,197,253,0.45) 0%, rgba(147,197,253,0) 70%), ${CREAM}`,
 ]
 // text colour on each card
-const CARD_INK = ['#ffffff', '#ffffff', '#ffffff', '#ffffff']
+const CARD_INK = ['#1d1d1f', '#1d1d1f', '#1d1d1f', '#1d1d1f']
 // fine film grain over the colours (SVG noise)
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-0.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-0.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-0.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
 
@@ -207,11 +208,16 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
         /* closed cards: the three step icons at the bottom */
         .fa-peek { opacity: 1; transition: opacity .3s ease; }
         .fa-card.is-open .fa-peek { opacity: 0; pointer-events: none; }
-        @media (max-width: 900px) {
-          .fa-row { flex-direction: column; height: auto; }
-          .fa-card, .fa-card.is-open { flex: none; min-height: 220px; }
+        .fa-step { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @media (max-width: 1100px) {
+          .fa-row { display: grid; grid-template-columns: 1fr 1fr; height: auto; }
+          .fa-card, .fa-card.is-open { flex: none; min-height: 0; }
           .fa-detail { opacity: 1; transform: none; pointer-events: auto; }
           .fa-peek { display: none; }
+          .fa-step { white-space: normal; }
+        }
+        @media (max-width: 640px) {
+          .fa-row { grid-template-columns: 1fr; gap: 12px; }
         }
       `}</style>
 
@@ -237,25 +243,24 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
                 onBlur={() => setActive(null)}
                 onClick={() => setActive(i)}
                 tabIndex={0}
-                style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: CARD_BG[i], color: CARD_INK[i], cursor: 'pointer', outline: 'none',
+                style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: CARD_BG[i], color: CARD_INK[i], cursor: 'pointer', outline: 'none', border: '1px solid rgba(255,255,255,0.9)',
                   boxShadow: open ? '0 24px 50px rgba(15,23,42,0.14)' : '0 4px 16px rgba(15,23,42,0.05)' }}
               >
-                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '140px 140px', mixBlendMode: 'overlay', opacity: 0.9, pointerEvents: 'none' }} />
-                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '140px 140px', mixBlendMode: 'soft-light', opacity: 0.6, pointerEvents: 'none' }} />
+                <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: GRAIN, backgroundSize: '140px 140px', mixBlendMode: 'soft-light', opacity: 0.35, pointerEvents: 'none' }} />
                 {CARD_INK[i] === '#ffffff' && <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)', pointerEvents: 'none' }} />}
 
                 {/* peek for closed cards */}
                 <div className="fa-peek" aria-hidden style={{ position: 'absolute', left: 28, right: 20, bottom: 26, display: 'flex' }}>
                   <span style={{ display: 'flex', gap: 6 }}>
                     {ICONS[i].map((Icon, k) => (
-                      <span key={k} style={{ width: 34, height: 34, borderRadius: 11, background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.35)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: CARD_INK[i] }}><Icon size={15} strokeWidth={1.75} /></span>
+                      <span key={k} style={{ width: 34, height: 34, borderRadius: 11, background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(29,29,31,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: CARD_INK[i] }}><Icon size={15} strokeWidth={1.75} /></span>
                     ))}
                   </span>
                 </div>
 
                 <div style={{ position: 'relative', padding: '30px 28px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <div role="heading" aria-level={3} style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: CARD_INK[i], margin: 0 }}>{card.title}</div>
-                  <div style={{ fontSize: 14, lineHeight: 1.55, margin: '10px 0 0', maxWidth: 340, color: CARD_INK[i], opacity: 0.85 }}>{card.desc}</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.55, margin: '10px 0 0', maxWidth: 340, color: '#3a3a3c' }}>{card.desc}</div>
 
                   <div className="fa-detail" style={{ marginTop: 18, display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -263,8 +268,8 @@ export default function FeatureAccordion({ lng }: { lng: Lng }) {
                         const Icon = ICONS[i][k]
                         return (
                           <li key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: CARD_INK[i] }}>
-                            <span style={{ width: 22, height: 22, borderRadius: 7, background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: CARD_INK[i] }}><Icon size={13} strokeWidth={1.75} /></span>
-                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s}</span>
+                            <span style={{ width: 22, height: 22, borderRadius: 7, background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(29,29,31,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: CARD_INK[i] }}><Icon size={13} strokeWidth={1.75} /></span>
+                            <span className="fa-step">{s}</span>
                           </li>
                         )
                       })}
