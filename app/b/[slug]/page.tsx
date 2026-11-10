@@ -12,6 +12,7 @@ import { DEFAULT_HOURS } from '@/lib/hours'
 import { useClientValue } from '@/lib/use-stored'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { CalendarDays, ChevronRight, Clock3, Mail, Phone, Scissors, UserRound, type LucideIcon } from 'lucide-react'
+import { DEMO_BARBER, DEMO_SERVICES, DEMO_SLUG, demoBusy } from '@/lib/demo-shop'
 
 /* ─────────────────────────  types  ───────────────────────── */
 interface Barber {
@@ -186,6 +187,11 @@ export default function BookingPage() {
   /* load barber + services */
   useEffect(() => {
     (async () => {
+      // the demo shop (/b/demo) comes from code, not from the database
+      if (slug === DEMO_SLUG) {
+        setBarber(DEMO_BARBER); setServices(DEMO_SERVICES); setWaitlistOn(false); setLoading(false)
+        return
+      }
       // Only public profile columns are readable (email and push tokens are private)
       const { data: b } = await supabase.from('barbers')
         .select('id, name, slug, bio, address, photo_url, cover_url, accent, links, blocks, working_hours')
@@ -217,6 +223,7 @@ export default function BookingPage() {
   /* fetch booked slots whenever date changes */
   useEffect(() => {
     if (!barber || !date) return
+    if (barber.id === DEMO_BARBER.id) { Promise.resolve().then(() => setBooked({ day: date.toDateString(), ranges: demoBusy(date) })); return }
     (async () => {
       const dayStart = new Date(date); dayStart.setHours(0, 0, 0, 0)
       const dayEnd = new Date(date); dayEnd.setHours(23, 59, 59, 999)
@@ -277,6 +284,9 @@ export default function BookingPage() {
       const s = h * 60 + m
       setBooked(b => ({ ...b, ranges: [...b.ranges, [s, s + durationMin]] }))
     }
+
+    // demo shop: show the confirmation, but save nothing and send nothing
+    if (barber.id === DEMO_BARBER.id) { setDone(true); setSubmitting(false); return }
 
     // Any non-cancelled appointment that overlaps [start, end) blocks this booking
     const { data: existing } = await supabase.rpc('get_busy_slots', {
