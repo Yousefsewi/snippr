@@ -2,6 +2,16 @@
 import type { TxDict } from '@/lib/i18n'
 
 export const DICT: TxDict = {
+  "Simple": { "nl": "Eenvoudig", "de": "Schlicht", "tr": "Sade", "ar": "بسيط" },
+  "Calm": { "nl": "Rustig", "de": "Ruhig", "tr": "Sakin", "ar": "هادئ" },
+  "Vivid": { "nl": "Levendig", "de": "Lebhaft", "tr": "Canlı", "ar": "حيوي" },
+  "White": { "nl": "Wit", "de": "Weiß", "tr": "Beyaz", "ar": "أبيض" },
+  "Graphite": { "nl": "Grafiet", "de": "Graphit", "tr": "Grafit", "ar": "رمادي داكن" },
+  "Midnight": { "nl": "Middernacht", "de": "Mitternacht", "tr": "Gece yarısı", "ar": "منتصف الليل" },
+  "Sand": { "nl": "Zand", "de": "Sand", "tr": "Kum", "ar": "رملي" },
+  "Sage": { "nl": "Salie", "de": "Salbei", "tr": "Adaçayı", "ar": "مريمية" },
+  "Blush": { "nl": "Blos", "de": "Rosé", "tr": "Pembe", "ar": "وردي" },
+  "Mist": { "nl": "Nevel", "de": "Nebel", "tr": "Sis", "ar": "ضباب" },
   "Back": {
     "nl": "Terug",
     "de": "Zurück",

@@ -261,12 +261,12 @@ export default function BookingLinkPage() {
               <p style={panelTitle}><Palette size={17} /> {tx('Customize')}</p>
               {PAGE_THEMES.filter(g => !g.hidden).map(group => (
                 <div key={group.group} style={{ marginBottom: 14 }}>
-                  <p style={{ fontSize: 12.5, fontWeight: 700, margin: '0 0 8px', color: INK }}>{group.group}</p>
+                  <p style={{ fontSize: 12.5, fontWeight: 700, margin: '0 0 8px', color: INK }}>{tx(group.group)}</p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 9 }}>
                     {group.items.map(t => {
                       const on = accent.toLowerCase() === t.accent.toLowerCase()
                       return (
-                        <button key={t.name} className="theme-tile" onClick={() => chooseAccent(t.accent)} title={t.name}
+                        <button key={t.name} className="theme-tile" onClick={() => chooseAccent(t.accent)} title={tx(t.name)}
                           style={{ position: 'relative', padding: 0, border: on ? `2px solid ${INK}` : '2px solid transparent', borderRadius: 16, cursor: 'pointer', background: 'none', boxShadow: on ? '0 6px 16px rgba(30,30,60,0.18)' : '0 2px 6px rgba(30,30,60,0.06)' }}>
                           {/* mini page */}
                           <div style={{ position: 'relative', height: 84, borderRadius: 14, overflow: 'hidden', background: wallpaper(t.accent) }}>
@@ -276,7 +276,7 @@ export default function BookingLinkPage() {
                               <span style={{ width: '70%', height: 5, borderRadius: 3, background: t.accent === '#ffffff' ? '#a1a1aa' : 'rgba(255,255,255,0.7)' }} />
                             </div>
                           </div>
-                          <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: INK, marginTop: 5 }}>{t.name}</span>
+                          <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: INK, marginTop: 5 }}>{tx(t.name)}</span>
                           {on && <span style={{ position: 'absolute', top: -7, right: -7, width: 20, height: 20, borderRadius: '50%', background: '#14b8a6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}><Check size={12} strokeWidth={3} /></span>}
                         </button>
                       )
@@ -335,7 +335,8 @@ export default function BookingLinkPage() {
           </div>
 
           {/* ── MIDDLE: live phone preview ── */}
-          <div className="link-preview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          {/* the phone is always laid out left-to-right; the page inside follows its own language */}
+          <div className="link-preview" dir="ltr" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 312, height: 640, borderRadius: 52, padding: 11, background: 'linear-gradient(145deg, #2a2a2e, #0f0f11)', boxShadow: '0 30px 60px rgba(30,30,60,0.28), inset 0 1px 0 rgba(255,255,255,0.15)' }}>
               <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: 42, overflow: 'hidden', background: '#ecebe8' }}>
                 {/* status bar + dynamic island, drawn over the page like on a real iPhone */}
