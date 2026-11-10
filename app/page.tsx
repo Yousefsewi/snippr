@@ -891,6 +891,7 @@ export default function Home() {
   return (
     <main
       dir={isRTL ? 'rtl' : 'ltr'}
+      lang={lng}
       style={{ background: '#0a0a0a' }}
       className="editorial-site editorial-dark w-full overflow-x-hidden"
     >

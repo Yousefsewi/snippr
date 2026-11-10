@@ -13,7 +13,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     body: 'Most booking apps were built for big salons and chains. Snippr is built for the barber with one chair and a busy day.',
     items: [
       ['Free, no commission', 'Start without a credit card. Snippr never takes a cut of your bookings — customers pay you directly.'],
-      ['Nothing to install for customers', 'No app and no account. Your customers tap your link and book in a few taps.'],
+      ['Your clients don’t download anything', 'No app, no account. They tap your link and book in a few seconds, right from their phone.'],
       ['Your page, not a marketplace', 'Customers only see you — no other barbers listed next to you, no one stealing your clients.'],
       ['Speaks your customers’ language', 'Booking page and emails in English, Turkish, Dutch and Arabic, in the language your customer chose.'],
       ['Your data stays in Europe', 'Stored on servers in the EU and handled under the GDPR. You can download or delete it any time.'],
@@ -26,7 +26,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     body: 'Çoğu randevu uygulaması büyük salonlar ve zincirler için yapıldı. Snippr, tek koltuklu ve günü yoğun geçen berber için yapıldı.',
     items: [
       ['Ücretsiz, komisyon yok', 'Kredi kartı olmadan başla. Snippr randevularından asla pay almaz — müşteri sana doğrudan öder.'],
-      ['Müşteriye kurulum yok', 'Uygulama yok, hesap yok. Müşterin linkine dokunur, birkaç dokunuşla randevu alır.'],
+      ['Müşterin hiçbir şey indirmez', 'Uygulama yok, üyelik yok. Linkine dokunur, birkaç saniyede telefonundan randevusunu alır.'],
       ['Senin sayfan, pazar yeri değil', 'Müşteri sadece seni görür — yanında başka berber listelenmez, kimse müşterini kapmaz.'],
       ['Müşterinin dilini konuşur', 'Randevu sayfası ve mailler İngilizce, Türkçe, Felemenkçe ve Arapça; müşteri hangisini seçtiyse.'],
       ['Verilerin Avrupa’da kalır', 'AB’deki sunucularda, GDPR kurallarıyla saklanır. İstediğin an indirebilir ya da silebilirsin.'],
@@ -39,7 +39,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     body: 'De meeste boekingsapps zijn gemaakt voor grote salons en ketens. Snippr is gemaakt voor de kapper met één stoel en een drukke dag.',
     items: [
       ['Geen commissie', 'Start zonder creditcard. Snippr neemt nooit een deel van je boekingen; klanten betalen jou direct.'],
-      ['Niets te installeren voor klanten', 'Geen app en geen account. Je klanten tikken op je link en boeken in een paar tikken.'],
+      ['Je klanten downloaden niets', 'Geen app, geen account. Ze tikken op je link en boeken in een paar seconden, gewoon op hun telefoon.'],
       ['Jouw pagina, geen marktplaats', 'Klanten zien alleen jou. Geen andere kappers naast je, niemand die je klanten wegkaapt.'],
       ['Spreekt de taal van je klanten', 'Boekingspagina en e-mails in het Engels, Turks, Nederlands en Arabisch, in de taal die je klant kiest.'],
       ['Je gegevens blijven in Europa', 'Opgeslagen op servers in de EU en verwerkt volgens de AVG. Je kunt ze altijd downloaden of verwijderen.'],
@@ -52,7 +52,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     body: 'Die meisten Buchungs-Apps wurden für große Salons und Ketten gebaut. Snippr ist für den Barbier mit einem Stuhl und einem vollen Tag gemacht.',
     items: [
       ['Keine Provision', 'Starte ohne Kreditkarte. Snippr nimmt nie einen Anteil an deinen Buchungen; Kunden bezahlen dich direkt.'],
-      ['Nichts zu installieren für Kunden', 'Keine App und kein Konto. Deine Kunden tippen auf deinen Link und buchen mit wenigen Tipps.'],
+      ['Deine Kunden laden nichts herunter', 'Keine App, kein Konto. Sie tippen auf deinen Link und buchen in wenigen Sekunden direkt am Handy.'],
       ['Deine Seite, kein Marktplatz', 'Kunden sehen nur dich. Keine anderen Barbiere daneben, niemand schnappt dir Kunden weg.'],
       ['Spricht die Sprache deiner Kunden', 'Buchungsseite und E-Mails auf Englisch, Türkisch, Niederländisch und Arabisch, in der Sprache, die dein Kunde wählt.'],
       ['Deine Daten bleiben in Europa', 'Gespeichert auf Servern in der EU und verarbeitet nach der DSGVO. Du kannst sie jederzeit herunterladen oder löschen.'],
@@ -65,7 +65,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     body: 'معظم تطبيقات الحجز صُممت للصالونات الكبيرة والسلاسل. أما Snippr فمصمَّم للحلاق صاحب الكرسي الواحد واليوم المزدحم.',
     items: [
       ['بدون عمولة', 'ابدأ بدون بطاقة ائتمان. لا يأخذ Snippr أي نسبة من حجوزاتك، والعملاء يدفعون لك مباشرة.'],
-      ['لا شيء يُثبَّت للعملاء', 'بدون تطبيق أو حساب. يضغط عملاؤك على رابطك ويحجزون بلمسات قليلة.'],
+      ['عملاؤك لا ينزّلون أي شيء', 'بدون تطبيق أو حساب. يضغطون على رابطك ويحجزون خلال ثوانٍ من هواتفهم.'],
       ['صفحتك، وليست سوقًا', 'يرى العملاء أنت فقط. لا حلاقين آخرين بجانبك، ولا أحد يأخذ زبائنك.'],
       ['يتحدث لغة عملائك', 'صفحة الحجز والرسائل بالإنجليزية والتركية والهولندية والعربية، باللغة التي يختارها عميلك.'],
       ['بياناتك تبقى في أوروبا', 'تُحفظ على خوادم داخل الاتحاد الأوروبي وتُعالج وفق اللائحة العامة لحماية البيانات. يمكنك تنزيلها أو حذفها في أي وقت.'],
@@ -82,7 +82,7 @@ const serif = { fontFamily: 'var(--font-noto-serif), Georgia, serif' } as const
 export default function WhySnippr({ lng }: { lng: Lng }) {
   const c = COPY[lng] ?? COPY.en
   return (
-    <section id="why" className="px-5 py-20 md:px-10 lg:py-28" style={{ background: 'transparent' }}>
+    <section id="why" lang={lng} className="px-5 py-20 md:px-10 lg:py-28" style={{ background: 'transparent' }}>
       <div className="mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <p className="text-[12.5px] uppercase tracking-[0.12em] text-[#1d1d1f]" style={mono}>{c.eyebrow}</p>
