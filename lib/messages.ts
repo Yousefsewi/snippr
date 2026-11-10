@@ -13,6 +13,12 @@ export const MSG_DEFAULTS: Record<MsgKind, boolean> = { confirmed: true, cancell
 export type MsgSettings = Partial<Record<MsgKind, boolean>>
 export const isOn = (s: MsgSettings | null | undefined, k: MsgKind) => s?.[k] ?? MSG_DEFAULTS[k]
 
+/** Emails only the Pro plan (the most expensive one) sends: the extra reminder 3 days ahead,
+ *  the thank-you with the Google review link, and the tip thank-you. The plan is stored on the
+ *  account (lib/plan.ts); every other email works on every plan. */
+export const PRO_ONLY_KINDS: MsgKind[] = ['remind3d', 'thanks', 'tip']
+export const planAllows = (plan: unknown, k: MsgKind) => !PRO_ONLY_KINDS.includes(k) || plan === 'pro'
+
 export type ClientLang = 'tr' | 'nl' | 'en' | 'ar' | 'de'
 export const CLIENT_LANGS: ClientLang[] = ['tr', 'nl', 'en', 'ar', 'de']
 export const normLang = (v: unknown, fallback: ClientLang = 'en'): ClientLang =>

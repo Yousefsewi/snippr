@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, isPlainEmail, rateLimited, clientIp } from '@/lib/mailer'
-import { isOn, messageHtml, normLang, LOCALE, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { isOn, planAllows, PRO_ONLY_KINDS, messageHtml, normLang, LOCALE, type MsgKind, type MsgSettings } from '@/lib/messages'
 import { manageUrl } from '@/lib/manage-link'
 import { hasOptedOut, optoutLinks } from '@/lib/optout'
 
@@ -30,7 +30,7 @@ type Row = {
   id: string; customer_name: string; customer_email: string | null; start_time: string; status: string
   messages_sent: string[] | null; client_lang?: string | null; client_tz?: string | null
   services: { name: string } | null
-  barbers: { name: string; slug: string; message_settings: MsgSettings | null } | null
+  barbers: { user_id: string; name: string; slug: string; message_settings: MsgSettings | null } | null
 }
 
 const safeTimeZone = (tz: unknown) => {
@@ -56,9 +56,11 @@ export async function GET(req: NextRequest) {
   const now = Date.now()
   const report: Record<string, number> = {}
 
+  const plans = new Map<string, string | null>() // user_id → plan
+
   for (const w of WINDOWS) {
     const { data, error } = await supabase.from('appointments')
-      .select('id, customer_name, customer_email, start_time, status, messages_sent, client_lang, client_tz, services(name), barbers(name, slug, message_settings)')
+      .select('id, customer_name, customer_email, start_time, status, messages_sent, client_lang, client_tz, services(name), barbers(user_id, name, slug, message_settings)')
       .in('status', ['pending', 'confirmed'])
       .not('customer_email', 'is', null)
       .not('messages_sent', 'cs', `{${w.kind}}`)
@@ -70,6 +72,16 @@ export async function GET(req: NextRequest) {
     let sent = 0
     for (const a of (data ?? []) as unknown as Row[]) {
       if (!a.barbers || !isOn(a.barbers.message_settings, w.kind)) continue
+      // the 3-days-before reminder is Pro only: look the barber's plan up once per run
+      if (PRO_ONLY_KINDS.includes(w.kind)) {
+        let plan = plans.get(a.barbers.user_id)
+        if (plan === undefined) {
+          const { data: u } = await supabase.auth.admin.getUserById(a.barbers.user_id)
+          plan = (u.user?.user_metadata?.plan as string | undefined) ?? null
+          plans.set(a.barbers.user_id, plan)
+        }
+        if (!planAllows(plan, w.kind)) continue
+      }
       if (a.customer_name.startsWith('⛔') || !isPlainEmail(a.customer_email)) continue
       if (await hasOptedOut(supabase, a.customer_email)) continue
       const links = optoutLinks(a.customer_email)

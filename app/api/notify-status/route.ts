@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { mailerReady, sendMail, SITE_URL, rateLimited, isPlainEmail } from '@/lib/mailer'
-import { isOn, messageHtml, normLang, LOCALE, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { isOn, planAllows, messageHtml, normLang, LOCALE, STATUS_KINDS, type MsgKind, type MsgSettings } from '@/lib/messages'
 import { OPTOUT_KINDS, hasOptedOut, optoutLinks } from '@/lib/optout'
 import { manageUrl } from '@/lib/manage-link'
 
@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
     : false
   if (!fits) return NextResponse.json({ skipped: 'status does not match' })
   if (!isOn(a.barbers.message_settings, k)) return NextResponse.json({ skipped: 'switched off' })
+  // thank-you and tip emails are Pro only (the barber's plan is on their account)
+  if (!planAllows(user.user_metadata?.plan, k)) return NextResponse.json({ skipped: 'pro plan only' })
   if (!a.customer_email || !isPlainEmail(a.customer_email)) return NextResponse.json({ skipped: 'no valid client email' })
   const optional = OPTOUT_KINDS.includes(k)
   if (optional && await hasOptedOut(supabase, a.customer_email)) return NextResponse.json({ skipped: 'client unsubscribed' })

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useLang } from '@/lib/i18n'
-import { isOn, messageHtml, type MsgKind, type MsgSettings } from '@/lib/messages'
+import { isOn, planAllows, PRO_ONLY_KINDS, messageHtml, type MsgKind, type MsgSettings } from '@/lib/messages'
 import type { ClientLang } from '@/lib/messages'
 import MessagesHero from '@/components/messages-hero'
 import { SHOW_UNRELEASED } from '@/lib/legal'
@@ -44,7 +44,7 @@ const COPY = {
       referral: ['Referral reward', 'Tells clients when a friend they referred books.'],
     },
     reviewHint: 'Add your Google review link', reviewSet: 'Google review link added',
-    history: 'Message history', historySub: 'Emails Snippr sent to your clients.', historyEmpty: 'No messages sent yet', historyEmptySub: 'When an automatic email goes out, it shows up here.', kinds: { remind1d: 'Reminder (1 day before)', remind3d: 'Reminder (3 days before)', new: 'New appointment', confirmed: 'Appointment confirmed', rescheduled: 'Appointment moved', cancelled: 'Appointment cancelled', thanks: 'Thanks for your visit', tip: 'Thanks for the tip' } as Record<string, string>, settingsTitle: 'Message settings', apptOn: 'Appointment',
+    history: 'Message history', historySub: 'Emails Snippr sent to your clients.', historyEmpty: 'No messages sent yet', historyEmptySub: 'When an automatic email goes out, it shows up here.', kinds: { remind1d: 'Reminder (1 day before)', remind3d: 'Reminder (3 days before)', new: 'New appointment', confirmed: 'Appointment confirmed', rescheduled: 'Appointment moved', cancelled: 'Appointment cancelled', thanks: 'Thanks for your visit', tip: 'Thanks for the tip' } as Record<string, string>, upgrade: 'Switch to Pro', settingsTitle: 'Message settings', apptOn: 'Appointment',
   },
   tr: {
     back: 'Eklentiler', title: 'Otomatik mesajlar', sub: 'Müşterilerine kendiliğinden giden e-postalar. Herkese tek tek yazmana gerek kalmaz.',
@@ -69,7 +69,7 @@ const COPY = {
       referral: ['Kazanılan tavsiye ödülleri', 'Tavsiye ettikleri arkadaşları randevu alınca bildirir.'],
     },
     reviewHint: 'Google yorum linkini ekle', reviewSet: 'Google yorum linki eklendi',
-    history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { remind1d: 'Hatırlatma (1 gün önce)', remind3d: 'Hatırlatma (3 gün önce)', new: 'Yeni randevu', confirmed: 'Randevu onaylandı', rescheduled: 'Randevu taşındı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
+    history: 'Mesaj geçmişi', historySub: 'Snippr’ın müşterilerine gönderdiği e-postalar.', historyEmpty: 'Henüz mesaj gönderilmedi', historyEmptySub: 'Otomatik bir e-posta gidince burada görünür.', kinds: { remind1d: 'Hatırlatma (1 gün önce)', remind3d: 'Hatırlatma (3 gün önce)', new: 'Yeni randevu', confirmed: 'Randevu onaylandı', rescheduled: 'Randevu taşındı', cancelled: 'İptal edilen randevu', thanks: 'Ziyaret için teşekkürler', tip: 'Bahşiş için teşekkürler' } as Record<string, string>, upgrade: 'Pro’ya geç', settingsTitle: 'Mesaj ayarları', apptOn: 'Randevu',
   },
   nl: {
     back: 'Add-ons', title: 'Automatische berichten', sub: 'E-mails die vanzelf naar je klanten gaan, zodat je niet iedereen hoeft te appen.',
@@ -94,7 +94,7 @@ const COPY = {
       referral: ['Beloning voor doorverwijzen', 'Laat klanten weten dat een doorverwezen vriend heeft geboekt.'],
     },
     reviewHint: 'Voeg je Google-reviewlink toe', reviewSet: 'Google-reviewlink toegevoegd',
-    history: 'Berichtengeschiedenis', historySub: 'E-mails die Snippr naar je klanten heeft gestuurd.', historyEmpty: 'Nog geen berichten verstuurd', historyEmptySub: 'Als er een automatische e-mail uitgaat, verschijnt die hier.', kinds: { remind1d: 'Herinnering (1 dag vooraf)', remind3d: 'Herinnering (3 dagen vooraf)', new: 'Nieuwe afspraak', confirmed: 'Afspraak bevestigd', rescheduled: 'Afspraak verplaatst', cancelled: 'Afspraak geannuleerd', thanks: 'Bedankt voor je bezoek', tip: 'Bedankt voor de fooi' } as Record<string, string>, settingsTitle: 'Berichtinstellingen', apptOn: 'Afspraak',
+    history: 'Berichtengeschiedenis', historySub: 'E-mails die Snippr naar je klanten heeft gestuurd.', historyEmpty: 'Nog geen berichten verstuurd', historyEmptySub: 'Als er een automatische e-mail uitgaat, verschijnt die hier.', kinds: { remind1d: 'Herinnering (1 dag vooraf)', remind3d: 'Herinnering (3 dagen vooraf)', new: 'Nieuwe afspraak', confirmed: 'Afspraak bevestigd', rescheduled: 'Afspraak verplaatst', cancelled: 'Afspraak geannuleerd', thanks: 'Bedankt voor je bezoek', tip: 'Bedankt voor de fooi' } as Record<string, string>, upgrade: 'Overstappen naar Pro', settingsTitle: 'Berichtinstellingen', apptOn: 'Afspraak',
   },
   de: {
     back: 'Add-ons', title: 'Automatische Nachrichten', sub: 'E-Mails, die von selbst an deine Kunden gehen, damit du nicht jedem schreiben musst.',
@@ -119,7 +119,7 @@ const COPY = {
       referral: ['Empfehlungsprämie', 'Sagt Kunden Bescheid, wenn ein empfohlener Freund bucht.'],
     },
     reviewHint: 'Google-Bewertungslink hinzufügen', reviewSet: 'Google-Bewertungslink hinzugefügt',
-    history: 'Nachrichtenverlauf', historySub: 'E-Mails, die Snippr an deine Kunden geschickt hat.', historyEmpty: 'Noch keine Nachrichten verschickt', historyEmptySub: 'Wenn eine automatische E-Mail rausgeht, erscheint sie hier.', kinds: { remind1d: 'Erinnerung (1 Tag vorher)', remind3d: 'Erinnerung (3 Tage vorher)', new: 'Neuer Termin', confirmed: 'Termin bestätigt', rescheduled: 'Termin verschoben', cancelled: 'Termin storniert', thanks: 'Danke für deinen Besuch', tip: 'Danke für das Trinkgeld' } as Record<string, string>, settingsTitle: 'Nachrichteneinstellungen', apptOn: 'Termin',
+    history: 'Nachrichtenverlauf', historySub: 'E-Mails, die Snippr an deine Kunden geschickt hat.', historyEmpty: 'Noch keine Nachrichten verschickt', historyEmptySub: 'Wenn eine automatische E-Mail rausgeht, erscheint sie hier.', kinds: { remind1d: 'Erinnerung (1 Tag vorher)', remind3d: 'Erinnerung (3 Tage vorher)', new: 'Neuer Termin', confirmed: 'Termin bestätigt', rescheduled: 'Termin verschoben', cancelled: 'Termin storniert', thanks: 'Danke für deinen Besuch', tip: 'Danke für das Trinkgeld' } as Record<string, string>, upgrade: 'Zu Pro wechseln', settingsTitle: 'Nachrichteneinstellungen', apptOn: 'Termin',
   },
   ar: {
     back: 'الإضافات', title: 'الرسائل التلقائية', sub: 'رسائل بريد تصل لعملائك تلقائيًا، فلا تحتاج لمراسلة كل واحد.',
@@ -144,7 +144,7 @@ const COPY = {
       referral: ['مكافأة الإحالة', 'يخبر العملاء عندما يحجز صديق أحالوه.'],
     },
     reviewHint: 'أضف رابط تقييم Google', reviewSet: 'تمت إضافة رابط تقييم Google',
-    history: 'سجل الرسائل', historySub: 'الرسائل التي أرسلها Snippr لعملائك.', historyEmpty: 'لم تُرسل رسائل بعد', historyEmptySub: 'عند إرسال رسالة تلقائية تظهر هنا.', kinds: { remind1d: 'تذكير (قبل يوم)', remind3d: 'تذكير (قبل 3 أيام)', new: 'موعد جديد', confirmed: 'تأكيد الموعد', rescheduled: 'نقل الموعد', cancelled: 'إلغاء الموعد', thanks: 'شكرًا لزيارتك', tip: 'شكرًا على الإكرامية' } as Record<string, string>, settingsTitle: 'إعدادات الرسائل', apptOn: 'الموعد',
+    history: 'سجل الرسائل', historySub: 'الرسائل التي أرسلها Snippr لعملائك.', historyEmpty: 'لم تُرسل رسائل بعد', historyEmptySub: 'عند إرسال رسالة تلقائية تظهر هنا.', kinds: { remind1d: 'تذكير (قبل يوم)', remind3d: 'تذكير (قبل 3 أيام)', new: 'موعد جديد', confirmed: 'تأكيد الموعد', rescheduled: 'نقل الموعد', cancelled: 'إلغاء الموعد', thanks: 'شكرًا لزيارتك', tip: 'شكرًا على الإكرامية' } as Record<string, string>, upgrade: 'انتقل إلى Pro', settingsTitle: 'إعدادات الرسائل', apptOn: 'الموعد',
   },
 }
 
@@ -169,12 +169,15 @@ export default function MessagesPage() {
   const [ready, setReady] = useState(true)
   const [preview, setPreview] = useState<MsgKind | null>(null)
   const [history, setHistory] = useState<{ id: string; kind: string; client: string; email: string; date: string }[]>([])
+  // the account's plan: some emails are Pro only (lib/messages.ts → PRO_ONLY_KINDS)
+  const [plan, setPlan] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
     ;(async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      if (active) setPlan(typeof user.user_metadata?.plan === 'string' ? user.user_metadata.plan : null)
       const { data: b } = await supabase.from('barbers').select('id, name, slug').eq('user_id', user.id).single()
       if (!b || !active) return
       setBarber(b)
@@ -200,7 +203,7 @@ export default function MessagesPage() {
   }, [])
 
   async function toggle(k: MsgKind) {
-    if (!barber || !ready) return
+    if (!barber || !ready || !planAllows(plan, k)) return
     const next = { ...settings, [k]: !isOn(settings, k) }
     setSettings(next)
     const { error } = await supabase.from('barbers').update({ message_settings: next }).eq('id', barber.id)
@@ -260,14 +263,18 @@ export default function MessagesPage() {
           <h2 className="mb-3 text-[19px] font-bold text-[#37352f]">{sec.title}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {sec.cards.map(c => {
-              const on = c.always || (c.kind ? isOn(settings, c.kind) : false)
+              const locked = c.kind ? !planAllows(plan, c.kind) : false
+              const on = !locked && (c.always || (c.kind ? isOn(settings, c.kind) : false))
               return (
                 <motion.div key={c.id} whileHover={{ y: -2 }} className="flex flex-col rounded-[20px] border border-[#ededec] bg-white p-5" style={{ opacity: c.soon ? 0.62 : 1 }}>
                   <div className="flex items-start justify-between gap-3">
                     <c.icon size={22} strokeWidth={1.8} style={{ color: c.soon ? '#9b9a97' : 'var(--accent)' }} />
-                    {c.kind && <Switch on={on} onChange={() => toggle(c.kind!)} disabled={!ready} />}
+                    {c.kind && <Switch on={on} onChange={() => toggle(c.kind!)} disabled={!ready || locked} />}
                   </div>
-                  <h3 className="mt-4 text-[15.5px] font-semibold text-[#37352f]">{c.title}</h3>
+                  <h3 className="mt-4 flex items-center gap-2 text-[15.5px] font-semibold text-[#37352f]">
+                    {c.title}
+                    {c.kind && PRO_ONLY_KINDS.includes(c.kind) && <span className="rounded-md bg-[#1d1d1f] px-1.5 py-0.5 text-[10.5px] font-bold tracking-wide text-white">PRO</span>}
+                  </h3>
                   <p className="mt-1 flex-1 text-[13.5px] leading-relaxed text-[#787774]">{c.desc}</p>
                   {c.kind === 'thanks' && ready && (
                     <Link href="/dashboard/addons?google=1" className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold" style={{ color: review ? '#1c6b3f' : 'var(--accent)' }}>
@@ -275,10 +282,14 @@ export default function MessagesPage() {
                     </Link>
                   )}
                   <div className="mt-4 flex items-center justify-between gap-2">
+                    {locked ? (
+                      <Link href="/dashboard/plans" className="rounded-full bg-[#1d1d1f] px-2.5 py-1 text-[12px] font-semibold text-white hover:bg-black">{t.upgrade}</Link>
+                    ) : (
                     <span className="rounded-full px-2.5 py-1 text-[12px] font-semibold"
                       style={c.soon ? { background: '#f1f1ef', color: '#9b9a97' } : on ? { background: '#e9f6ec', color: '#1c6b3f' } : { background: '#f1f1ef', color: '#787774' }}>
                       {c.soon ? t.soon : c.always ? t.always : on ? t.on : t.off}
                     </span>
+                    )}
                     <span className="flex items-center gap-2 text-[#9b9a97]">
                       {c.kind && (
                         <button onClick={() => setPreview(c.kind!)} className="flex items-center gap-1 rounded-full px-2 py-1 text-[12.5px] font-semibold text-[#37352f] hover:bg-[#f1f1ef]"><Eye size={14} /> {t.preview}</button>
