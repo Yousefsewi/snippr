@@ -74,7 +74,7 @@ export default function PrivacyPage() {
                 <li><b>Expo</b> — delivers notifications to the Snippr mobile app, if a barber uses it.</li>
                 <li><b>OpenStreetMap (Nominatim)</b> — suggests addresses while a barber types their shop address in the dashboard. Only the typed text and your IP address are sent.</li>
                 <li><b>Have I Been Pwned</b> — checks whether a new password appeared in a data leak. Only the first 5 characters of a hash of the password leave the device; never the password or any personal data.</li>
-                <li><b>YouTube</b> — only if a barber adds a video to their page, and only after you click to play it.</li>
+                <li><b>YouTube</b> — only if a barber adds a video to their page. The video’s preview picture is loaded from YouTube (no cookies); the player itself only loads when you press play, or right away if you accepted all cookies.</li>
               </ul>
               <p style={{ margin: 0 }}>Fonts and images are served from our own site. We do not use Google Fonts, analytics or tracking tools.</p>
             </>

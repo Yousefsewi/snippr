@@ -5,6 +5,8 @@
 
 export const CONSENT_KEY = 'snippr-cookie-consent'
 export const OPEN_COOKIE_SETTINGS = 'snippr:open-cookie-settings'
+/** fired when the visitor saves a cookie choice, so open pages can react (e.g. YouTube videos) */
+export const CONSENT_CHANGED = 'snippr:consent-changed'
 
 export type Consent = { v: 1; necessary: true; analytics: boolean; marketing: boolean; at: string }
 
@@ -24,6 +26,7 @@ export function readConsent(): Consent | null {
 export function saveConsent(analytics: boolean, marketing: boolean) {
   const c: Consent = { v: 1, necessary: true, analytics, marketing, at: new Date().toISOString() }
   try { localStorage.setItem(CONSENT_KEY, JSON.stringify(c)) } catch { /* private mode: choice lasts this visit only */ }
+  try { window.dispatchEvent(new Event(CONSENT_CHANGED)) } catch { /* server */ }
   return c
 }
 
