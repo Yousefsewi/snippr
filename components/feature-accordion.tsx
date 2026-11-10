@@ -18,8 +18,8 @@ const COPY: Record<Lng, {
 }> = {
   en: {
     eyebrow: 'HOW SNIPPR WORKS',
-    title: 'Built for barbers whose day runs on bookings',
-    body: 'Cutting hair moves you forward, but the messages around it slow you down. Snippr handles everything before and after the appointment, so your hands stay on the clippers.',
+    title: 'Built for barbers, hairdressers and beauty salons whose day runs on bookings',
+    body: 'Your work moves you forward, but the messages around it slow you down. Snippr handles everything before and after the appointment, so you can keep your hands on your work.',
     cta: 'Start for free',
     cards: [
       { title: 'Book', desc: 'A customer taps your link from Instagram or WhatsApp and picks a free time — no app, no account, no calls.',
@@ -34,8 +34,8 @@ const COPY: Record<Lng, {
   },
   tr: {
     eyebrow: 'SNIPPR NASIL ÇALIŞIR',
-    title: 'Günü randevularla dönen berberler için',
-    body: 'Saç kesmek seni ilerletir, etrafındaki mesajlaşma ise yavaşlatır. Snippr randevudan önce ve sonra olan her şeyi halleder, ellerin makinede kalsın.',
+    title: 'Günü randevularla dönen berberler, kuaförler ve güzellik salonları için',
+    body: 'İşin seni ilerletir, etrafındaki mesajlaşma ise yavaşlatır. Snippr randevudan önce ve sonra olan her şeyi halleder; sen sadece işine odaklan.',
     cta: 'Ücretsiz başla',
     cards: [
       { title: 'Randevu', desc: 'Müşteri Instagram veya WhatsApp’taki linkine dokunur ve boş bir saat seçer — uygulama yok, hesap yok, telefon yok.',
@@ -50,8 +50,8 @@ const COPY: Record<Lng, {
   },
   nl: {
     eyebrow: 'ZO WERKT SNIPPR',
-    title: 'Gemaakt voor kappers wier dag draait om afspraken',
-    body: 'Knippen brengt je verder, maar de berichten eromheen houden je op. Snippr regelt alles voor en na de afspraak, zodat je handen aan de tondeuse blijven.',
+    title: 'Gemaakt voor barbiers, kappers en schoonheidssalons wier dag draait om afspraken',
+    body: 'Je vak brengt je verder, maar de berichten eromheen houden je op. Snippr regelt alles voor en na de afspraak, zodat jij je op je werk kunt richten.',
     cta: 'Gratis starten',
     cards: [
       { title: 'Boeken', desc: 'Een klant tikt op je link in Instagram of WhatsApp en kiest een vrij tijdstip. Geen app, geen account, geen telefoontjes.',
@@ -66,8 +66,8 @@ const COPY: Record<Lng, {
   },
   de: {
     eyebrow: 'SO FUNKTIONIERT SNIPPR',
-    title: 'Gemacht für Barbiere, deren Tag von Terminen lebt',
-    body: 'Haare schneiden bringt dich weiter, die Nachrichten drumherum bremsen dich. Snippr erledigt alles vor und nach dem Termin, damit deine Hände an der Maschine bleiben.',
+    title: 'Gemacht für Barbiere, Friseure und Kosmetikstudios, deren Tag von Terminen lebt',
+    body: 'Deine Arbeit bringt dich weiter, die Nachrichten drumherum bremsen dich. Snippr erledigt alles vor und nach dem Termin, damit du dich ganz auf deine Arbeit konzentrieren kannst.',
     cta: 'Kostenlos starten',
     cards: [
       { title: 'Buchen', desc: 'Ein Kunde tippt auf deinen Link in Instagram oder WhatsApp und wählt eine freie Zeit. Keine App, kein Konto, keine Anrufe.',
@@ -82,8 +82,8 @@ const COPY: Record<Lng, {
   },
   ar: {
     eyebrow: 'كيف يعمل Snippr',
-    title: 'مصمَّم للحلاقين الذين يعتمد يومهم على المواعيد',
-    body: 'قص الشعر يدفعك للأمام، لكن الرسائل من حوله تبطئك. يتولى Snippr كل ما قبل الموعد وبعده، لتبقى يداك على ماكينة الحلاقة.',
+    title: 'مصمَّم للحلاقين ومصففي الشعر وصالونات التجميل الذين يعتمد يومهم على المواعيد',
+    body: 'عملك يدفعك للأمام، لكن الرسائل من حوله تبطئك. يتولى Snippr كل ما قبل الموعد وبعده، لتركّز أنت على عملك فقط.',
     cta: 'ابدأ مجانًا',
     cards: [
       { title: 'الحجز', desc: 'يضغط العميل على رابطك في إنستغرام أو واتساب ويختار وقتًا متاحًا، بدون تطبيق أو حساب أو مكالمات.',
