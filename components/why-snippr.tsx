@@ -17,7 +17,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
       ['Your page, not a marketplace', 'Customers only see you — no other barbers listed next to you, no one stealing your clients.'],
       ['Speaks your customers’ language', 'Booking page and emails in English, Turkish, Dutch and Arabic, in the language your customer chose.'],
       ['Your data stays in Europe', 'Stored on servers in the EU and handled under the GDPR. You can download or delete it any time.'],
-      ['Made in the Netherlands', 'Built in Assen for barbers and salons — with reminders sent at 10:00 Dutch time.'],
+      ['Works anywhere in the world', 'Your booking page opens in your client’s own time zone and in their language. Barbers and salons in any country can use Snippr.'],
     ],
   },
   tr: {
@@ -30,7 +30,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
       ['Senin sayfan, pazar yeri değil', 'Müşteri sadece seni görür — yanında başka berber listelenmez, kimse müşterini kapmaz.'],
       ['Müşterinin dilini konuşur', 'Randevu sayfası ve mailler İngilizce, Türkçe, Felemenkçe ve Arapça; müşteri hangisini seçtiyse.'],
       ['Verilerin Avrupa’da kalır', 'AB’deki sunucularda, GDPR kurallarıyla saklanır. İstediğin an indirebilir ya da silebilirsin.'],
-      ['Hollanda’da yapıldı', 'Assen’de berberler ve salonlar için yapıldı — hatırlatmalar Hollanda saatiyle 10:00’da gider.'],
+      ['Dünyanın her yerinde çalışır', 'Randevu sayfan müşterinin kendi saat diliminde ve kendi dilinde açılır. Her ülkedeki berber ve salonlar Snippr’ı kullanabilir.'],
     ],
   },
   nl: {
@@ -43,7 +43,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
       ['Jouw pagina, geen marktplaats', 'Klanten zien alleen jou. Geen andere kappers naast je, niemand die je klanten wegkaapt.'],
       ['Spreekt de taal van je klanten', 'Boekingspagina en e-mails in het Engels, Turks, Nederlands en Arabisch, in de taal die je klant kiest.'],
       ['Je gegevens blijven in Europa', 'Opgeslagen op servers in de EU en verwerkt volgens de AVG. Je kunt ze altijd downloaden of verwijderen.'],
-      ['Gemaakt in Nederland', 'Gebouwd in Assen voor kappers en salons, met herinneringen om 10:00 Nederlandse tijd.'],
+      ['Werkt overal ter wereld', 'Je boekingspagina opent in de tijdzone en de taal van je klant. Kappers en salons in elk land kunnen Snippr gebruiken.'],
     ],
   },
   de: {
@@ -56,7 +56,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
       ['Deine Seite, kein Marktplatz', 'Kunden sehen nur dich. Keine anderen Barbiere daneben, niemand schnappt dir Kunden weg.'],
       ['Spricht die Sprache deiner Kunden', 'Buchungsseite und E-Mails auf Englisch, Türkisch, Niederländisch und Arabisch, in der Sprache, die dein Kunde wählt.'],
       ['Deine Daten bleiben in Europa', 'Gespeichert auf Servern in der EU und verarbeitet nach der DSGVO. Du kannst sie jederzeit herunterladen oder löschen.'],
-      ['Gemacht in den Niederlanden', 'Entwickelt in Assen für Barbiere und Salons, mit Erinnerungen um 10:00 Uhr niederländischer Zeit.'],
+      ['Funktioniert überall auf der Welt', 'Deine Buchungsseite öffnet sich in der Zeitzone und Sprache deines Kunden. Barbiere und Salons in jedem Land können Snippr nutzen.'],
     ],
   },
   ar: {
@@ -69,7 +69,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
       ['صفحتك، وليست سوقًا', 'يرى العملاء أنت فقط. لا حلاقين آخرين بجانبك، ولا أحد يأخذ زبائنك.'],
       ['يتحدث لغة عملائك', 'صفحة الحجز والرسائل بالإنجليزية والتركية والهولندية والعربية، باللغة التي يختارها عميلك.'],
       ['بياناتك تبقى في أوروبا', 'تُحفظ على خوادم داخل الاتحاد الأوروبي وتُعالج وفق اللائحة العامة لحماية البيانات. يمكنك تنزيلها أو حذفها في أي وقت.'],
-      ['صُنع في هولندا', 'طُوِّر في أسن للحلاقين والصالونات، مع تذكيرات تُرسل الساعة 10:00 بتوقيت هولندا.'],
+      ['يعمل في أي مكان في العالم', 'تفتح صفحة الحجز بالمنطقة الزمنية للعميل وبلغته. يمكن للحلاقين والصالونات في أي بلد استخدام Snippr.'],
     ],
   },
 }

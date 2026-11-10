@@ -33,8 +33,8 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'reminders', tab: 'Reminders', title: 'Fewer\nempty chairs',
         body: 'Snippr emails your customers for you: a confirmation right after booking, a reminder before the appointment, and a message if it is cancelled. Every email goes out in the language your customer booked in. Switch each one on or off.',
-        specs: [['Confirmation', 'Right away'], ['Reminder', '1 or 3 days before'], ['Sent at', '10:00 (NL time)'], ['Cancellation', 'Automatic'], ['Thank-you', 'After the visit'], ['Language', 'The customer’s own']],
-        points: [['Reminder', 'Lands one day before, at 10:00'], ['Details', 'Date, time, service and price'], ['Maps', 'Your address opens in one tap']],
+        specs: [['Confirmation', 'Right away'], ['Reminder', '1 or 3 days before'], ['Sent at', 'Every morning'], ['Cancellation', 'Automatic'], ['Thank-you', 'After the visit'], ['Language', 'The customer’s own']],
+        points: [['Reminder', 'Arrives the morning before'], ['Details', 'Date, time, service and price'], ['Maps', 'Your address opens in one tap']],
       },
       {
         key: 'sales', tab: 'Sales', title: 'Know what\nyou earned',
@@ -62,8 +62,8 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'reminders', tab: 'Hatırlatmalar', title: 'Daha az\nboş koltuk',
         body: 'Snippr müşterilerine senin yerine mail atar: randevudan hemen sonra onay, randevudan önce hatırlatma, iptal olursa bilgi. Her mail müşterinin randevu aldığı dilde gider. Her birini açıp kapatabilirsin.',
-        specs: [['Onay', 'Hemen'], ['Hatırlatma', '1 veya 3 gün önce'], ['Gönderim saati', '10:00 (NL saati)'], ['İptal', 'Otomatik'], ['Teşekkür', 'Ziyaretten sonra'], ['Dil', 'Müşterinin dili']],
-        points: [['Hatırlatma', 'Bir gün önce saat 10:00’da'], ['Bilgiler', 'Tarih, saat, hizmet ve fiyat'], ['Harita', 'Adresin tek dokunuşla açılır']],
+        specs: [['Onay', 'Hemen'], ['Hatırlatma', '1 veya 3 gün önce'], ['Gönderim', 'Her sabah'], ['İptal', 'Otomatik'], ['Teşekkür', 'Ziyaretten sonra'], ['Dil', 'Müşterinin dili']],
+        points: [['Hatırlatma', 'Bir gün önce, sabah gelir'], ['Bilgiler', 'Tarih, saat, hizmet ve fiyat'], ['Harita', 'Adresin tek dokunuşla açılır']],
       },
       {
         key: 'sales', tab: 'Satışlar', title: 'Ne kazandığını\nbil',
@@ -91,8 +91,8 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'reminders', tab: 'Herinneringen', title: 'Minder\nlege stoelen',
         body: 'Snippr mailt je klanten voor je: een bevestiging direct na het boeken, een herinnering vóór de afspraak en een bericht als die wordt geannuleerd. Elke mail gaat in de taal waarin de klant heeft geboekt. Zet ze los aan of uit.',
-        specs: [['Bevestiging', 'Direct'], ['Herinnering', '1 of 3 dagen vooraf'], ['Verstuurd om', '10:00 (NL-tijd)'], ['Annulering', 'Automatisch'], ['Bedankje', 'Na het bezoek'], ['Taal', 'Die van de klant']],
-        points: [['Herinnering', 'Eén dag vooraf, om 10:00'], ['Gegevens', 'Datum, tijd, behandeling en prijs'], ['Maps', 'Je adres opent met één tik']],
+        specs: [['Bevestiging', 'Direct'], ['Herinnering', '1 of 3 dagen vooraf'], ['Verstuurd', 'Elke ochtend'], ['Annulering', 'Automatisch'], ['Bedankje', 'Na het bezoek'], ['Taal', 'Die van de klant']],
+        points: [['Herinnering', 'Komt de ochtend ervoor binnen'], ['Gegevens', 'Datum, tijd, behandeling en prijs'], ['Maps', 'Je adres opent met één tik']],
       },
       {
         key: 'sales', tab: 'Omzet', title: 'Weet wat\nje verdient',
@@ -120,8 +120,8 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'reminders', tab: 'Erinnerungen', title: 'Weniger\nleere Stühle',
         body: 'Snippr schreibt deinen Kunden für dich: eine Bestätigung direkt nach der Buchung, eine Erinnerung vor dem Termin und eine Nachricht bei einer Absage. Jede Mail geht in der Sprache raus, in der der Kunde gebucht hat. Jede lässt sich ein- oder ausschalten.',
-        specs: [['Bestätigung', 'Sofort'], ['Erinnerung', '1 oder 3 Tage vorher'], ['Versand um', '10:00 (NL-Zeit)'], ['Absage', 'Automatisch'], ['Dankeschön', 'Nach dem Besuch'], ['Sprache', 'Die des Kunden']],
-        points: [['Erinnerung', 'Einen Tag vorher um 10:00'], ['Details', 'Datum, Uhrzeit, Leistung und Preis'], ['Maps', 'Deine Adresse öffnet mit einem Tipp']],
+        specs: [['Bestätigung', 'Sofort'], ['Erinnerung', '1 oder 3 Tage vorher'], ['Versand', 'Jeden Morgen'], ['Absage', 'Automatisch'], ['Dankeschön', 'Nach dem Besuch'], ['Sprache', 'Die des Kunden']],
+        points: [['Erinnerung', 'Kommt am Morgen davor'], ['Details', 'Datum, Uhrzeit, Leistung und Preis'], ['Maps', 'Deine Adresse öffnet mit einem Tipp']],
       },
       {
         key: 'sales', tab: 'Umsatz', title: 'Wisse, was\ndu verdienst',
@@ -149,8 +149,8 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
       {
         key: 'reminders', tab: 'التذكيرات', title: 'كراسٍ فارغة\nأقل',
         body: 'يرسل Snippr الرسائل لعملائك نيابةً عنك: تأكيد بعد الحجز مباشرة، وتذكير قبل الموعد، ورسالة إذا أُلغي. كل رسالة تُرسل باللغة التي حجز بها العميل، ويمكنك تشغيل كل واحدة أو إيقافها.',
-        specs: [['التأكيد', 'فوري'], ['التذكير', 'قبل يوم أو 3 أيام'], ['وقت الإرسال', '10:00 (بتوقيت هولندا)'], ['الإلغاء', 'تلقائي'], ['الشكر', 'بعد الزيارة'], ['اللغة', 'لغة العميل']],
-        points: [['التذكير', 'قبل يوم الساعة 10:00'], ['التفاصيل', 'التاريخ والوقت والخدمة والسعر'], ['الخرائط', 'عنوانك يفتح بلمسة']],
+        specs: [['التأكيد', 'فوري'], ['التذكير', 'قبل يوم أو 3 أيام'], ['الإرسال', 'كل صباح'], ['الإلغاء', 'تلقائي'], ['الشكر', 'بعد الزيارة'], ['اللغة', 'لغة العميل']],
+        points: [['التذكير', 'يصل صباح اليوم السابق'], ['التفاصيل', 'التاريخ والوقت والخدمة والسعر'], ['الخرائط', 'عنوانك يفتح بلمسة']],
       },
       {
         key: 'sales', tab: 'المبيعات', title: 'اعرف كم\nكسبت',
