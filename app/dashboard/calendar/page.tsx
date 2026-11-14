@@ -15,13 +15,14 @@ import { useIsMobile } from '@/lib/use-mobile'
 import { DEFAULT_HOURS, type Day as HDay, type Hours } from '@/lib/hours'
 import { blockName, blockReason, isBlock } from '@/lib/blocks'
 import { addOwnAppointment, saveErrorKind } from '@/lib/owner-appointments'
-import { notifyStatus } from '@/lib/notify-status'
+import { kindForStatus, notifyStatus } from '@/lib/notify-status'
 import { SITE_LOCALE, toSiteLng } from '@/lib/site-lang'
 
 interface Appointment {
   id: string
   customer_name: string
   customer_phone: string | null
+  customer_email?: string | null
   start_time: string
   end_time: string
   status: string
@@ -46,7 +47,7 @@ const COPY = {
     errName: 'Please enter the client’s name.', errTime: 'End time must be after the start time.', errPast: 'You can’t add something in the past.',
     errOverlap: 'There is already an appointment at this time.', errGeneric: 'Could not save. Please try again.', errDays: 'Pick a last day on or after the first day (max 60 days).',
     st: { pending: 'Pending', confirmed: 'Confirmed', completed: 'Completed', cancelled: 'Cancelled' } as Record<string, string>,
-    closed: 'Closed', delBlock: 'Remove this blocked time?',
+    closed: 'Closed', delBlock: 'Remove this blocked time?', aConfirm: 'Confirm', aComplete: 'Mark completed', aCancel: 'Cancel appointment', aCancelSure: 'Cancel this appointment? The client gets an email.', aCall: 'Call', aMail: 'Email', aClose: 'Close', aPrice: 'Price', aKeep: 'Keep it',
   },
   tr: {
     today: 'Bugün', views: { day: 'Günlük görünüm', three: '3 günlük görünüm', week: 'Haftalık görünüm', month: 'Aylık görünüm' }, short: { day: 'Gün', three: '3 gün', week: 'Hafta', month: 'Ay' },
@@ -60,7 +61,7 @@ const COPY = {
     errName: 'Lütfen müşterinin adını yaz.', errTime: 'Bitiş saati başlangıçtan sonra olmalı.', errPast: 'Geçmiş bir zamana ekleme yapılamaz.',
     errOverlap: 'Bu saatte zaten bir randevu var.', errGeneric: 'Kaydedilemedi. Lütfen tekrar dene.', errDays: 'Son gün, ilk günle aynı ya da sonra olmalı (en fazla 60 gün).',
     st: { pending: 'Beklemede', confirmed: 'Onaylandı', completed: 'Tamamlandı', cancelled: 'İptal' } as Record<string, string>,
-    closed: 'Kapalı', delBlock: 'Bu kapalı zaman silinsin mi?',
+    closed: 'Kapalı', delBlock: 'Bu kapalı zaman silinsin mi?', aConfirm: 'Onayla', aComplete: 'Tamamlandı', aCancel: 'Randevuyu iptal et', aCancelSure: 'Bu randevu iptal edilsin mi? Müşteriye e-posta gider.', aCall: 'Ara', aMail: 'E-posta', aClose: 'Kapat', aPrice: 'Fiyat', aKeep: 'Vazgeç',
   },
   nl: {
     today: 'Vandaag', views: { day: 'Dagweergave', three: '3-dagenweergave', week: 'Weekweergave', month: 'Maandweergave' }, short: { day: 'Dag', three: '3 dagen', week: 'Week', month: 'Maand' },
@@ -74,7 +75,7 @@ const COPY = {
     errName: 'Vul de naam van de klant in.', errTime: 'De eindtijd moet na de begintijd liggen.', errPast: 'Je kunt niets in het verleden toevoegen.',
     errOverlap: 'Er staat al een afspraak op deze tijd.', errGeneric: 'Opslaan is niet gelukt. Probeer het opnieuw.', errDays: 'Kies een laatste dag op of na de eerste dag (max. 60 dagen).',
     st: { pending: 'In afwachting', confirmed: 'Bevestigd', completed: 'Afgerond', cancelled: 'Geannuleerd' } as Record<string, string>,
-    closed: 'Gesloten', delBlock: 'Deze geblokkeerde tijd verwijderen?',
+    closed: 'Gesloten', delBlock: 'Deze geblokkeerde tijd verwijderen?', aConfirm: 'Bevestigen', aComplete: 'Afronden', aCancel: 'Afspraak annuleren', aCancelSure: 'Deze afspraak annuleren? De klant krijgt een e-mail.', aCall: 'Bellen', aMail: 'E-mail', aClose: 'Sluiten', aPrice: 'Prijs', aKeep: 'Toch niet',
   },
   de: {
     today: 'Heute', views: { day: 'Tagesansicht', three: '3-Tage-Ansicht', week: 'Wochenansicht', month: 'Monatsansicht' }, short: { day: 'Tag', three: '3 Tage', week: 'Woche', month: 'Monat' },
@@ -88,7 +89,7 @@ const COPY = {
     errName: 'Bitte gib den Namen des Kunden ein.', errTime: 'Die Endzeit muss nach der Startzeit liegen.', errPast: 'Du kannst nichts in der Vergangenheit eintragen.',
     errOverlap: 'Zu dieser Zeit gibt es schon einen Termin.', errGeneric: 'Speichern fehlgeschlagen. Bitte versuch es noch einmal.', errDays: 'Wähle einen letzten Tag am oder nach dem ersten Tag (max. 60 Tage).',
     st: { pending: 'Ausstehend', confirmed: 'Bestätigt', completed: 'Abgeschlossen', cancelled: 'Storniert' } as Record<string, string>,
-    closed: 'Geschlossen', delBlock: 'Diese gesperrte Zeit entfernen?',
+    closed: 'Geschlossen', delBlock: 'Diese gesperrte Zeit entfernen?', aConfirm: 'Bestätigen', aComplete: 'Als erledigt markieren', aCancel: 'Termin stornieren', aCancelSure: 'Diesen Termin stornieren? Der Kunde bekommt eine E-Mail.', aCall: 'Anrufen', aMail: 'E-Mail', aClose: 'Schließen', aPrice: 'Preis', aKeep: 'Behalten',
   },
   ar: {
     today: 'اليوم', views: { day: 'عرض اليوم', three: 'عرض 3 أيام', week: 'عرض الأسبوع', month: 'عرض الشهر' }, short: { day: 'يوم', three: '3 أيام', week: 'أسبوع', month: 'شهر' },
@@ -102,7 +103,7 @@ const COPY = {
     errName: 'يرجى إدخال اسم العميل.', errTime: 'يجب أن يكون وقت النهاية بعد وقت البداية.', errPast: 'لا يمكنك إضافة شيء في الماضي.',
     errOverlap: 'يوجد موعد بالفعل في هذا الوقت.', errGeneric: 'تعذر الحفظ. يرجى المحاولة مرة أخرى.', errDays: 'اختر يومًا أخيرًا في اليوم الأول أو بعده (60 يومًا كحد أقصى).',
     st: { pending: 'قيد الانتظار', confirmed: 'مؤكد', completed: 'مكتمل', cancelled: 'ملغى' } as Record<string, string>,
-    closed: 'مغلق', delBlock: 'إزالة هذا الوقت المغلق؟',
+    closed: 'مغلق', delBlock: 'إزالة هذا الوقت المغلق؟', aConfirm: 'تأكيد', aComplete: 'تحديد كمكتمل', aCancel: 'إلغاء الموعد', aCancelSure: 'إلغاء هذا الموعد؟ سيصل العميل بريد إلكتروني.', aCall: 'اتصال', aMail: 'البريد', aClose: 'إغلاق', aPrice: 'السعر', aKeep: 'تراجع',
   },
 }
 
@@ -427,6 +428,27 @@ export default function CalendarPage() {
   const [drag, setDrag] = useState<Drag | null>(null)
   const [ghost, setGhost] = useState<{ day: string; start: number; end: number } | null>(null)
   const ghostRef = useRef<{ day: string; start: number; end: number } | null>(null)
+  // tapping an appointment opens its details (a finished drag must not count as a tap)
+  const [openAppt, setOpenAppt] = useState<Appointment | null>(null)
+  const [confirmCancel, setConfirmCancel] = useState(false)
+  const dragMoved = useRef(false)
+  // short message at the top instead of a browser alert
+  const [notice, setNotice] = useState('')
+  useEffect(() => {
+    if (!notice) return
+    const id = setTimeout(() => setNotice(''), 3500)
+    return () => clearTimeout(id)
+  }, [notice])
+
+  async function changeStatus(a: Appointment, status: string) {
+    setAppointments(list => list.map(x => (x.id === a.id ? { ...x, status } : x)))
+    setOpenAppt(o => (o && o.id === a.id ? { ...o, status } : o))
+    setConfirmCancel(false)
+    const { error } = await supabase.from('appointments').update({ status }).eq('id', a.id)
+    if (error) { setNotice(t.errGeneric); if (barberId) reload(barberId); return }
+    const kind = kindForStatus(status)
+    if (kind) notifyStatus(a.id, kind)
+  }
 
   const startDrag = (e: React.PointerEvent, a: Appointment, mode: Drag['mode']) => {
     if (e.button !== 0 || e.pointerType === 'touch') return
@@ -462,13 +484,15 @@ export default function CalendarPage() {
     }
     const onUp = async () => {
       const g = ghostRef.current, d = drag
+      dragMoved.current = !!g
+      setTimeout(() => { dragMoved.current = false }, 0)
       setDrag(null); setGhost(null); ghostRef.current = null
       if (!g || !barberId || (g.start === d.s0 && g.end === d.e0)) return
-      if (g.start < Date.now() - 5 * 60000) { window.alert(t.errPast); return }
+      if (g.start < Date.now() - 5 * 60000) { setNotice(t.errPast); return }
       const start = new Date(g.start).toISOString(), end = new Date(g.end).toISOString()
       setAppointments(list => list.map(x => (x.id === d.id ? { ...x, start_time: start, end_time: end } : x)))
       const { error } = await supabase.from('appointments').update({ start_time: start, end_time: end }).eq('id', d.id)
-      if (error) { window.alert(explain(error)); reload(barberId); return }
+      if (error) { setNotice(explain(error)); reload(barberId); return }
       // tell the client their booking moved (only real bookings, only when the time changed)
       const moved = appointments.find(x => x.id === d.id)
       if (moved && !isBlock(moved) && g.start !== d.s0) notifyStatus(d.id, 'rescheduled', new Date(d.s0).toISOString())
@@ -534,6 +558,8 @@ export default function CalendarPage() {
           const c = evColor(a.status)
           return (
             <div key={a.id} onPointerDown={e => startDrag(e, a, 'move')} title={t.dragHint}
+              onClick={() => { if (!dragMoved.current) { setConfirmCancel(false); setOpenAppt(a) } }}
+              role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') setOpenAppt(a) }}
               className="group absolute right-1 left-1 cursor-grab select-none overflow-hidden rounded-lg px-2 py-1 text-[11px]"
               style={{ top, height, background: c.bg, color: c.text, borderLeft: `3px solid ${c.bar}`, opacity: drag?.id === a.id && ghost ? 0.35 : 1 }}>
               {height < 40 ? (
@@ -859,6 +885,80 @@ export default function CalendarPage() {
             )}
             {err && <p className="text-[14px] font-medium text-[#e5484d]">{err}</p>}
           </SheetShell>
+        )}
+      </AnimatePresence>
+      {/* appointment details: opens when an appointment in the calendar is tapped */}
+      <AnimatePresence>
+        {openAppt && (() => {
+          const a = openAppt
+          const c = evColor(a.status)
+          const start = new Date(a.start_time)
+          const phone = a.customer_phone?.trim() || ''
+          const digits = phone.replace(/[^\d+]/g, '')
+          const wa = digits.startsWith('+') ? digits.slice(1) : digits.startsWith('00') ? digits.slice(2) : digits.startsWith('0') ? '31' + digits.slice(1) : digits
+          const open = a.status === 'pending' || a.status === 'confirmed'
+          const price = a.services ? Math.round(a.services.price * (100 - (FIRST_VISIT_DISCOUNT ? (a.discount_percent ?? 0) : 0))) / 100 : null
+          const btn = 'flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] text-[14px] font-semibold transition'
+          return (
+            <motion.div key="appt" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpenAppt(null)}
+              className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 sm:items-center sm:p-4">
+              <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={a.customer_name}
+                className="w-full max-w-md rounded-t-[22px] bg-white p-6 shadow-2xl sm:rounded-[22px]">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-[20px] font-bold text-[#37352f]">{a.customer_name}</p>
+                    <span className="mt-1.5 inline-block rounded-full px-2.5 py-0.5 text-[12px] font-semibold" style={{ background: c.bg, color: c.text }}>{t.st[a.status] ?? a.status}</span>
+                  </div>
+                  <button onClick={() => setOpenAppt(null)} aria-label={t.aClose} className="rounded-full p-1.5 text-[#787774] hover:bg-[#f1f1ef]">✕</button>
+                </div>
+
+                <dl className="mt-5 divide-y divide-[#f1f1ef] rounded-[14px] border border-[#ededec] text-[14px]">
+                  <div className="flex justify-between gap-3 px-4 py-2.5"><dt className="text-[#9b9a97]">{t.date}</dt><dd className="m-0 font-medium text-[#37352f]">{start.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' })}</dd></div>
+                  <div className="flex justify-between gap-3 px-4 py-2.5"><dt className="text-[#9b9a97]">{t.time}</dt><dd className="m-0 font-medium text-[#37352f]">{hhmm(a.start_time)} – {hhmm(a.end_time)}</dd></div>
+                  {a.services?.name && <div className="flex justify-between gap-3 px-4 py-2.5"><dt className="text-[#9b9a97]">{t.service}</dt><dd className="m-0 font-medium text-[#37352f]">{a.services.name}</dd></div>}
+                  {price !== null && <div className="flex justify-between gap-3 px-4 py-2.5"><dt className="text-[#9b9a97]">{t.aPrice}</dt><dd className="m-0 font-medium text-[#37352f]">{format(price)}</dd></div>}
+                  {phone && <div className="flex justify-between gap-3 px-4 py-2.5"><dt className="text-[#9b9a97]">{t.phone.replace(/\s*\(.*\)/, '')}</dt><dd className="m-0 font-medium text-[#37352f]">{phone}</dd></div>}
+                  {a.customer_email && <div className="flex justify-between gap-3 px-4 py-2.5"><dt className="text-[#9b9a97]">{t.aMail}</dt><dd className="m-0 truncate font-medium text-[#37352f]">{a.customer_email}</dd></div>}
+                </dl>
+
+                {(phone || a.customer_email) && (
+                  <div className="mt-3 flex gap-2">
+                    {phone && <a href={`tel:${digits}`} className={`${btn} border border-[#e3e2e0] text-[#37352f] hover:bg-[#f7f7f5]`}>{t.aCall}</a>}
+                    {phone && wa && <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer" className={`${btn} border border-[#e3e2e0] text-[#37352f] hover:bg-[#f7f7f5]`}>WhatsApp</a>}
+                    {a.customer_email && <a href={`mailto:${a.customer_email}`} className={`${btn} border border-[#e3e2e0] text-[#37352f] hover:bg-[#f7f7f5]`}>{t.aMail}</a>}
+                  </div>
+                )}
+
+                {open && !confirmCancel && (
+                  <div className="mt-3 flex gap-2">
+                    {a.status === 'pending' && <button onClick={() => changeStatus(a, 'confirmed')} className={`${btn} bg-[#1d1d1f] text-white hover:bg-black`}>{t.aConfirm}</button>}
+                    {a.status === 'confirmed' && <button onClick={() => changeStatus(a, 'completed')} className={`${btn} bg-[#1d1d1f] text-white hover:bg-black`}>{t.aComplete}</button>}
+                    <button onClick={() => setConfirmCancel(true)} className={`${btn} border border-[#f5d0ca] text-[#a8302a] hover:bg-[#fdf3f1]`}>{t.aCancel}</button>
+                  </div>
+                )}
+                {open && confirmCancel && (
+                  <div className="mt-3 rounded-[12px] bg-[#fdf3f1] p-3.5">
+                    <p className="text-[13.5px] text-[#5d1715]">{t.aCancelSure}</p>
+                    <div className="mt-3 flex gap-2">
+                      <button onClick={() => changeStatus(a, 'cancelled')} className={`${btn} bg-[#c62828] text-white hover:bg-[#a91f1f]`}>{t.aCancel}</button>
+                      <button onClick={() => setConfirmCancel(false)} className={`${btn} border border-[#e3e2e0] bg-white text-[#37352f]`}>{t.aKeep}</button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
+          )
+        })()}
+      </AnimatePresence>
+
+      {/* short message (e.g. "can't move into the past") */}
+      <AnimatePresence>
+        {notice && (
+          <motion.div key="notice" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+            role="status" className="fixed top-4 left-1/2 z-[60] -translate-x-1/2 rounded-[12px] bg-[#1d1d1f] px-4 py-2.5 text-[14px] font-medium text-white shadow-lg">
+            {notice}
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
