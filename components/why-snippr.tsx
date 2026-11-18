@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 // "What makes Snippr different" on the homepage. Only true claims — keep it that way.
 
 import type { SiteLng as Lng } from '@/lib/site-lang'
+import { TRIAL_DAYS } from '@/lib/legal'
 
 const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [string, string][] }> = {
   en: {
@@ -12,7 +13,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     title: 'What makes Snippr different',
     body: 'Most booking apps were built for big salons and chains. Snippr is built for the barber with one chair and a busy day.',
     items: [
-      ['Free, no commission', 'Start without a credit card. Snippr never takes a cut of your bookings — customers pay you directly.'],
+      ['No commission, ever', `Try every plan free for ${TRIAL_DAYS} days, no card needed, then from €14.95 a month. Snippr never takes a cut of your bookings: clients pay you directly.`],
       ['Your clients don’t download anything', 'No app, no account. They tap your link and book in a few seconds, right from their phone.'],
       ['Your page, not a marketplace', 'Customers only see you — no other barbers listed next to you, no one stealing your clients.'],
       ['Speaks your customers’ language', 'Booking page and emails in English, Turkish, Dutch and Arabic, in the language your customer chose.'],
@@ -25,7 +26,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     title: 'Snippr’ı farklı kılan ne?',
     body: 'Çoğu randevu uygulaması büyük salonlar ve zincirler için yapıldı. Snippr, tek koltuklu ve günü yoğun geçen berber için yapıldı.',
     items: [
-      ['Ücretsiz, komisyon yok', 'Kredi kartı olmadan başla. Snippr randevularından asla pay almaz — müşteri sana doğrudan öder.'],
+      ['Asla komisyon yok', `Bütün planları ${TRIAL_DAYS} gün ücretsiz dene, kart gerekmez; sonra aylık €14,95’ten başlar. Snippr randevularından asla pay almaz, müşteri sana doğrudan öder.`],
       ['Müşterin hiçbir şey indirmez', 'Uygulama yok, üyelik yok. Linkine dokunur, birkaç saniyede telefonundan randevusunu alır.'],
       ['Senin sayfan, pazar yeri değil', 'Müşteri sadece seni görür — yanında başka berber listelenmez, kimse müşterini kapmaz.'],
       ['Müşterinin dilini konuşur', 'Randevu sayfası ve mailler İngilizce, Türkçe, Felemenkçe ve Arapça; müşteri hangisini seçtiyse.'],
@@ -38,7 +39,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     title: 'Wat Snippr anders maakt',
     body: 'De meeste boekingsapps zijn gemaakt voor grote salons en ketens. Snippr is gemaakt voor de kapper met één stoel en een drukke dag.',
     items: [
-      ['Geen commissie', 'Start zonder creditcard. Snippr neemt nooit een deel van je boekingen; klanten betalen jou direct.'],
+      ['Nooit commissie', `Probeer elk abonnement ${TRIAL_DAYS} dagen gratis, zonder kaart, daarna vanaf €14,95 per maand. Snippr neemt nooit een deel van je boekingen: klanten betalen jou direct.`],
       ['Je klanten downloaden niets', 'Geen app, geen account. Ze tikken op je link en boeken in een paar seconden, gewoon op hun telefoon.'],
       ['Jouw pagina, geen marktplaats', 'Klanten zien alleen jou. Geen andere kappers naast je, niemand die je klanten wegkaapt.'],
       ['Spreekt de taal van je klanten', 'Boekingspagina en e-mails in het Engels, Turks, Nederlands en Arabisch, in de taal die je klant kiest.'],
@@ -51,7 +52,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     title: 'Was Snippr anders macht',
     body: 'Die meisten Buchungs-Apps wurden für große Salons und Ketten gebaut. Snippr ist für den Barbier mit einem Stuhl und einem vollen Tag gemacht.',
     items: [
-      ['Keine Provision', 'Starte ohne Kreditkarte. Snippr nimmt nie einen Anteil an deinen Buchungen; Kunden bezahlen dich direkt.'],
+      ['Niemals Provision', `Teste jeden Tarif ${TRIAL_DAYS} Tage kostenlos, ohne Karte, danach ab 14,95 € im Monat. Snippr nimmt nie einen Anteil an deinen Buchungen: Kunden bezahlen dich direkt.`],
       ['Deine Kunden laden nichts herunter', 'Keine App, kein Konto. Sie tippen auf deinen Link und buchen in wenigen Sekunden direkt am Handy.'],
       ['Deine Seite, kein Marktplatz', 'Kunden sehen nur dich. Keine anderen Barbiere daneben, niemand schnappt dir Kunden weg.'],
       ['Spricht die Sprache deiner Kunden', 'Buchungsseite und E-Mails auf Englisch, Türkisch, Niederländisch und Arabisch, in der Sprache, die dein Kunde wählt.'],
@@ -64,7 +65,7 @@ const COPY: Record<Lng, { eyebrow: string; title: string; body: string; items: [
     title: 'ما الذي يميّز Snippr',
     body: 'معظم تطبيقات الحجز صُممت للصالونات الكبيرة والسلاسل. أما Snippr فمصمَّم للحلاق صاحب الكرسي الواحد واليوم المزدحم.',
     items: [
-      ['بدون عمولة', 'ابدأ بدون بطاقة ائتمان. لا يأخذ Snippr أي نسبة من حجوزاتك، والعملاء يدفعون لك مباشرة.'],
+      ['بدون عمولة أبدًا', `جرّب كل الخطط مجانًا لمدة ${TRIAL_DAYS} يومًا بدون بطاقة، ثم من €14.95 شهريًا. لا يأخذ Snippr أي نسبة من حجوزاتك، والعملاء يدفعون لك مباشرة.`],
       ['عملاؤك لا ينزّلون أي شيء', 'بدون تطبيق أو حساب. يضغطون على رابطك ويحجزون خلال ثوانٍ من هواتفهم.'],
       ['صفحتك، وليست سوقًا', 'يرى العملاء أنت فقط. لا حلاقين آخرين بجانبك، ولا أحد يأخذ زبائنك.'],
       ['يتحدث لغة عملائك', 'صفحة الحجز والرسائل بالإنجليزية والتركية والهولندية والعربية، باللغة التي يختارها عميلك.'],

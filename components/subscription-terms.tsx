@@ -19,7 +19,7 @@ type PlanKey = keyof typeof PLAN_PRICES_EUR
 const COPY = {
   en: {
     title: 'Before you subscribe',
-    sub: 'Payments are not open yet; during early access Snippr is free. When paid plans start, these terms apply and we tell you by email first.',
+    sub: `Every plan starts with a ${TRIAL_DAYS}-day free trial. Payments are not open yet; before they start we tell you by email, and these terms apply from then on.`,
     names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
     per: (m: string, y: string, mi: string, yi: string) => `${m}/month or ${y}/year excl. ${vat}% VAT (${mi} or ${yi} incl. VAT)`,
     proNote: ' — starting price; the final price is agreed with you',
@@ -38,7 +38,7 @@ const COPY = {
   },
   tr: {
     title: 'Abone olmadan önce',
-    sub: 'Ödemeler henüz açılmadı; erken erişim boyunca Snippr ücretsiz. Ücretli planlar başladığında bu koşullar geçerli olur ve önce sana e-postayla haber veririz.',
+    sub: `Her plan ${TRIAL_DAYS} günlük ücretsiz denemeyle başlar. Ödemeler henüz açılmadı; açılmadan önce sana e-postayla haber veririz, o andan itibaren bu koşullar geçerli olur.`,
     names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
     per: (m: string, y: string, mi: string, yi: string) => `aylık ${m} ya da yıllık ${y}, %${vat} KDV (BTW) hariç (KDV dahil ${mi} ya da ${yi})`,
     proNote: ' — başlangıç fiyatı; son fiyat seninle konuşularak belirlenir',
@@ -57,7 +57,7 @@ const COPY = {
   },
   nl: {
     title: 'Voordat je een abonnement neemt',
-    sub: 'Betalingen zijn nog niet open; tijdens de lancering is Snippr gratis. Als betaalde abonnementen starten, gelden deze voorwaarden en mailen we je eerst.',
+    sub: `Elk abonnement begint met een gratis proef van ${TRIAL_DAYS} dagen. Betalingen zijn nog niet open; voordat ze starten mailen we je, en vanaf dan gelden deze voorwaarden.`,
     names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
     per: (m: string, y: string, mi: string, yi: string) => `${m}/maand of ${y}/jaar excl. ${vat}% btw (${mi} of ${yi} incl. btw)`,
     proNote: ' — vanafprijs; de uiteindelijke prijs spreken we met je af',
@@ -76,7 +76,7 @@ const COPY = {
   },
   de: {
     title: 'Bevor du ein Abo abschließt',
-    sub: 'Zahlungen sind noch nicht geöffnet; während des Starts ist Snippr kostenlos. Wenn bezahlte Tarife starten, gelten diese Bedingungen und wir schreiben dir vorher eine E-Mail.',
+    sub: `Jeder Tarif beginnt mit einem ${TRIAL_DAYS}-tägigen kostenlosen Test. Zahlungen sind noch nicht geöffnet; bevor sie starten, schreiben wir dir, und ab dann gelten diese Bedingungen.`,
     names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
     per: (m: string, y: string, mi: string, yi: string) => `${m}/Monat oder ${y}/Jahr zzgl. ${vat} % MwSt. (${mi} oder ${yi} inkl. MwSt.)`,
     proNote: ' — Einstiegspreis; den endgültigen Preis vereinbaren wir mit dir',
@@ -95,7 +95,7 @@ const COPY = {
   },
   ar: {
     title: 'قبل أن تشترك',
-    sub: 'الدفع غير متاح بعد، وخلال الإطلاق Snippr مجاني. عند بدء الخطط المدفوعة تسري هذه الشروط ونراسلك أولًا.',
+    sub: `تبدأ كل خطة بتجربة مجانية لمدة ${TRIAL_DAYS} يومًا. الدفع غير متاح بعد، وقبل بدئه نراسلك، ومن حينها تسري هذه الشروط.`,
     names: { solo: 'Solo', salon: 'Salon', pro: 'Pro' } as Record<PlanKey, string>,
     per: (m: string, y: string, mi: string, yi: string) => `${m} شهريًا أو ${y} سنويًا بدون ضريبة ${vat}% (${mi} أو ${yi} شاملة الضريبة)`,
     proNote: ' — سعر مبدئي، ونتفق معك على السعر النهائي',

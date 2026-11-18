@@ -20,7 +20,7 @@ const COPY = {
   en: {
     back: 'Add-ons', label: 'Facebook and Instagram bookings', h1: 'Take bookings on Instagram and Facebook',
     sub: 'Put your Snippr booking link on your social pages so followers can book in seconds.',
-    b1: 'Free online booking for new and regular clients', b2: 'Works with your existing Instagram and Facebook pages', b3: 'Share it in stories, posts and ads too',
+    b1: 'Online booking for new and regular clients', b2: 'Works with your existing Instagram and Facebook pages', b3: 'Share it in stories, posts and ads too',
     included: 'Included in your plan', setup: 'Set it up now', copy: 'Copy link', copied: 'Copied!', yourLink: 'Your booking link', qr: 'QR code',
     book: 'Book now', posts: 'posts', followers: 'followers', following: 'following', message: 'Message', open: 'Open',
     how: 'How to set it up', tabs: { instagram: 'Instagram', facebook: 'Facebook', google: 'Google', whatsapp: 'WhatsApp' },
@@ -55,7 +55,7 @@ const COPY = {
   tr: {
     back: 'Eklentiler', label: 'Facebook ve Instagram rezervasyonları', h1: 'Instagram ve Facebook’ta randevu al',
     sub: 'Snippr randevu linkini sosyal medya sayfalarına ekle, takipçilerin saniyeler içinde randevu alsın.',
-    b1: 'Hem yeni hem düzenli müşterilere ÜCRETSİZ online randevu', b2: 'Mevcut Instagram ve Facebook sayfalarınla çalışır', b3: 'Hikâyelerde, gönderilerde ve reklamlarda da paylaş',
+    b1: 'Hem yeni hem düzenli müşterilere online randevu', b2: 'Mevcut Instagram ve Facebook sayfalarınla çalışır', b3: 'Hikâyelerde, gönderilerde ve reklamlarda da paylaş',
     included: 'Planına dahildir', setup: 'Hemen yapılandır', copy: 'Linki kopyala', copied: 'Kopyalandı!', yourLink: 'Randevu linkin', qr: 'QR kod',
     book: 'Randevu al', posts: 'gönderi', followers: 'takipçi', following: 'takip', message: 'Mesaj', open: 'Aç',
     how: 'Nasıl kurulur?', tabs: { instagram: 'Instagram', facebook: 'Facebook', google: 'Google', whatsapp: 'WhatsApp' },

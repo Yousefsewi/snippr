@@ -11,6 +11,7 @@ import { MousePointerClick, Bell, Mail, TrendingUp, Check, CalendarDays, Gift, Q
 // stack and every card shows its content.
 
 import type { SiteLng as Lng } from '@/lib/site-lang'
+import { TRIAL_DAYS } from '@/lib/legal'
 
 const COPY: Record<Lng, {
   eyebrow: string; title: string; body: string; cta: string
@@ -20,7 +21,7 @@ const COPY: Record<Lng, {
     eyebrow: 'HOW SNIPPR WORKS',
     title: 'Built for barbers, hairdressers and beauty salons whose day runs on bookings',
     body: 'Your work moves you forward, but the messages around it slow you down. Snippr handles everything before and after the appointment, so you can keep your hands on your work.',
-    cta: 'Start for free',
+    cta: `Try ${TRIAL_DAYS} days free`,
     cards: [
       { title: 'Book', desc: 'A customer taps your link from Instagram or WhatsApp and picks a free time — no app, no account, no calls.',
         steps: ['Taps the link in your bio', 'Picks Saturday at 14:30', 'Gets a confirmation right away'] },
@@ -36,7 +37,7 @@ const COPY: Record<Lng, {
     eyebrow: 'SNIPPR NASIL ÇALIŞIR',
     title: 'Günü randevularla dönen berberler, kuaförler ve güzellik salonları için',
     body: 'İşin seni ilerletir, etrafındaki mesajlaşma ise yavaşlatır. Snippr randevudan önce ve sonra olan her şeyi halleder; sen sadece işine odaklan.',
-    cta: 'Ücretsiz başla',
+    cta: `${TRIAL_DAYS} gün ücretsiz dene`,
     cards: [
       { title: 'Randevu', desc: 'Müşteri Instagram veya WhatsApp’taki linkine dokunur ve boş bir saat seçer — uygulama yok, hesap yok, telefon yok.',
         steps: ['Bio’ndaki linke dokunur', 'Cumartesi 14:30’u seçer', 'Hemen onay alır'] },
@@ -52,7 +53,7 @@ const COPY: Record<Lng, {
     eyebrow: 'ZO WERKT SNIPPR',
     title: 'Gemaakt voor barbiers, kappers en schoonheidssalons wier dag draait om afspraken',
     body: 'Je vak brengt je verder, maar de berichten eromheen houden je op. Snippr regelt alles voor en na de afspraak, zodat jij je op je werk kunt richten.',
-    cta: 'Gratis starten',
+    cta: `${TRIAL_DAYS} dagen gratis proberen`,
     cards: [
       { title: 'Boeken', desc: 'Een klant tikt op je link in Instagram of WhatsApp en kiest een vrij tijdstip. Geen app, geen account, geen telefoontjes.',
         steps: ['Tikt op de link in je bio', 'Kiest zaterdag 14:30', 'Krijgt meteen een bevestiging'] },
@@ -68,7 +69,7 @@ const COPY: Record<Lng, {
     eyebrow: 'SO FUNKTIONIERT SNIPPR',
     title: 'Gemacht für Barbiere, Friseure und Kosmetikstudios, deren Tag von Terminen lebt',
     body: 'Deine Arbeit bringt dich weiter, die Nachrichten drumherum bremsen dich. Snippr erledigt alles vor und nach dem Termin, damit du dich ganz auf deine Arbeit konzentrieren kannst.',
-    cta: 'Kostenlos starten',
+    cta: `${TRIAL_DAYS} Tage kostenlos testen`,
     cards: [
       { title: 'Buchen', desc: 'Ein Kunde tippt auf deinen Link in Instagram oder WhatsApp und wählt eine freie Zeit. Keine App, kein Konto, keine Anrufe.',
         steps: ['Tippt auf den Link in deiner Bio', 'Wählt Samstag 14:30', 'Bekommt sofort eine Bestätigung'] },
@@ -84,7 +85,7 @@ const COPY: Record<Lng, {
     eyebrow: 'كيف يعمل Snippr',
     title: 'مصمَّم للحلاقين ومصففي الشعر وصالونات التجميل الذين يعتمد يومهم على المواعيد',
     body: 'عملك يدفعك للأمام، لكن الرسائل من حوله تبطئك. يتولى Snippr كل ما قبل الموعد وبعده، لتركّز أنت على عملك فقط.',
-    cta: 'ابدأ مجانًا',
+    cta: `جرّب ${TRIAL_DAYS} يومًا مجانًا`,
     cards: [
       { title: 'الحجز', desc: 'يضغط العميل على رابطك في إنستغرام أو واتساب ويختار وقتًا متاحًا، بدون تطبيق أو حساب أو مكالمات.',
         steps: ['يضغط على الرابط في البايو', 'يختار السبت 14:30', 'يحصل على تأكيد فورًا'] },

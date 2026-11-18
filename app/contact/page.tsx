@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, HelpCircle, Mail, Send, Sparkles, type LucideIcon } from 'lucide-react'
 import { SUPPORT_EMAIL } from '@/lib/site'
 import { useStored, useClientValue, writeStored } from '@/lib/use-stored'
+import { TRIAL_DAYS } from '@/lib/legal'
 
 type Lng = 'tr' | 'nl' | 'en' | 'ar' | 'de'
 type Topic = 'account' | 'bookings' | 'billing' | 'idea' | 'other'
@@ -25,7 +26,7 @@ const T = {
     send: 'Gönder', sending: 'Gönderiliyor…', sentT: 'Mesajın ulaştı!', sentD: 'En kısa sürede e-postana cevap vereceğiz.', another: 'Yeni mesaj yaz',
     err: { name: 'Lütfen adını yaz.', email: 'Geçerli bir e-posta adresi yaz.', message: 'Mesajın en az 10 karakter olmalı.', rate: 'Çok fazla mesaj gönderdin. Lütfen bir saat sonra tekrar dene.', server: 'Gönderilemedi. Lütfen tekrar dene ya da bize e-posta at.' },
     privacy: 'Bilgilerini sadece mesajına cevap vermek için kullanırız.', privacyLink: 'Gizlilik',
-    ctaT: 'Berber misin?', ctaD: 'Ücretsiz hesap aç, birkaç dakikada kendi randevu linkin hazır olsun.', ctaB: 'Ücretsiz başla',
+    ctaT: 'Berber misin?', ctaD: `${TRIAL_DAYS} gün ücretsiz dene, birkaç dakikada kendi randevu linkin hazır olsun.`, ctaB: `${TRIAL_DAYS} gün ücretsiz dene`,
   },
   nl: {
     back: 'Home', h1a: 'We zijn er voor je.', h1b: 'Waarmee kunnen we helpen?',
@@ -38,7 +39,7 @@ const T = {
     send: 'Versturen', sending: 'Bezig met versturen…', sentT: 'Je bericht is verstuurd!', sentD: 'We antwoorden zo snel mogelijk per e-mail.', another: 'Nieuw bericht',
     err: { name: 'Vul je naam in.', email: 'Vul een geldig e-mailadres in.', message: 'Je bericht moet minstens 10 tekens hebben.', rate: 'Je hebt te veel berichten gestuurd. Probeer het over een uur opnieuw.', server: 'Versturen is niet gelukt. Probeer het opnieuw of mail ons.' },
     privacy: 'We gebruiken je gegevens alleen om je bericht te beantwoorden.', privacyLink: 'Privacy',
-    ctaT: 'Ben je kapper?', ctaD: 'Maak een gratis account en heb binnen een paar minuten je eigen boekingslink.', ctaB: 'Gratis beginnen',
+    ctaT: 'Ben je kapper?', ctaD: `Probeer Snippr ${TRIAL_DAYS} dagen gratis en heb binnen een paar minuten je eigen boekingslink.`, ctaB: `${TRIAL_DAYS} dagen gratis proberen`,
   },
   en: {
     back: 'Home', h1a: 'We’re here.', h1b: 'How can we help?',
@@ -51,7 +52,7 @@ const T = {
     send: 'Send', sending: 'Sending…', sentT: 'Message sent!', sentD: 'We’ll reply by email as soon as we can.', another: 'Write another',
     err: { name: 'Please enter your name.', email: 'Please enter a valid email address.', message: 'Your message needs at least 10 characters.', rate: 'Too many messages. Please try again in an hour.', server: 'Could not send. Please try again or email us.' },
     privacy: 'We only use your details to answer your message.', privacyLink: 'Privacy',
-    ctaT: 'Are you a barber?', ctaD: 'Create a free account and get your own booking link in a few minutes.', ctaB: 'Get started free',
+    ctaT: 'Are you a barber?', ctaD: `Try Snippr free for ${TRIAL_DAYS} days and get your own booking link in a few minutes.`, ctaB: `Try ${TRIAL_DAYS} days free`,
   },
   ar: {
     back: 'الرئيسية', h1a: 'نحن هنا.', h1b: 'كيف يمكننا مساعدتك؟',
@@ -64,7 +65,7 @@ const T = {
     send: 'إرسال', sending: 'جارٍ الإرسال…', sentT: 'تم إرسال رسالتك!', sentD: 'سنردّ عليك عبر البريد الإلكتروني في أقرب وقت.', another: 'اكتب رسالة جديدة',
     err: { name: 'يرجى إدخال اسمك.', email: 'يرجى إدخال بريد إلكتروني صحيح.', message: 'يجب أن تحتوي رسالتك على 10 أحرف على الأقل.', rate: 'أرسلت رسائل كثيرة. يرجى المحاولة بعد ساعة.', server: 'تعذّر الإرسال. حاول مرة أخرى أو راسلنا عبر البريد.' },
     privacy: 'نستخدم بياناتك فقط للرد على رسالتك.', privacyLink: 'الخصوصية',
-    ctaT: 'هل أنت حلاق؟', ctaD: 'أنشئ حسابًا مجانيًا واحصل على رابط الحجز الخاص بك خلال دقائق.', ctaB: 'ابدأ مجانًا',
+    ctaT: 'هل أنت حلاق؟', ctaD: `جرّب Snippr مجانًا لمدة ${TRIAL_DAYS} يومًا واحصل على رابط الحجز الخاص بك خلال دقائق.`, ctaB: `جرّب ${TRIAL_DAYS} يومًا مجانًا`,
   },
   de: {
     back: 'Startseite', h1a: 'Wir sind da.', h1b: 'Wie können wir helfen?',
@@ -77,7 +78,7 @@ const T = {
     send: 'Senden', sending: 'Wird gesendet…', sentT: 'Nachricht gesendet!', sentD: 'Wir antworten so schnell wie möglich per E-Mail.', another: 'Noch eine schreiben',
     err: { name: 'Bitte gib deinen Namen ein.', email: 'Bitte gib eine gültige E-Mail-Adresse ein.', message: 'Deine Nachricht braucht mindestens 10 Zeichen.', rate: 'Zu viele Nachrichten. Bitte versuch es in einer Stunde noch einmal.', server: 'Senden fehlgeschlagen. Versuch es noch einmal oder schreib uns eine E-Mail.' },
     privacy: 'Wir nutzen deine Daten nur, um deine Nachricht zu beantworten.', privacyLink: 'Datenschutz',
-    ctaT: 'Bist du Barbier?', ctaD: 'Erstelle ein kostenloses Konto und hol dir in wenigen Minuten deinen eigenen Buchungslink.', ctaB: 'Kostenlos starten',
+    ctaT: 'Bist du Barbier?', ctaD: `Teste Snippr ${TRIAL_DAYS} Tage kostenlos und hol dir in wenigen Minuten deinen eigenen Buchungslink.`, ctaB: `${TRIAL_DAYS} Tage kostenlos testen`,
   },
 }
 

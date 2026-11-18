@@ -34,7 +34,7 @@ const T = {
     ],
     stats: [[`${TRIAL_DAYS} days`, 'free trial'], ['24/7', 'online booking'], ['0%', 'commission on bookings'], ['2 min', 'to set up']],
     ctaTitle: 'Join Snippr', ctaSub: `Start taking online bookings today. ${TRIAL_DAYS} days free, no credit card needed.`,
-    ctaStart: 'Get started free', ctaContact: 'Talk to us',
+    ctaStart: `Try ${TRIAL_DAYS} days free`, ctaContact: 'Talk to us',
   },
   tr: {
     back: 'Ana sayfa', eyebrow: 'SNIPPR HAKKINDA',
@@ -58,7 +58,7 @@ const T = {
     ],
     stats: [[`${TRIAL_DAYS} gün`, 'ücretsiz deneme'], ['7/24', 'online randevu'], ['%0', 'randevu komisyonu'], ['2 dk', 'kurulum süresi']],
     ctaTitle: 'Snippr’a katıl', ctaSub: `Bugün online randevu almaya başla. ${TRIAL_DAYS} gün ücretsiz, kredi kartı gerekmez.`,
-    ctaStart: 'Ücretsiz başla', ctaContact: 'Bize yaz',
+    ctaStart: `${TRIAL_DAYS} gün ücretsiz dene`, ctaContact: 'Bize yaz',
   },
   nl: {
     back: 'Home', eyebrow: 'OVER SNIPPR',
@@ -82,7 +82,7 @@ const T = {
     ],
     stats: [[`${TRIAL_DAYS} dagen`, 'gratis proberen'], ['24/7', 'online boeken'], ['0%', 'commissie op afspraken'], ['2 min', 'om in te stellen']],
     ctaTitle: 'Doe mee met Snippr', ctaSub: `Begin vandaag met online afspraken. ${TRIAL_DAYS} dagen gratis, geen creditcard nodig.`,
-    ctaStart: 'Gratis beginnen', ctaContact: 'Neem contact op',
+    ctaStart: `${TRIAL_DAYS} dagen gratis proberen`, ctaContact: 'Neem contact op',
   },
   de: {
     back: 'Startseite', eyebrow: 'ÜBER SNIPPR',
@@ -106,7 +106,7 @@ const T = {
     ],
     stats: [[`${TRIAL_DAYS} Tage`, 'kostenlos testen'], ['24/7', 'Online-Buchung'], ['0 %', 'Provision auf Buchungen'], ['2 Min.', 'zum Einrichten']],
     ctaTitle: 'Mach mit bei Snippr', ctaSub: `Nimm noch heute Online-Buchungen an. ${TRIAL_DAYS} Tage kostenlos, keine Kreditkarte nötig.`,
-    ctaStart: 'Kostenlos starten', ctaContact: 'Schreib uns',
+    ctaStart: `${TRIAL_DAYS} Tage kostenlos testen`, ctaContact: 'Schreib uns',
   },
   ar: {
     back: 'الرئيسية', eyebrow: 'عن SNIPPR',
@@ -130,7 +130,7 @@ const T = {
     ],
     stats: [[`${TRIAL_DAYS} يومًا`, 'تجربة مجانية'], ['24/7', 'حجز عبر الإنترنت'], ['0%', 'عمولة على الحجوزات'], ['دقيقتان', 'للإعداد']],
     ctaTitle: 'انضم إلى Snippr', ctaSub: `ابدأ باستقبال الحجوزات عبر الإنترنت اليوم. ${TRIAL_DAYS} يومًا مجانًا بدون بطاقة ائتمان.`,
-    ctaStart: 'ابدأ مجانًا', ctaContact: 'تواصل معنا',
+    ctaStart: `جرّب ${TRIAL_DAYS} يومًا مجانًا`, ctaContact: 'تواصل معنا',
   },
 }
 

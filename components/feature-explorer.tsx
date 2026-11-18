@@ -12,11 +12,12 @@ import { ArrowRight, CalendarDays, ChevronRight, Clock3, MapPin, Plus, Scissors,
 // Every value here is a real Snippr feature; keep it that way when editing.
 
 import { L, type All, type SiteLng as Lng } from '@/lib/site-lang'
+import { TRIAL_DAYS } from '@/lib/legal'
 type Tab = { key: string; tab: string; title: string; body: string; specs: [string, string][]; points: [string, string][] }
 
 const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
   en: {
-    cta: 'Start for free',
+    cta: `Try ${TRIAL_DAYS} days free`,
     tabs: [
       {
         key: 'booking', tab: 'Booking page', title: 'Booked while\nyou cut',
@@ -45,7 +46,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
     ],
   },
   tr: {
-    cta: 'Ücretsiz başla',
+    cta: `${TRIAL_DAYS} gün ücretsiz dene`,
     tabs: [
       {
         key: 'booking', tab: 'Randevu sayfası', title: 'Sen keserken\nrandevu gelir',
@@ -74,7 +75,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
     ],
   },
   nl: {
-    cta: 'Gratis starten',
+    cta: `${TRIAL_DAYS} dagen gratis proberen`,
     tabs: [
       {
         key: 'booking', tab: 'Boekingspagina', title: 'Geboekt terwijl\nje knipt',
@@ -103,7 +104,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
     ],
   },
   de: {
-    cta: 'Kostenlos starten',
+    cta: `${TRIAL_DAYS} Tage kostenlos testen`,
     tabs: [
       {
         key: 'booking', tab: 'Buchungsseite', title: 'Gebucht, während\ndu schneidest',
@@ -132,7 +133,7 @@ const COPY: Record<Lng, { cta: string; tabs: Tab[] }> = {
     ],
   },
   ar: {
-    cta: 'ابدأ مجانًا',
+    cta: `جرّب ${TRIAL_DAYS} يومًا مجانًا`,
     tabs: [
       {
         key: 'booking', tab: 'صفحة الحجز', title: 'حجوزات تصلك\nوأنت تعمل',
