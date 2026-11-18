@@ -16,9 +16,19 @@ export const metadata: Metadata = {
   // on another address such as the old *.vercel.app one. "./" = the current page's own path.
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "./" },
+  // Link previews on WhatsApp, Instagram, iMessage, Facebook and X: a 1200×630 picture
+  // (public/og.jpg) and the large card on X. Booking pages set their own title (app/b/[slug]/layout.tsx).
   openGraph: {
     url: "./", siteName: "Snippr", type: "website",
+    title: "Snippr — Online booking for barbers and salons",
     description: "Put your link in your bio or on Instagram, or hang up your QR code — clients book in seconds.",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Snippr — Never miss a single client" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Snippr — Online booking for barbers and salons",
+    description: "Put your link in your bio or on Instagram, or hang up your QR code — clients book in seconds.",
+    images: ["/og.jpg"],
   },
 };
 
