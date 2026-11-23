@@ -11,7 +11,6 @@ const PAGES: { path: string; priority: number }[] = [
   { path: '/faq', priority: 0.6 },
   { path: '/contact', priority: 0.5 },
   { path: '/register', priority: 0.7 },
-  { path: '/login', priority: 0.3 },
   { path: '/privacy', priority: 0.2 },
   { path: '/terms', priority: 0.2 },
   { path: '/imprint', priority: 0.2 },
@@ -19,5 +18,6 @@ const PAGES: { path: string; priority: number }[] = [
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return PAGES.map(p => ({ url: `${SITE_URL}${p.path}`, changeFrequency: 'monthly', priority: p.priority }))
+  const lastModified = new Date()
+  return PAGES.map(p => ({ url: `${SITE_URL}${p.path}`, lastModified, changeFrequency: 'monthly', priority: p.priority }))
 }

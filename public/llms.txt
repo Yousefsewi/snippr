@@ -1,0 +1,16 @@
+# Snippr
+
+> Snippr is online booking software for barbers, hairdressers and beauty salons. Each shop gets its own booking page and link (snipprcalendar.com/b/<shop>) plus a QR code; clients book 24/7, get email confirmations and reminders, and can cancel themselves. Snippr takes no commission on bookings.
+
+- Pricing: one fixed monthly price per shop. Solo €14.95, Salon €34.95, Pro from €59.95 (excl. VAT). Every plan is free for 15 days, no card needed.
+- Languages: English, Dutch, German, Turkish and Arabic.
+- Based in the Netherlands.
+
+## Pages
+
+- [Home](https://www.snipprcalendar.com/): what Snippr does
+- [Pricing](https://www.snipprcalendar.com/pricing): plans and prices
+- [FAQ](https://www.snipprcalendar.com/faq): common questions
+- [About](https://www.snipprcalendar.com/about): why Snippr exists
+- [Help](https://www.snipprcalendar.com/help): guides for shop owners
+- [Contact](https://www.snipprcalendar.com/contact): support (snipprcalendar@gmail.com)

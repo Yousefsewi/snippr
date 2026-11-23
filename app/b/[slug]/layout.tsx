@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${shop.name} · Snippr`,
     description,
+    // the demo shop is a sample: reachable by link, not listed in search results
+    ...(slug === DEMO_SLUG ? { robots: { index: false, follow: true } } : {}),
     openGraph: { type: 'website', siteName: 'Snippr', url: `/b/${slug}`, title, description, images },
     twitter: { card: 'summary_large_image', title, description, images: images.map(i => i.url) },
   }
