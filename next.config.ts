@@ -13,7 +13,7 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "media-src 'self' blob:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://nominatim.openstreetmap.org https://api.pwnedpasswords.com${dev ? " ws:" : ""}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://nominatim.openstreetmap.org https://api.pwnedpasswords.com https://*.ingest.de.sentry.io${dev ? " ws:" : ""}`,
   "frame-src 'self' https://www.youtube-nocookie.com",
   "worker-src 'self' blob:",
   "object-src 'none'",

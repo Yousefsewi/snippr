@@ -72,6 +72,7 @@ export default function PrivacyPage() {
                 <li><b>Google sign-in</b> — only if you choose “Continue with Google”: Google confirms who you are and shares your name, email address and profile picture with us. We never see your Google password.</li>
                 <li><b>Browser push services</b> (e.g. Google, Apple, Mozilla) — deliver new-booking notifications to a barber’s device, only if the barber turns them on.</li>
                 <li><b>Expo</b> — delivers notifications to the Snippr mobile app, if a barber uses it.</li>
+                <li><b>Sentry</b> (Functional Software Inc., EU region in Germany) — receives technical error reports when something breaks on the site, so we can fix it. We switch off names, email addresses, IP addresses and cookies in these reports.</li>
                 <li><b>OpenStreetMap (Nominatim)</b> — suggests addresses while a barber types their shop address in the dashboard. Only the typed text and your IP address are sent.</li>
                 <li><b>Have I Been Pwned</b> — checks whether a new password appeared in a data leak. Only the first 5 characters of a hash of the password leave the device; never the password or any personal data.</li>
                 <li><b>YouTube</b> — only if a barber adds a video to their page. The video’s preview picture is loaded from YouTube (no cookies); the player itself only loads when you press play, or right away if you accepted all cookies.</li>
