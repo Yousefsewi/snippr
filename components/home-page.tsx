@@ -541,8 +541,8 @@ const LC: Record<Lng, {
   tr: {
     nav: { how: 'Nasıl çalışır', pricing: 'Fiyatlandırma', faq: 'SSS', about: 'Hakkında', help: 'Yardım ve destek' },
     login: 'Giriş', getStarted: 'Başla', badge: '7/24 online randevu', downloadApp: 'Uygulamayı İndir',
-    heroBig: 'TEK MÜŞTERİNİ\nBİLE KAÇIRMA.',
-    heroSub: 'Sen makineyi elinden bırakmadan, müşterilerin 7/24 randevu alsın. Linkini Instagram bio’na koy ya da QR kodunu as; gerisini Snippr halleder.',
+    heroBig: 'TELEFON ÇALMASIN,\nKOLTUK DOLSUN.',
+    heroSub: 'Randevuları Snippr alıyor. Sen işine odaklan.',
     appTag: 'Mobil uygulama', appTitle: 'Snippr’ı uygulama olarak ister misin?',
     appBody: 'Snippr telefonunun tarayıcısında zaten sorunsuz çalışıyor. iOS ve Android uygulamalarını da geliştiriyoruz — hazır olunca ilk sen mi duymak istersin?',
     appBtn: 'Hazır olunca bana yaz', appDone: 'Teşekkürler! O e-postayı gönder, ilk sen haber alacaksın.',
