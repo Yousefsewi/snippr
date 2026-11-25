@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { openCookieSettings } from '@/lib/consent'
@@ -876,7 +875,6 @@ function AppInterestCTA({ serif, lng }: { serif: string; lng: Lng }) {
 // and /ar (app/[lang] pages) the language is fixed by the address, so the server sends that
 // language and search engines can index it.
 export default function HomePage({ fixedLng }: { fixedLng?: SiteLng }) {
-  const router = useRouter()
   const saved = useStored('snippr-lang')
   const browserLng = useClientValue(browserSiteLng, 'en' as SiteLng)
   const lng: Lng = fixedLng ?? (isSiteLng(saved) ? saved : browserLng)
@@ -885,7 +883,8 @@ export default function HomePage({ fixedLng }: { fixedLng?: SiteLng }) {
   const chooseLng = (l: Lng) => {
     try { writeStored('snippr-lang', l) } catch { /* storage blocked */ }
     // on a language address, switching language opens that language's address
-    if (fixedLng && l !== fixedLng) router.push(l === 'en' ? '/' : `/${l}`)
+    // a full page load, so every text on the page comes in the new language at once
+    if (fixedLng && l !== fixedLng) window.location.assign(l === 'en' ? '/' : `/${l}`)
   }
   const c = LC[lng]
   const isRTL = lng === 'ar'
@@ -1042,7 +1041,8 @@ export default function HomePage({ fixedLng }: { fixedLng?: SiteLng }) {
 
         {/* ── Dotted 3D cube on the right (wide screens) — dots move away from the mouse ── */}
         {SHOW_HERO_CUBE && (
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-center justify-center pt-16 lg:flex" style={{ width: '54%' }}>
+          // Arabic reads right to left: the headline sits on the right, so the cube moves to the left
+          <div aria-hidden className={`pointer-events-none absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} z-[5] hidden items-center justify-center pt-16 lg:flex`} style={{ width: '54%' }}>
             <motion.div className="flex flex-col items-center"
               initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}>
               {/* the cube's own size: grows with the screen but never reaches the headline (300–760px);
