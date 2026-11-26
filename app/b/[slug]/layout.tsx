@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { DEMO_BARBER, DEMO_SLUG } from '@/lib/demo-shop'
+import { DEMO_BARBER, DEMO_ENABLED, DEMO_SLUG } from '@/lib/demo-shop'
 
 // Link previews for a barber's own booking page: when a barber shares snipprcalendar.com/b/<name>
 // on WhatsApp or Instagram, the preview shows the shop's name, a short text and, if the shop has
@@ -12,7 +12,7 @@ const webImage = (v: unknown) => (typeof v === 'string' && /^https:\/\//.test(v)
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   let shop: { name: string; bio?: string | null; address?: string | null; cover_url?: string | null; photo_url?: string | null } | null = null
-  if (slug === DEMO_SLUG) shop = DEMO_BARBER
+  if (DEMO_ENABLED && slug === DEMO_SLUG) shop = DEMO_BARBER
   else {
     try {
       const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY

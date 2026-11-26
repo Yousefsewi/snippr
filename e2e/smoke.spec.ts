@@ -42,7 +42,8 @@ test.describe('homepage in every language', () => {
   })
 })
 
-test('demo shop: a client can pick a service, a day and a time', async ({ page }) => {
+// The demo shop is turned off (lib/demo-shop.ts → DEMO_ENABLED). Switch this back to test(...) if it returns.
+test.skip('demo shop: a client can pick a service, a day and a time', async ({ page }) => {
   await prepare(page, 'en')
   await page.goto('/b/demo')
   await expect(page.getByText('Golden Scissors').first()).toBeVisible()

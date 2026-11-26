@@ -12,7 +12,7 @@ import { DEFAULT_HOURS } from '@/lib/hours'
 import { useClientValue } from '@/lib/use-stored'
 import { FIRST_VISIT_DISCOUNT } from '@/lib/features'
 import { CalendarDays, ChevronRight, Clock3, Mail, Phone, Scissors, UserRound, type LucideIcon } from 'lucide-react'
-import { DEMO_BARBER, DEMO_SERVICES, DEMO_SLUG, demoBusy } from '@/lib/demo-shop'
+import { DEMO_BARBER, DEMO_ENABLED, DEMO_SERVICES, DEMO_SLUG, demoBusy } from '@/lib/demo-shop'
 
 /* ─────────────────────────  types  ───────────────────────── */
 interface Barber {
@@ -188,7 +188,7 @@ export default function BookingPage() {
   useEffect(() => {
     (async () => {
       // the demo shop (/b/demo) comes from code, not from the database
-      if (slug === DEMO_SLUG) {
+      if (DEMO_ENABLED && slug === DEMO_SLUG) {
         setBarber(DEMO_BARBER); setServices(DEMO_SERVICES); setWaitlistOn(false); setLoading(false)
         return
       }

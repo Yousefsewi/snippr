@@ -3,6 +3,9 @@
 // only simulated: nothing is saved and no email goes out.
 import type { Hours as WorkingHours } from './hours'
 
+// Turned off at the owner's request (2026-11-26): /b/demo is a 404 like any unknown shop.
+// Set to true to bring the sample shop back.
+export const DEMO_ENABLED = false
 export const DEMO_SLUG = 'demo'
 
 const open = (start: string, end: string) => ({ open: true, start, end })
