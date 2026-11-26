@@ -18,7 +18,7 @@ export const DEMO_BARBER = {
   slug: DEMO_SLUG,
   bio: 'Fades, beards & hot-towel shaves. Walk-ins welcome.',
   address: 'Assen, Nederland',
-  photo_url: '/demo/barber-avatar.webp',
+  photo_url: '/demo/barbershop-cover.webp', // the shop itself, no person
   cover_url: '/demo/barbershop-cover.webp',
   accent: '#c9a27a',
   links: [{ platform: 'instagram', url: 'https://www.instagram.com/' }],
