@@ -16,7 +16,7 @@ export const PLAN_PRICES_EUR = {
   pro: { monthly: 59.95, yearly: 599 },    // unlimited, price on request
 } as const
 export const TRIAL_DAYS = 15             // free trial, no card
-export const FOUNDER_DISCOUNT = 40       // % off for life
+export const FOUNDER_SOLO_PRICE = 9.95   // € per month for the Solo plan, for life (excl. VAT)
 export const FOUNDER_SPOTS = 20          // first shops that join
 export const SMS_PACK = { count: 100, price: 12 } // add-on, not built yet
 // Features that aren't built yet stay hidden everywhere until this is true

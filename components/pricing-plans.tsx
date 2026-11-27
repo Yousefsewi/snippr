@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Clock, Minus, MessageSquareText, Mail, Sparkles } from 'lucide-react'
 import SubscriptionTerms from '@/components/subscription-terms'
-import { PLAN_PRICES_EUR, FOUNDER_DISCOUNT, FOUNDER_SPOTS, TRIAL_DAYS, SMS_PACK, SHOW_UNRELEASED, VISIBLE_PLANS } from '@/lib/legal'
+import { PLAN_PRICES_EUR, FOUNDER_SOLO_PRICE, FOUNDER_SPOTS, TRIAL_DAYS, SMS_PACK, SHOW_UNRELEASED, VISIBLE_PLANS } from '@/lib/legal'
 
 export type Lng = SiteLng
 type PlanId = 'solo' | 'salon' | 'pro'
@@ -28,8 +28,8 @@ const T = {
     monthly: 'Monthly', yearly: 'Yearly', save: '2 months free',
     perMonth: '/mo', exVat: 'excl. VAT', billedYearly: (n: string) => `${n} per year`, billedMonthly: 'billed monthly',
     soonTag: 'soon', popular: 'Most chosen', everythingSolo: 'Everything in Solo',
-    founderTitle: `Founder offer: ${FOUNDER_DISCOUNT}% off for life`,
-    founderBody: `For the first ${FOUNDER_SPOTS} shops that join. Solo for ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/mo, for as long as you stay.`,
+    founderTitle: `Founder offer: Solo for ${eur(FOUNDER_SOLO_PRICE)} a month, for life`,
+    founderBody: `For the first ${FOUNDER_SPOTS} shops that join. Solo for ${eur(FOUNDER_SOLO_PRICE)}/mo, for as long as you stay.`,
     early: `Launch: every plan is free for ${TRIAL_DAYS} days. No card needed, and nothing is charged when the trial ends.`, yourPlan: 'Your plan',
     plans: {
       solo: { name: 'Solo', who: 'For one barber or stylist', cta: `Try ${TRIAL_DAYS} days free`, ctaDash: 'Switch to this plan' },
@@ -70,8 +70,8 @@ const T = {
     monthly: 'Aylık', yearly: 'Yıllık', save: '2 ay bedava',
     perMonth: '/ay', exVat: 'KDV hariç', billedYearly: (n: string) => `yıllık ${n}`, billedMonthly: 'aylık ödenir',
     soonTag: 'yakında', popular: 'En çok seçilen', everythingSolo: 'Solo’daki her şey',
-    founderTitle: `Kurucu teklifi: ömür boyu %${FOUNDER_DISCOUNT} indirim`,
-    founderBody: `Katılan ilk ${FOUNDER_SPOTS} işletmeye. Solo aylık ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}, Snippr’da kaldığın sürece.`,
+    founderTitle: `Kurucu teklifi: Solo ömür boyu aylık ${eur(FOUNDER_SOLO_PRICE)}`,
+    founderBody: `Katılan ilk ${FOUNDER_SPOTS} işletmeye. Solo aylık ${eur(FOUNDER_SOLO_PRICE)}, Snippr’da kaldığın sürece.`,
     early: `Lansman: Bütün planlar ${TRIAL_DAYS} gün ücretsiz. Kart gerekmez, deneme bitince otomatik ücret alınmaz.`, yourPlan: 'Senin planın',
     plans: {
       solo: { name: 'Solo', who: 'Tek berber ya da kuaför için', cta: `${TRIAL_DAYS} gün ücretsiz dene`, ctaDash: 'Bu plana geç' },
@@ -112,8 +112,8 @@ const T = {
     monthly: 'Maandelijks', yearly: 'Jaarlijks', save: '2 maanden gratis',
     perMonth: '/mnd', exVat: 'excl. btw', billedYearly: (n: string) => `${n} per jaar`, billedMonthly: 'per maand gefactureerd',
     soonTag: 'binnenkort', popular: 'Meest gekozen', everythingSolo: 'Alles uit Solo',
-    founderTitle: `Oprichtersaanbod: levenslang ${FOUNDER_DISCOUNT}% korting`,
-    founderBody: `Voor de eerste ${FOUNDER_SPOTS} zaken die meedoen. Solo voor ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/mnd, zolang je blijft.`,
+    founderTitle: `Oprichtersaanbod: Solo levenslang ${eur(FOUNDER_SOLO_PRICE)} per maand`,
+    founderBody: `Voor de eerste ${FOUNDER_SPOTS} zaken die meedoen. Solo voor ${eur(FOUNDER_SOLO_PRICE)}/mnd, zolang je blijft.`,
     early: `Lancering: elk abonnement is ${TRIAL_DAYS} dagen gratis. Geen kaart nodig, en er wordt niets afgeschreven als de proef afloopt.`, yourPlan: 'Jouw abonnement',
     plans: {
       solo: { name: 'Solo', who: 'Voor één kapper of stylist', cta: `${TRIAL_DAYS} dagen gratis proberen`, ctaDash: 'Overstappen naar dit abonnement' },
@@ -154,8 +154,8 @@ const T = {
     monthly: 'Monatlich', yearly: 'Jährlich', save: '2 Monate gratis',
     perMonth: '/Monat', exVat: 'zzgl. MwSt.', billedYearly: (n: string) => `${n} pro Jahr`, billedMonthly: 'monatliche Abrechnung',
     soonTag: 'bald', popular: 'Am häufigsten gewählt', everythingSolo: 'Alles aus Solo',
-    founderTitle: `Gründerangebot: ${FOUNDER_DISCOUNT} % Rabatt auf Lebenszeit`,
-    founderBody: `Für die ersten ${FOUNDER_SPOTS} Läden, die mitmachen. Solo für ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))}/Monat, solange du dabei bleibst.`,
+    founderTitle: `Gründerangebot: Solo für ${eur(FOUNDER_SOLO_PRICE)} im Monat, auf Lebenszeit`,
+    founderBody: `Für die ersten ${FOUNDER_SPOTS} Läden, die mitmachen. Solo für ${eur(FOUNDER_SOLO_PRICE)}/Monat, solange du dabei bleibst.`,
     early: `Start: Jeder Tarif ist ${TRIAL_DAYS} Tage kostenlos. Keine Karte nötig, und nach dem Test wird nichts abgebucht.`, yourPlan: 'Dein Tarif',
     plans: {
       solo: { name: 'Solo', who: 'Für einen Barbier oder Stylisten', cta: `${TRIAL_DAYS} Tage kostenlos testen`, ctaDash: 'Zu diesem Tarif wechseln' },
@@ -196,8 +196,8 @@ const T = {
     monthly: 'شهري', yearly: 'سنوي', save: 'شهران مجانًا',
     perMonth: '/شهر', exVat: 'بدون ضريبة القيمة المضافة', billedYearly: (n: string) => `${n} سنويًا`, billedMonthly: 'يُدفع شهريًا',
     soonTag: 'قريبًا', popular: 'الأكثر اختيارًا', everythingSolo: 'كل ما في Solo',
-    founderTitle: `عرض المؤسسين: خصم ${FOUNDER_DISCOUNT}% مدى الحياة`,
-    founderBody: `لأول ${FOUNDER_SPOTS} محلًا تنضم. Solo مقابل ${eur(PLAN_PRICES_EUR.solo.monthly * (1 - FOUNDER_DISCOUNT / 100))} شهريًا طالما بقيت معنا.`,
+    founderTitle: `عرض المؤسسين: Solo مقابل ${eur(FOUNDER_SOLO_PRICE)} شهريًا مدى الحياة`,
+    founderBody: `لأول ${FOUNDER_SPOTS} محلًا تنضم. Solo مقابل ${eur(FOUNDER_SOLO_PRICE)} شهريًا طالما بقيت معنا.`,
     early: `إطلاق: كل الخطط مجانية لمدة ${TRIAL_DAYS} يومًا. لا حاجة لبطاقة، ولا يُخصم شيء عند انتهاء التجربة.`, yourPlan: 'خطتك',
     plans: {
       solo: { name: 'Solo', who: 'لحلاق أو مصفف واحد', cta: `جرّب ${TRIAL_DAYS} يومًا مجانًا`, ctaDash: 'انتقل إلى هذه الخطة' },

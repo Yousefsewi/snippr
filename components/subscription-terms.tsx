@@ -9,7 +9,7 @@
 
 import Link from 'next/link'
 import type { SiteLng } from '@/lib/site-lang'
-import { PLAN_PRICES_EUR, VISIBLE_PLANS, VAT_RATE, TRIAL_DAYS, FOUNDER_DISCOUNT, FOUNDER_SPOTS } from '@/lib/legal'
+import { PLAN_PRICES_EUR, VISIBLE_PLANS, VAT_RATE, TRIAL_DAYS, FOUNDER_SOLO_PRICE, FOUNDER_SPOTS } from '@/lib/legal'
 
 const eur = (n: number) => `€${n.toFixed(2).replace('.', ',')}`
 const incl = (n: number) => eur(Math.round(n * (1 + VAT_RATE) * 100) / 100)
@@ -27,7 +27,7 @@ const COPY = {
       ['Seller', <>Snippr, the Netherlands — company details on the <Link href="/imprint">imprint page</Link>.</>],
       ['Price', null],
       ['Free trial', `${TRIAL_DAYS} days, no card needed. If you don’t choose a plan at the end, nothing is charged.`],
-      ['Founder offer', `The first ${FOUNDER_SPOTS} shops that subscribe get ${FOUNDER_DISCOUNT}% off their plan for as long as they keep it without a break.`],
+      ['Founder offer', `The first ${FOUNDER_SPOTS} shops that subscribe pay ${eur(FOUNDER_SOLO_PRICE)} a month (excl. VAT) for the Solo plan, for as long as they keep it without a break.`],
       ['Billing', 'In advance, in euros, per month or per year (the yearly plan costs about 10 months).'],
       ['Renewal', 'Your plan renews automatically for the same period until you cancel. We email you before a yearly plan renews.'],
       ['Cancel', 'Any time in Dashboard → Plans & billing. Your plan stays active until the end of the period you paid for; nothing more is charged. You can download your data at any time.'],
@@ -46,7 +46,7 @@ const COPY = {
       ['Satıcı', <>Snippr, Hollanda — şirket bilgileri <Link href="/imprint">künye sayfasında</Link>.</>],
       ['Fiyat', null],
       ['Ücretsiz deneme', `${TRIAL_DAYS} gün, kart gerekmez. Deneme sonunda plan seçmezsen hiçbir ücret alınmaz.`],
-      ['Kurucu teklifi', `Abone olan ilk ${FOUNDER_SPOTS} işletme, planını aralıksız sürdürdüğü sürece %${FOUNDER_DISCOUNT} indirimli öder.`],
+      ['Kurucu teklifi', `Abone olan ilk ${FOUNDER_SPOTS} işletme, Solo planını aralıksız sürdürdüğü sürece aylık ${eur(FOUNDER_SOLO_PRICE)} (KDV hariç) öder.`],
       ['Ödeme dönemi', 'Peşin, euro ile, aylık ya da yıllık (yıllık plan yaklaşık 10 ay fiyatına).'],
       ['Yenileme', 'Planın sen iptal edene kadar aynı süreyle kendiliğinden yenilenir. Yıllık plan yenilenmeden önce sana e-posta göndeririz.'],
       ['İptal', 'İstediğin an Panel → Planlar ve fatura’dan. Planın, ödediğin dönemin sonuna kadar açık kalır; başka ücret alınmaz. Verilerini her zaman indirebilirsin.'],
@@ -65,7 +65,7 @@ const COPY = {
       ['Verkoper', <>Snippr, Nederland — bedrijfsgegevens op de <Link href="/imprint">impressumpagina</Link>.</>],
       ['Prijs', null],
       ['Gratis proef', `${TRIAL_DAYS} dagen, geen kaart nodig. Kies je aan het eind geen abonnement, dan wordt er niets afgeschreven.`],
-      ['Oprichtersaanbod', `De eerste ${FOUNDER_SPOTS} zaken die een abonnement nemen krijgen ${FOUNDER_DISCOUNT}% korting, zolang ze het zonder onderbreking houden.`],
+      ['Oprichtersaanbod', `De eerste ${FOUNDER_SPOTS} zaken die een abonnement nemen betalen ${eur(FOUNDER_SOLO_PRICE)} per maand (excl. btw) voor Solo, zolang ze het zonder onderbreking houden.`],
       ['Facturering', 'Vooraf, in euro, per maand of per jaar (het jaarabonnement kost ongeveer 10 maanden).'],
       ['Verlenging', 'Je abonnement wordt automatisch verlengd met dezelfde periode tot je opzegt. We mailen je voordat een jaarabonnement wordt verlengd.'],
       ['Opzeggen', 'Altijd, via Dashboard → Abonnementen. Je abonnement blijft actief tot het einde van de betaalde periode; er wordt niets meer afgeschreven. Je kunt je gegevens altijd downloaden.'],
@@ -84,7 +84,7 @@ const COPY = {
       ['Verkäufer', <>Snippr, Niederlande — Firmendaten im <Link href="/imprint">Impressum</Link>.</>],
       ['Preis', null],
       ['Kostenloser Test', `${TRIAL_DAYS} Tage, keine Karte nötig. Wählst du am Ende keinen Tarif, wird nichts abgebucht.`],
-      ['Gründerangebot', `Die ersten ${FOUNDER_SPOTS} Läden, die ein Abo abschließen, bekommen ${FOUNDER_DISCOUNT} % Rabatt, solange sie es ohne Unterbrechung behalten.`],
+      ['Gründerangebot', `Die ersten ${FOUNDER_SPOTS} Läden, die ein Abo abschließen, zahlen ${eur(FOUNDER_SOLO_PRICE)} im Monat (zzgl. MwSt.) für Solo, solange sie es ohne Unterbrechung behalten.`],
       ['Abrechnung', 'Im Voraus, in Euro, monatlich oder jährlich (der Jahrestarif kostet etwa 10 Monate).'],
       ['Verlängerung', 'Dein Tarif verlängert sich automatisch um denselben Zeitraum, bis du kündigst. Vor der Verlängerung eines Jahrestarifs schreiben wir dir.'],
       ['Kündigen', 'Jederzeit unter Dashboard → Tarife. Dein Tarif bleibt bis zum Ende des bezahlten Zeitraums aktiv; danach wird nichts mehr abgebucht. Du kannst deine Daten jederzeit herunterladen.'],
@@ -103,7 +103,7 @@ const COPY = {
       ['البائع', <>Snippr، هولندا — بيانات الشركة في <Link href="/imprint">صفحة البيانات القانونية</Link>.</>],
       ['السعر', null],
       ['تجربة مجانية', `${TRIAL_DAYS} يومًا بدون بطاقة. إذا لم تختر خطة في النهاية فلن يُخصم شيء.`],
-      ['عرض المؤسسين', `أول ${FOUNDER_SPOTS} محلًا تشترك تحصل على خصم ${FOUNDER_DISCOUNT}% طالما استمرت دون انقطاع.`],
+      ['عرض المؤسسين', `أول ${FOUNDER_SPOTS} محلًا تشترك تدفع ${eur(FOUNDER_SOLO_PRICE)} شهريًا (بدون ضريبة) لخطة Solo طالما استمرت دون انقطاع.`],
       ['الفوترة', 'مقدمًا، باليورو، شهريًا أو سنويًا (الخطة السنوية تكلف نحو 10 أشهر).'],
       ['التجديد', 'تتجدد خطتك تلقائيًا للمدة نفسها حتى تلغيها. نراسلك قبل تجديد الخطة السنوية.'],
       ['الإلغاء', 'في أي وقت من اللوحة ← الخطط. تبقى خطتك فعّالة حتى نهاية الفترة المدفوعة ولا يُخصم شيء بعدها. يمكنك تنزيل بياناتك في أي وقت.'],
