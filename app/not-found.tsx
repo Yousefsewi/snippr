@@ -1,162 +1,48 @@
 'use client'
 
+// 404: a quiet, full-screen page in the site's colours. The homepage's dotted cube floats behind
+// a single thin line of text ("This chair is empty.") and one small link back. Click the cube to
+// scatter it. Inspired by editorial 404 pages: almost nothing on screen, one image, one sentence.
+
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
-import { playfair as serif } from '@/lib/fonts'
 import { useSiteLng } from '@/lib/use-site-lng'
 import type { SiteLng } from '@/lib/site-lang'
 
+const ParticleCube = dynamic(() => import('@/components/ParticleCube'), { ssr: false })
 
 const COPY: Record<SiteLng, { title: string; body: string; home: string }> = {
-  en: { title: 'Page not found', body: 'Sorry, we couldn’t find the page you’re looking for. It might have been moved or deleted.', home: 'Back to home' },
-  nl: { title: 'Pagina niet gevonden', body: 'Sorry, we konden de pagina die je zoekt niet vinden. Misschien is hij verplaatst of verwijderd.', home: 'Terug naar home' },
-  de: { title: 'Seite nicht gefunden', body: 'Sorry, wir konnten die gesuchte Seite nicht finden. Vielleicht wurde sie verschoben oder gelöscht.', home: 'Zur Startseite' },
-  tr: { title: 'Sayfa bulunamadı', body: 'Üzgünüz, aradığın sayfayı bulamadık. Taşınmış ya da silinmiş olabilir.', home: 'Ana sayfaya dön' },
-  ar: { title: 'الصفحة غير موجودة', body: 'عذرًا، لم نجد الصفحة التي تبحث عنها. ربما نُقلت أو حُذفت.', home: 'العودة للرئيسية' },
+  en: { title: 'This chair is empty.', body: 'The page you’re looking for isn’t here.', home: 'Back to the shop' },
+  nl: { title: 'Deze stoel is leeg.', body: 'De pagina die je zoekt is er niet.', home: 'Terug naar de zaak' },
+  de: { title: 'Dieser Stuhl ist leer.', body: 'Die Seite, die du suchst, gibt es hier nicht.', home: 'Zurück zum Laden' },
+  tr: { title: 'Bu koltuk boş.', body: 'Aradığın sayfa burada değil.', home: 'Dükkâna dön' },
+  ar: { title: 'هذا الكرسي فارغ.', body: 'الصفحة التي تبحث عنها غير موجودة هنا.', home: 'العودة إلى المحل' },
 }
 
 export default function NotFound() {
-  const c = COPY[useSiteLng()]
+  const lng = useSiteLng()
+  const c = COPY[lng]
   return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(to bottom, #0e1a0d 0%, #0b1509 50%, #050a04 78%, #000000 100%)',
-      color: '#ffffff',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
+    <main dir={lng === 'ar' ? 'rtl' : 'ltr'} lang={lng} style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#ece6de', color: '#1d1d1f', colorScheme: 'light' }}>
+      {/* the site's soft sand / sky / rose light */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(60% 50% at 12% 10%, rgba(205,170,125,0.45), transparent 70%), radial-gradient(55% 50% at 90% 35%, rgba(160,195,240,0.45), transparent 70%), radial-gradient(60% 50% at 45% 105%, rgba(240,170,190,0.38), transparent 70%)' }} />
 
-      {/* Animated background elements */}
-      <div style={{
-        position: 'absolute',
-        top: '10%',
-        left: '10%',
-        width: '200px',
-        height: '200px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
-        filter: 'blur(40px)',
-      }} />
+      {/* the dotted cube, large, behind the text */}
+      <div aria-hidden className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2" style={{ width: 'min(92vw, 760px)', aspectRatio: '1 / 1' }}>
+        <div className="absolute cursor-pointer" style={{ inset: '-30%' }}>
+          <ParticleCube />
+        </div>
+      </div>
 
-      <div style={{
-        position: 'absolute',
-        bottom: '10%',
-        right: '10%',
-        width: '300px',
-        height: '300px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(76,175,80,0.03) 0%, transparent 70%)',
-        filter: 'blur(50px)',
-      }} />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        style={{
-          textAlign: 'center',
-          zIndex: 10,
-          maxWidth: '600px',
-          padding: '40px 20px',
-        }}
-      >
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <h1 className={`${serif.className}`} style={{
-            fontSize: 'clamp(64px, 10vw, 120px)',
-            fontWeight: 700,
-            margin: '0 0 20px',
-            background: 'linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
-            404
-          </h1>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <h2 style={{
-            fontSize: '28px',
-            fontWeight: 600,
-            margin: '0 0 16px',
-            color: '#ffffff',
-          }}>
-            {c.title}
-          </h2>
-          <p style={{
-            fontSize: '16px',
-            color: 'rgba(255,255,255,0.6)',
-            margin: '0 0 32px',
-            lineHeight: 1.6,
-          }}>
-            {c.body}
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}
-        >
-          <Link href="/" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '14px 32px',
-            borderRadius: '12px',
-            background: '#ffffff',
-            color: '#000000',
-            textDecoration: 'none',
-            fontWeight: 600,
-            fontSize: '14px',
-            transition: 'all 0.2s',
-            cursor: 'pointer',
-          }}>
-            {c.home}
-          </Link>
-          <Link href="/dashboard" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '14px 32px',
-            borderRadius: '12px',
-            background: 'rgba(255,255,255,0.12)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            color: '#ffffff',
-            textDecoration: 'none',
-            fontWeight: 600,
-            fontSize: '14px',
-            transition: 'all 0.2s',
-            cursor: 'pointer',
-          }}>
-            Dashboard
-          </Link>
-        </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          style={{
-            fontSize: '13px',
-            color: 'rgba(255,255,255,0.35)',
-            marginTop: '48px',
-          }}
-        >
-          Error Code: 404
-        </motion.p>
+      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none absolute inset-x-0 bottom-[12vh] flex flex-col items-center px-6 text-center">
+        <span className="text-[12px] tracking-[0.2em] text-[#1d1d1f]/50" style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}>404</span>
+        <h1 className="mt-3 text-[clamp(34px,6vw,64px)] leading-[1.05] tracking-[-0.03em]" style={{ fontWeight: 300 }}>{c.title}</h1>
+        <p className="mt-3 text-[15px] text-[#1d1d1f]/60">{c.body}</p>
+        <Link href="/" className="pointer-events-auto mt-5 text-[14px] text-[#1d1d1f]/75 underline decoration-[#1d1d1f]/30 underline-offset-4 transition hover:text-[#1d1d1f] hover:decoration-[#1d1d1f]">
+          {c.home}
+        </Link>
       </motion.div>
     </main>
   )
